@@ -1,0 +1,26 @@
+---
+// La bibliothèque : les modèles, présentés comme dans l'outil (écran « Install from the library »).
+// Données : src/content/<langue>/_library.json, synchronisé depuis l'outil.
+import { chemin, site, donnees } from "../lib/content";
+import { nom } from "../lib/pages";
+const { lang } = Astro.props;
+const t = site(lang).frameworksUi;
+const lib = donnees(lang, "library");
+const couleurs = ["#2A78D6", "#0A6E6C", "#9D5516", "#5B4FB3"]; // mêmes pastilles que l'assistant d'installation
+---
+<div class="page large"><div class="wrap">
+  <h1>{t.title}</h1>
+  <p class="lead">{nom(t.lead)}</p>
+  <div class="tool bibliotheque-modeles">
+    <ul class="grille-modeles">
+      {lib.templates.map((m: any, i: number) => (
+        <li class="carte carte-modele" style={`--c-ref:${couleurs[i % 4]}`}>
+          <h2><span class="pastille-ref grande" aria-hidden="true"></span> {m.name}</h2>
+          <p class="description-modele">{m.text}</p>
+          <div class="actions-carte-modele"><a class="btn ghost small" href={chemin(`frameworks/${m.slug}`, lang)}>{t.see}<span class="sr">{site(lang).common.colon}{m.name}</span></a></div>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <p class="note-installer">{t.install} <a href={`${chemin("", lang)}#frameworks`}>{t.tryInstall}</a></p>
+</div></div>

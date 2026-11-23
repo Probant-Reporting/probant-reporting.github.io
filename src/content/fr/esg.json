@@ -1,0 +1,463 @@
+{
+  "navLabel": "Reporting de durabilité",
+  "meta": {
+    "title": "{name} – collectez les KPI de tous vos sites, avec les preuves",
+    "description": "Un logiciel libre et gratuit pour collecter les KPI de toute votre organisation, avec la preuve derrière chaque chiffre. Les totaux se calculent à chaque niveau, des modèles pour la norme volontaire VS et pour les ESRS révisées sont fournis, et l'auditeur vérifie tout dans l'outil."
+  },
+  "hero": {
+    "title": "Collectez les KPI de tous vos sites, avec les preuves jointes",
+    "lead": "Les contributeurs saisissent leurs chiffres et joignent le justificatif. {name} additionne tout, à chaque niveau de votre organisation, et garde l'ensemble prêt pour l'auditeur. C'est un logiciel libre et gratuit, que vous réglez vous-même.",
+    "ctaSecondary": "Poser une question",
+    "proofs": [
+      "Un rôle d'auditeur en lecture seule : valeurs, preuves et historique",
+      "La norme volontaire VS, avec un export vers le classeur officiel de l'EFRAG",
+      "Une interface en sept langues",
+      "Sur votre serveur, ou en hébergement clé en main chez Clever Cloud"
+    ]
+  },
+  "try": {
+    "lead": "Essayez ici : saisissez la consommation d'électricité du siège, joignez un fichier et validez. Passez ensuite à la vue de l'auditeur. Rien ne sort de votre navigateur.",
+    "note": "Les écrans présentés ici sont des copies de l'outil, avec des données inventées.",
+    "title": "Essayer",
+    "tour": "Voir les vrais écrans dans la visite guidée"
+  },
+  "features": [
+    {
+      "id": "campaigns",
+      "visual": "campaign",
+      "title": "Toute la collecte au même endroit",
+      "lead": "Vous ouvrez une campagne pour l'année ou le trimestre. Chaque contributeur voit ce qu'il lui reste à saisir, et les relances partent toutes seules.",
+      "points": [
+        "Le chiffre de la période de comparaison (N-1) s'affiche à côté du champ, avec l'écart.",
+        "Nombres, pourcentages, montants, oui / non, listes de choix, textes rédigés et tableaux au nombre de lignes variable.",
+        "Un site qui ouvre en cours d'année compte à partir de sa date d'ouverture.",
+        "Vous suivez en direct le taux de remplissage de chaque organisation."
+      ],
+      "tab": "Campagnes"
+    },
+    {
+      "id": "evidence",
+      "visual": "evidence",
+      "title": "La preuve à côté de chaque chiffre",
+      "lead": "Chaque valeur garde son fichier et son historique : qui l'a saisie, qui l'a validée, et quand.",
+      "points": [
+        "L'auditeur a un accès en lecture seule et vérifie tout dans l'outil.",
+        "Un exercice clos reste tel qu'il a été publié : l'arbre des organisations et les chiffres de l'époque sont gardés.",
+        "Fini la chasse aux factures dans les e-mails la veille de l'audit."
+      ],
+      "tab": "Preuves"
+    },
+    {
+      "id": "consolidation",
+      "visual": "consolidation",
+      "title": "Les totaux du groupe se calculent tout seuls",
+      "lead": "Vous décrivez votre organisation avec vos propres niveaux. Un chiffre saisi pour un site compte dans tous les totaux au-dessus.",
+      "points": [
+        "Vos niveaux et vos noms, autant qu'il vous en faut.",
+        "Vous écrivez les formules vous-même, dans l'outil. Pas besoin d'un développeur.",
+        "Des tableaux de bord et des graphiques, avec la comparaison aux périodes précédentes."
+      ],
+      "tab": "Consolidation"
+    },
+    {
+      "id": "consistency",
+      "visual": "consistency",
+      "title": "Les valeurs étranges ressortent avant l'audit",
+      "lead": "L'outil compare chaque valeur à la période de comparaison et à vos propres règles. Tout ce qui mérite un coup d'œil arrive dans une seule liste, À traiter.",
+      "points": [
+        "Chaque alerte explique le problème en une phrase.",
+        "Le contributeur corrige la valeur, ou explique pourquoi elle est juste."
+      ],
+      "tab": "Contrôles"
+    },
+    {
+      "id": "library",
+      "visual": "library",
+      "title": "Partez d'un modèle",
+      "lead": "La bibliothèque compte quatorze modèles : la norme volontaire européenne de reporting de durabilité (VS), en deux modèles, le module de base et le module complet ; la transparence des rémunérations ; et les ESRS révisées de la CSRD, en onze modèles, un par norme. Vous pouvez ensuite changer chaque KPI, chaque unité, chaque formule.",
+      "points": [
+        "Un assistant de mise en place vous guide, de votre organisation à votre première campagne.",
+        "Vous importez des valeurs depuis Excel ou CSV, et vous exportez des tableaux qui s'ouvrent proprement dans Excel.",
+        "L'outil vous aide à collecter les données dont vous avez besoin pour la norme volontaire VS, pour vos indicateurs ESRS et pour la déclaration des écarts de rémunération entre femmes et hommes de la directive européenne 2023/970.",
+        "Pour les ESRS, installez l'ESRS 2 et les modèles de vos sujets importants. Un KPI que deux modèles ont en commun se saisit une seule fois."
+      ],
+      "tab": "Modèles"
+    },
+    {
+      "id": "field",
+      "visual": "phone",
+      "title": "Simple pour ceux qui ne se connectent que deux fois par an",
+      "lead": "La page de saisie leur dit en une phrase ce qu'il reste à faire. Elle fonctionne sur téléphone, en sept langues.",
+      "points": [
+        "Les statuts s'affichent avec un symbole et un mot, pas seulement une couleur.",
+        "Vous traduisez vos KPI avec un fichier Excel.",
+        "Un guide court par rôle s'ouvre par l'icône d'aide, dans la langue de l'interface."
+      ],
+      "tab": "Contributeurs"
+    },
+    {
+      "id": "it",
+      "visual": "hosting",
+      "title": "L'IT ne s'occupe que de l'hébergement",
+      "lead": "{name} tourne sur un serveur. Votre équipe informatique l'installe sur un serveur de votre entreprise, ou passe par un hébergeur qui le fait tourner pour vous (Clever Cloud). Elle installe aussi les mises à jour. Tout le reste se fait dans l'outil, par vos administrateurs.",
+      "points": [],
+      "cta": true,
+      "tab": "Pour l'IT"
+    }
+  ],
+  "specs": [
+    {
+      "term": "Hébergement",
+      "value": "Sur votre serveur avec Docker, ou en hébergement clé en main chez Clever Cloud"
+    },
+    {
+      "term": "Votre équipe informatique",
+      "value": "L'hébergement et les mises à jour. Rien à développer"
+    },
+    {
+      "term": "Sauvegardes",
+      "value": "Automatiques"
+    },
+    {
+      "term": "Comptes",
+      "value": "Créés et gérés par les administrateurs dans l'outil. Pas de SSO"
+    },
+    {
+      "term": "Entrées et sorties",
+      "value": "Fichiers Excel et CSV. Pas d'API REST publique : les assistants IA passent par le serveur MCP"
+    },
+    {
+      "term": "Espaces",
+      "value": "Plusieurs espaces séparés dans une même installation"
+    },
+    {
+      "term": "Langues",
+      "value": "Anglais, français, espagnol, allemand, italien, néerlandais et portugais"
+    },
+    {
+      "term": "Accessibilité",
+      "value": "Conçu selon WCAG 2.1 AA"
+    },
+    {
+      "term": "Coût",
+      "value": "Le logiciel est gratuit"
+    }
+  ],
+  "roles": {
+    "title": "Qui fait quoi",
+    "lead": "",
+    "items": [
+      {
+        "role": "Administrateur",
+        "who": "L'équipe qui pilote le reporting",
+        "text": "Met en place les référentiels et l'arbre des organisations, ouvre les campagnes, suit le taux de remplissage, envoie les relances et exporte les données.",
+        "jobs": [
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "readOnly": false
+      },
+      {
+        "role": "Contributeur",
+        "who": "Sites et filiales",
+        "text": "Saisit les KPI qui lui sont attribués, ajoute les preuves et valide sa saisie.",
+        "jobs": [
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "readOnly": false
+      },
+      {
+        "role": "Validateur",
+        "who": "À n'importe quel niveau de votre organisation",
+        "text": "Relit les valeurs de son organisation et des organisations en dessous.",
+        "jobs": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0
+        ],
+        "readOnly": false
+      },
+      {
+        "role": "Lecteur",
+        "who": "Direction, comités",
+        "text": "Lit les tableaux de bord et les graphiques. En lecture seule.",
+        "jobs": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "readOnly": true
+      },
+      {
+        "role": "Auditeur",
+        "who": "Pendant un audit",
+        "text": "Lit les valeurs, les preuves et l'historique. En lecture seule.",
+        "jobs": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1
+        ],
+        "readOnly": true
+      }
+    ],
+    "columns": [
+      "Met en place les référentiels et l'arbre",
+      "Ouvre les campagnes, envoie les relances",
+      "Saisit les KPI et les preuves",
+      "Valide sa saisie",
+      "Relit les valeurs de ses organisations",
+      "Repasse une saisie validée en brouillon",
+      "Lit les tableaux de bord",
+      "Lit les valeurs, les preuves, l'historique"
+    ],
+    "changesLabel": "Modifie les données",
+    "yes": "Oui",
+    "readOnly": "Lecture seule",
+    "mainJob": "Tâche principale",
+    "tableLabel": "Les rôles et leurs tâches principales",
+    "no": "Non"
+  },
+  "limits": {
+    "title": "Ce que {name} ne fait pas",
+    "lead": "{name} collecte des données quantitatives, avec les preuves et les contrôles qui vont avec. Voici ce qu'il ne fait pas, pour que vous le sachiez avant de l'essayer.",
+    "items": [
+      {
+        "title": "Pas de calcul du bilan carbone",
+        "text": "Il collecte les données et applique vos formules, mais ce n'est pas un logiciel de comptabilité carbone."
+      },
+      {
+        "title": "Pas de rapport de durabilité",
+        "text": "Il ne rédige pas le rapport, et il ne fait pas l'analyse de double matérialité."
+      },
+      {
+        "title": "Pas d'audit",
+        "text": "L'audit reste le travail de l'auditeur. {name} lui donne un accès en lecture seule à ce dont il a besoin."
+      },
+      {
+        "title": "Pas d'API REST publique, pas de SSO, pas d'intégration EcoVadis",
+        "text": "Les données entrent et sortent en fichiers Excel ou CSV, et les assistants IA passent par le serveur MCP. Les administrateurs créent les comptes dans l'outil."
+      }
+    ],
+    "meta": {
+      "title": "Ce que {name} ne fait pas – {name}",
+      "description": "{name} collecte des données quantitatives, avec les preuves et les contrôles qui vont avec. Voici ce qu'il ne fait pas."
+    },
+    "link": "Ce que {name} ne fait pas"
+  },
+  "free": {
+    "title": "{name} est gratuit",
+    "priceLabel": "Le logiciel",
+    "price": "0 €",
+    "text": "Pas d'abonnement, pas de version payante. Le code source est public, sous licence AGPL-3.0-or-later.",
+    "included": [
+      "Toutes les fonctions de cette page",
+      "Cinq rôles",
+      "Une interface en sept langues",
+      "La norme volontaire VS, module de base et module complet",
+      "La transparence des rémunérations, pour la directive européenne 2023/970",
+      "Les ESRS révisées, en onze modèles à installer selon vos sujets importants"
+    ],
+    "provideLabel": "Ce que vous apportez",
+    "provideTitle": "Vous payez votre hébergement",
+    "provide": [
+      "Sur un serveur de votre entreprise, ou chez un hébergeur qui fait tourner l'outil pour vous (Clever Cloud). Votre équipe informatique installe les mises à jour."
+    ],
+    "priceNote": "pour le logiciel"
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "items": [
+      {
+        "q": "{name} est-il vraiment gratuit ?",
+        "a": "Oui. Il n'y a pas de version payante, et le code source est public, sous licence AGPL-3.0-or-later. Le seul coût, c'est l'hébergement."
+      },
+      {
+        "q": "Comment obtenir {name} ?",
+        "a": "Vous pouvez l'essayer sur votre ordinateur, l'installer sur un serveur avec Docker, ou choisir un hébergement clé en main chez Clever Cloud. La page Obtenir {name} donne les commandes et les liens."
+      },
+      {
+        "q": "Où sont hébergées les données ?",
+        "a": "Là où vous le décidez : sur un serveur de votre entreprise, installé par votre équipe informatique, ou chez un hébergeur qui fait tourner l'outil pour vous (Clever Cloud). Les sauvegardes sont automatiques."
+      },
+      {
+        "q": "Faut-il abandonner Excel ?",
+        "a": "Non. Vous importez des valeurs depuis des fichiers Excel ou CSV, et vous exportez des tableaux vers Excel."
+      },
+      {
+        "q": "{name} couvre-t-il la norme volontaire VS ?",
+        "a": "Oui. La bibliothèque la fournit en deux modèles, le module de base et le module complet. {name} vous aide à collecter les données dont vous avez besoin, et exporte les valeurs vers le classeur officiel de l'EFRAG."
+      },
+      {
+        "q": "{name} aide-t-il pour la transparence des rémunérations ?",
+        "a": "Oui. La bibliothèque a un modèle pour la déclaration des écarts de rémunération entre femmes et hommes de la directive européenne 2023/970, avec une déclaration par employeur. Chaque entité saisit ses rémunérations moyennes et ses effectifs, et {name} calcule les écarts moyens de chaque entité et du groupe à partir des totaux, jamais comme une moyenne d'écarts. Les lois nationales qui transposent la directive peuvent ajouter des précisions : le modèle suit la directive."
+      },
+      {
+        "q": "{name} fournit-il des modèles pour les ESRS ?",
+        "a": "Oui. La bibliothèque a onze modèles pour les ESRS révisées de la CSRD (règlement délégué (UE) 2026/1563) : ESRS 2, E1 à E5, S1 à S4 et G1. Ce sont des modèles de collecte construits à partir du texte du règlement. Installez l'ESRS 2 et les modèles de vos sujets importants, puis adaptez les KPI à votre entreprise. Un KPI que plusieurs modèles ont en commun se saisit une seule fois. Les textes des KPI de ces modèles existent en anglais et en français."
+      },
+      {
+        "q": "{name} nous met-il en conformité avec une réglementation ?",
+        "a": "Non, pas à lui seul. Il vous aide à collecter les données quantitatives dont vous avez besoin, par exemple pour la norme volontaire VS, pour vos indicateurs ESRS ou pour la déclaration des écarts de rémunération."
+      },
+      {
+        "q": "{name} calcule-t-il notre bilan carbone ?",
+        "a": "Non. Il collecte les données et applique les formules que vous réglez. Ce n'est pas un logiciel de comptabilité carbone certifié."
+      },
+      {
+        "q": "Faut-il former les contributeurs ?",
+        "a": "Non. La page de saisie leur dit ce qu'il reste à faire, sur ordinateur comme sur téléphone."
+      },
+      {
+        "q": "Que voit l'auditeur ?",
+        "a": "Chaque valeur, avec sa preuve et son historique. Il ne peut rien modifier."
+      },
+      {
+        "q": "Que devient un exercice clos ?",
+        "a": "Il reste tel qu'il a été publié, avec l'arbre des organisations et les chiffres de l'époque. Si un administrateur le rouvre, il choisit de garder ces chiffres ou de recalculer avec l'organisation d'aujourd'hui."
+      },
+      {
+        "q": "D'autres départements peuvent-ils l'utiliser ?",
+        "a": "Oui. Vous créez des espaces séparés dans une même installation, par exemple pour la RSE, les achats et les RH."
+      },
+      {
+        "q": "Un assistant IA peut-il utiliser {name} ?",
+        "a": "Oui, si un administrateur le permet. C'est éteint par défaut. Chaque personne connecte son propre assistant, avec un jeton personnel, et l'assistant a les droits de cette personne, jamais plus."
+      },
+      {
+        "q": "Que doit faire l'IT ?",
+        "a": "Héberger l'outil et appliquer les mises à jour. Il n'y a rien à développer."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Des questions ?",
+    "text": "Je développe {name} sur mon temps libre et je le partage gratuitement. Si vous avez une question, écrivez-moi, je vous réponds volontiers."
+  },
+  "featuresHead": {
+    "title": "Ce qui change pour votre équipe",
+    "lead": ""
+  },
+  "frameworks": {
+    "title": "Installez un référentiel en 3 étapes",
+    "lead": "Choisissez un modèle, décochez ce dont vous n'avez pas besoin, installez. Ce sont les vrais modèles et les vrais KPI de l'outil : la norme volontaire VS, la transparence des rémunérations et les ESRS révisées.",
+    "ownTitle": "Ou construisez votre propre référentiel",
+    "own": [
+      "Créez vos KPI un par un dans l'outil, avec leurs unités et leurs formules.",
+      "Reprenez des KPI que vous avez déjà dans d'autres référentiels : un chiffre commun n'est saisi qu'une fois.",
+      "Importez un fichier Excel ou JSON. Vous voyez un aperçu avant que rien ne change."
+    ]
+  },
+  "vs": {
+    "title": "La norme volontaire VS, prête à collecter",
+    "lead": "{name} vous aide à collecter les données dont vous avez besoin pour la norme volontaire VS (ex-VSME). Deux modèles la couvrent, et vous exportez les valeurs vers le classeur officiel de l'EFRAG.",
+    "points": [
+      "Chaque information demandée est un ensemble de KPI, avec sa définition, son unité, et la preuve derrière chaque valeur.",
+      "Les règles de cohérence attrapent les erreurs habituelles, par exemple plus d'électricité renouvelable que d'électricité au total.",
+      "Vous collectez une seule fois, site par site, et les valeurs remontent dans l'arbre des organisations."
+    ],
+    "templatesLabel": "Les deux modèles",
+    "templates": [
+      {
+        "slug": "vs-basic",
+        "name": "Module de base",
+        "text": "Les informations B1 à B11, de la base de préparation à la corruption."
+      },
+      {
+        "slug": "vs-comprehensive",
+        "name": "Module complet",
+        "text": "Les informations C1 à C9, à ajouter au module de base : stratégie, cibles et risques climatiques, effectifs, droits de l'homme, mixité."
+      }
+    ],
+    "see": "Voir les KPI",
+    "exportLabel": "De {name} au classeur de l'EFRAG",
+    "export": [
+      "Collectez et validez les valeurs dans {name}.",
+      "Exportez-les vers le classeur Excel officiel de l'EFRAG. {name} ne remplit que les cellules de saisie.",
+      "Ouvrez le classeur dans Excel et enregistrez-le, pour que le convertisseur de l'EFRAG lise les valeurs calculées."
+    ],
+    "note": "{name} n'est ni conçu ni approuvé par l'EFRAG.",
+    "cta": "Modèles de la bibliothèque"
+  },
+  "assistant": {
+    "title": "Avec votre assistant IA",
+    "lead": "Un assistant IA, par exemple Claude, peut travailler dans {name} grâce à son serveur MCP. C'est éteint tant qu'un administrateur ne l'a pas permis, et l'assistant n'a jamais plus de droits que la personne qui le connecte.",
+    "specs": [
+      {
+        "term": "Par défaut",
+        "value": "Éteint"
+      },
+      {
+        "term": "Qui le permet",
+        "value": "Un administrateur, pour l'espace"
+      },
+      {
+        "term": "Qui se connecte",
+        "value": "Chaque personne, avec un jeton personnel"
+      },
+      {
+        "term": "Ce qu'il peut faire",
+        "value": "Ce que cette personne peut faire, par exemple lire le taux de remplissage ou saisir une valeur"
+      },
+      {
+        "term": "Lecteur et auditeur",
+        "value": "Lecture seule"
+      },
+      {
+        "term": "Trace",
+        "value": "Chaque appel est dans l'historique"
+      }
+    ],
+    "tableLabel": "Comment les assistants IA se connectent"
+  },
+  "get": {
+    "title": "Obtenir {name}",
+    "lead": "Le logiciel est gratuit et son code est public. Choisissez votre façon de commencer.",
+    "paths": [
+      {
+        "anchor": "essayer-sur-votre-ordinateur",
+        "title": "Essayer sur votre ordinateur",
+        "text": "Un essai avec la société de démonstration, pour faire le tour avant de décider."
+      },
+      {
+        "anchor": "installer-sur-un-serveur",
+        "title": "Installer sur un serveur",
+        "text": "Pour votre équipe informatique : Docker, un script et un guide."
+      },
+      {
+        "anchor": "hébergement-clé-en-main",
+        "title": "Hébergement clé en main",
+        "text": "Un hébergeur fait tourner l'outil pour vous. Le guide décrit Clever Cloud."
+      }
+    ],
+    "cta": "Obtenir {name}",
+    "tour": "Suivre la visite guidée"
+  }
+}

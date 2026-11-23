@@ -1,0 +1,13 @@
+---
+import { chemin, site } from "../lib/content";
+import { pagesDe, nom } from "../lib/pages";
+const { lang } = Astro.props;
+const g = site(lang).guidesUi;
+---
+<div class="page large"><div class="wrap">
+  <h1>{g.title}</h1>
+  {g.lead && <p class="lead">{nom(g.lead)}</p>}
+  <ul class="cartes-liens">
+    {pagesDe("guides", lang).map((x) => <li><a href={chemin(`guides/${x.slug}`, lang)}><b>{nom(x.fm.title)}</b><span class="qui">{nom(x.fm.who)}</span><span>{nom(x.fm.summary || x.fm.description)}</span></a></li>)}
+  </ul>
+</div></div>

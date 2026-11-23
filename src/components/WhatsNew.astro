@@ -1,0 +1,31 @@
+---
+// « What's new » : une entrée par version de l'outil (src/content/<langue>/_changelog.json, voir src/lib/changelog.ts).
+import { chemin, fluxRss, site, config } from "../lib/content";
+import { versions, ancre, enLigne, dateLongue } from "../lib/changelog";
+const { lang } = Astro.props;
+const w = site(lang).whatsNew;
+const lien = (u: string) => (u.startsWith("/") ? chemin(u.replace(/^\/|\/$/g, ""), lang) : u);
+---
+<div class="page"><div class="wrap prose">
+  <h1>{w.title}</h1>
+  <p class="lead">{w.lead}</p>
+  <p class="suivre"><a href={fluxRss(lang)}>{w.rss}</a> · <a href={`${config.repo}/releases`} rel="noopener">{w.releases}</a> · <a href={chemin("get", lang)}>{w.get}</a></p>
+  {versions(lang).map((v) => (
+    <article class="version" id={ancre(v.version)} aria-labelledby={`${ancre(v.version)}-t`}>
+      <h2 id={`${ancre(v.version)}-t`}>{w.version.replace("{version}", v.version)}</h2>
+      <p class="version-date"><time datetime={v.date}>{dateLongue(v.date, lang)}</time></p>
+      {/* une version pas encore traduite s'affiche dans la langue par défaut, et la page le dit */}
+      {v.lang !== lang && <p class="note">{w.untranslated}</p>}
+      <div lang={v.lang !== lang ? v.lang : undefined}>
+      {v.sections.map((s) => (
+        <>
+          {s.title && <h3>{s.title}</h3>}
+          <ul>{s.items.map((i) => <li set:html={enLigne(i, lien)} />)}</ul>
+        </>
+      ))}
+      </div>
+    </article>
+  ))}
+  <h2>{w.updateTitle}</h2>
+  <p set:html={enLigne(w.updateText, lien)} />
+</div></div>

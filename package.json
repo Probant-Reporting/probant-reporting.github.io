@@ -1,0 +1,21 @@
+{
+  "name": "product-site",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "node qa/check.mjs",
+    "og": "node qa/og.mjs",
+    "a11y": "node qa/a11y.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "@fontsource/source-serif-4": "^5.0.0",
+    "axe-core": "^4.14.0"
+  }
+}

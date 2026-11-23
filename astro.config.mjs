@@ -1,0 +1,50 @@
+import { defineConfig } from "astro/config";
+import { readFileSync } from "node:fs";
+import config from "./site.config.mjs";
+import { typoFr } from "./src/lib/typo.mjs";
+
+// Pages en Markdown : {name} devient le nom du produit, les liens internes suivent l'adresse de base du site et la
+// langue de la page (src/content/<langue>/… : « /get/ » devient « /fr/get/ » dans une page française), et chaque
+// tableau est mis dans un cadre qui défile seul sur téléphone, nommé dans la langue de la page.
+const base = config.base.endsWith("/") ? config.base : config.base + "/";
+const parcourir = (n, f) => { f(n); (n.children || []).forEach((c) => parcourir(c, f)); };
+const langueDe = (fichier) => (/[\\/]content[\\/]([^\\/]+)[\\/]/.exec(fichier?.path || fichier?.history?.[0] || "") || [])[1] || config.defaultLang;
+// le mot « table » dans la langue de la page : src/content/<langue>/_site.json, common.table
+const mots = {};
+const motTableau = (lang) => (mots[lang] ??= (() => { try { return JSON.parse(readFileSync(new URL(`./src/content/${lang}/_site.json`, import.meta.url), "utf8")).common.table; } catch { return "table"; } })());
+// un fichier servi tel quel (image, archive) n'a pas de version par langue ; le flux RSS en a une
+const sansLangue = (url) => /\.[a-z0-9]+$/i.test(url.split(/[#?]/)[0]) && !/^\/rss\.xml$/.test(url);
+function remarkProbant() {
+  return (arbre, fichier) => {
+    const lang = langueDe(fichier), prefixe = lang === config.defaultLang ? "" : `${lang}/`;
+    parcourir(arbre, (n) => {
+      if (typeof n.value === "string") n.value = n.value.replaceAll("{name}", config.name);
+      if (n.type === "link" && n.url.startsWith("/") && !n.url.startsWith("//")) n.url = base + (sansLangue(n.url) ? "" : prefixe) + n.url.slice(1);
+    });
+  };
+}
+// Typographie française des pages françaises (src/lib/typo.mjs) : espaces insécables dans le texte, jamais dans le code.
+function rehypeTypo() {
+  const texte = (n, dansCode) => { if (n.type === "text" && !dansCode) n.value = typoFr(n.value); (n.children || []).forEach((c) => texte(c, dansCode || n.tagName === "code" || n.tagName === "pre")); };
+  return (arbre, fichier) => { if (langueDe(fichier) === "fr") texte(arbre, false); };
+}
+function rehypeTableaux() {
+  return (arbre, fichier) => { let n = 0, titre = ""; const mot = motTableau(langueDe(fichier)); parcourir(arbre, (noeud) => {
+    if (noeud.type === "element" && /^h[23]$/.test(noeud.tagName)) titre = (noeud.children || []).map((c) => c.value || (c.children || []).map((x) => x.value || "").join("")).join("").trim();
+    if (noeud.properties?.className?.includes?.("tableau-defile")) return; // déjà dans son cadre
+    if (noeud.type === "element" && noeud.tagName === "pre") noeud.properties = { ...noeud.properties, tabIndex: 0 }; // code qui défile : atteignable au clavier
+    (noeud.children || []).forEach((c, i) => {
+      if (c.type === "element" && c.tagName === "table") noeud.children[i] = { type: "element", tagName: "div", properties: { className: ["tableau-defile"], tabIndex: 0, role: "region", ariaLabel: titre ? `${titre} (${mot} ${++n})` : `${mot[0].toUpperCase()}${mot.slice(1)} ${++n}` }, children: [c] };
+    });
+  }); };
+}
+
+export default defineConfig({
+  site: config.url,
+  base: config.base,
+  trailingSlash: "always",
+  build: { inlineStylesheets: "always", assets: "assets" },
+  compressHTML: true,
+  devToolbar: { enabled: false },
+  markdown: { remarkPlugins: [remarkProbant], rehypePlugins: [rehypeTypo, rehypeTableaux], syntaxHighlight: false },
+});

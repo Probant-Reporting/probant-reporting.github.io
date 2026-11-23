@@ -1,0 +1,30 @@
+---
+title: "Troubleshooting"
+description: "Troubleshooting: a guide for IT teams, from the documentation of the tool."
+order: 10
+group: "Run"
+source: "docs/installation.md"
+---
+
+This table shows common problems, their likely cause, and the solution:
+
+| Symptom | Likely cause and solution |
+|---|---|
+| `Bad Request (400)` when you open the tool | The address is not in `DOMAIN`. Add it to `.env` (separate several values with commas). Then run `docker compose up -d`. |
+| The page does not open | Check that the service runs (`docker compose ps`). Check that the firewall opens the port. Then read `docker compose logs web`. |
+| Redirect loop or CSRF error (403) over HTTPS | `DJANGO_HTTPS=1` is set, but the proxy does not send `X-Forwarded-Proto: https`. Caddy sends it automatically. With another proxy (nginx, Traefik…), add this header. |
+| No HTTPS certificate | The domain name must point to the server, and ports 80 and 443 must be open. Read `docker compose logs caddy`. |
+| “The folder /data is not writable by the tool” | A folder mounted in place of the volume belongs to another user. Run `sudo chown -R 1000:1000 <folder>`. |
+| “Database unreachable” | With PostgreSQL, check `DATABASE_URL`. Then read `docker compose logs db`. |
+| “DAMAGED DATABASE” in the log, `/sante/` answers `503` “damaged database” | The startup check (or a backup) found that the SQLite file is damaged (disk fault, file copied by hand next to an old `-wal` file…). The tool starts without updating the database and refuses to back it up, so the good archives stay. The log gives the last good archive. Restore it: `docker compose exec web python manage.py restore <that archive> --yes`. Then run `docker compose restart web`. The tool keeps the damaged state: a “before-restore-damaged” archive, or the file renamed `db.sqlite3.damaged-<date>` if it no longer opens. If no archive is good, use the external copy of the backups. |
+| “Not enough disk space” (backup, update, or restore), `/sante/` “disk almost full” | Nothing is half-written. The tool does not keep the backup and does not apply the update (the database does not change). It cancels the restore. Free some space: copy old archives off the server, or enlarge the disk. Then run the command again, or run `docker compose restart web`. People who try to save see “Saving is not possible for now”. Nothing that they did is half-saved. |
+| “This archive has no valid signature of this installation” (restore command), or “This backup was not made by this installation” (Hosting page) | Nothing was changed. The archive was made by an earlier version, by another server, or before a change of `DJANGO_SECRET_KEY`, or someone changed it. If you trust it, restore it from the command line with `--unsigned`: `docker compose exec web python manage.py restore <archive> --yes --unsigned`. If you do not know where it comes from, do not restore it. |
+| “The database was updated by a more recent version of the tool” or “made with other database migrations” (restore, PostgreSQL) | Nothing was changed. The message gives the exact command. To go back after an update, see [Going back to the previous version](/docs/update-the-tool/#going-back-to-the-previous-version). To restore on a new server, install first the version that made the backup. To restore an older archive after an update: restore it with the version that made it, then update again with `./update.sh`. |
+| “the restore of … was interrupted and could not be finished” | The archive in the message is missing or cannot be read. Restore it again (`python manage.py restore <name> --yes`). To go back to the state before, restore the “before-restore” archive. |
+| Everyone must sign in again after a restart | The `.secret_key` file of the data folder was deleted or empty. The tool created a new key (log: “New secret key created”). Nothing else is lost. |
+| Wrong server clock (date in the future, then corrected) | The tool keeps the backups dated in the future, but does not count them in the rotation. The next automatic backup runs at the usual time. `/sante/` gives a warning (`avertissement`). Fix the clock (NTP). |
+| “database is locked” | A save waited more than 60 seconds for its turn: SQLite writes one save at a time. This is rare, because SQLite runs in WAL mode. When it occurs, the server is overloaded. Check that the tool has its processors to itself (`docker stats`). Avoid **Redo all calculations** and large imports during the busiest hours. Then give the server more processors, or switch to PostgreSQL (section 8). |
+| The test email fails | The message gives the cause (username refused, port blocked, TLS…). Check the `SMTP_…` settings with the email provider. |
+| Administrator password lost | Another administrator resets it in **Administration › Accounts**. If there is no other administrator, run `docker compose exec web python manage.py changepassword <email>`. |
+| No account can open **Administration** any more | The tool never lets the last active administrator lose the role or the access. This can still occur after a restore of an old backup, or after a change made directly in the database. Give the administrator role back to an existing account: `docker compose exec web python manage.py grant_admin <email>`. The tool records the change in the history. |
+| Start again from scratch (trial) | **Warning:** this **deletes all the data**. Run `docker compose down -v`, then `./install.sh`. |

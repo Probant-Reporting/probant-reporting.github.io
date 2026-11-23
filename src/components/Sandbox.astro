@@ -1,0 +1,40 @@
+---
+// L'essai dans le navigateur. Sans JavaScript : le tableau de départ, en lecture seule.
+import { site, config } from "../lib/content";
+import { SAISIS, DEPART, N1, nombre, ecart, ecartTexte, fleche } from "../lib/demo.mjs";
+const { lang } = Astro.props;
+const t = site(lang);
+const T = { ...t.tool, productName: config.name, quoteOpen: t.common.quoteOpen, quoteClose: t.common.quoteClose };
+const cls = { validated: "statut statut-valide", draft: "statut statut-brouillon", todo: "statut" } as Record<string, string>;
+---
+<div class="tool role-choix" data-roles data-js-seul hidden>
+  <div class="role-ligne">
+    <span class="role-libelle" id="role-libelle">{T.role.label}</span>
+    <div class="segments" role="group" aria-labelledby="role-libelle">
+      {["contributor", "validator", "auditor"].map((r, i) => <button type="button" data-role={r} aria-pressed={i === 0 ? "true" : "false"}>{T.role[r]}</button>)}
+    </div>
+  </div>
+  <p class="role-texte" data-role-texte aria-live="polite">{T.role.contributorText}</p>
+</div>
+<div class="frame tool" aria-label={T.frameLabel} role="group">
+  <div id="sandbox" style="min-height:520px">
+    <div class="pad">
+      <div class="barre-outils"><p class="titre-cellule" style="margin:0">{T.tabs.entry} – {T.campaign}</p></div>
+      <div class="defile">
+        <table>
+          <thead><tr><th scope="col">{T.cols.indicator}</th><th scope="col">{T.cols.value} <span class="annee-courante">2026</span></th><th scope="col" class="n1 mq">{T.cols.n1} <span class="n1-libelle">2025</span></th><th scope="col" class="mq">{T.cols.variance}</th><th scope="col">{T.cols.status}</th></tr></thead>
+          <tbody>
+            {SAISIS.map((k) => { const d = DEPART.lyon[k], e = ecart(d.v, N1.lyon[k]); return (
+              <tr><th scope="row">{T.kpis[k].name}</th><td class="valeur nombre">{d.v == null ? "–" : `${nombre(d.v, lang)} ${T.kpis[k].unit}`}</td><td class="n1 nombre mq">{nombre(N1.lyon[k], lang)}</td><td class="nombre mq">{e == null ? "–" : `${fleche(e)} ${ecartTexte(e, lang)}`}</td><td><span class={cls[d.s]}>{T.status[d.s]}</span></td></tr>
+            ); })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <p class="toast" id="sandbox-annonce" role="status"></p>
+</div>
+<script type="application/json" id="sandbox-textes" set:html={JSON.stringify(T)} />
+<script>
+  import "../scripts/sandbox.js";
+</script>

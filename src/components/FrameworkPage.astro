@@ -1,0 +1,44 @@
+---
+// Un modèle de la bibliothèque : ses KPI par thème, avec unité, type et formule (données de l'outil).
+import { chemin, site, donnees } from "../lib/content";
+import { titre } from "../lib/pages";
+import Icon from "./Icon.astro";
+const { lang, slug } = Astro.props;
+const t = site(lang).frameworksUi;
+const lib = donnees(lang, "library");
+const m = lib.templates.find((x: any) => x.slug === slug);
+const cat = lib.catalogue;
+// lien d'évitement de chaque tableau : vers le thème suivant, puis vers la suite de la page
+const apres = (i: number) => (i + 1 < m.themes.length ? `theme-${i + 2}` : "apres-tableaux");
+// une unité « list: … » ou « table: … » longue (la liste des pays…) : le mot, puis le détail replié
+// (en français : « liste : … », « tableau : … », écrits par npm run sync)
+const unite = (u: string) => { const r = /^(list|table|liste|tableau)\s?: (.+)$/s.exec(u || ""); return r && u.length > 30 ? { sorte: r[1], liste: r[1].startsWith("list"), detail: r[2] } : null; };
+// date d'un document (AAAA-MM-JJ) écrite dans la langue de la page, sans fuseau horaire
+const jour = (d: string) => (/^\d{4}-\d{2}-\d{2}$/.test(d || "") ? new Date(`${d}T12:00:00Z`).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : d);
+---
+<div class="page large"><div class="wrap prose">
+  <p class="fil"><a href={chemin("frameworks", lang)}>{t.title}</a></p>
+  <h1>{titre(m.name)}</h1>
+  <p class="lead">{m.text}</p>
+  <p>{t.install} <a href={`${chemin("", lang)}#frameworks`}>{t.tryInstall}</a></p>
+  {m.themes.map((th: any, i: number) => (
+    <div class="theme-modele">
+      <h2 id={`theme-${i + 1}`} tabindex="-1">{th.name}</h2>
+      <a class="eviter" href={`#${apres(i)}`}>{t.skipTable}<span class="sr">{site(lang).common.colon}{th.name}</span></a>
+      <p class="indice-defile">{t.scrollHint}</p>
+      <div class="tableau-defile" tabindex="0" role="region" aria-label={th.name}>
+        <table class="kpis">
+          <thead><tr><th scope="col">{t.code}</th><th scope="col">{t.kpi}</th><th scope="col">{t.unit}</th><th scope="col">{t.type}</th><th scope="col">{t.formula}</th></tr></thead>
+          <tbody>{th.kpis.map((k: any) => { const c = cat[k.code] || {}; return (
+            <tr><td><code>{k.code}</code></td><td><b>{k.name}</b><span class="code-ligne"><code>{k.code}</code></span>{!k.mandatory && <span class="facultatif"> ({t.optional})</span>}{c.definition && <details><summary>{t.definition}</summary><p>{c.definition}</p></details>}</td><td>{unite(c.unit) ? <>{unite(c.unit)!.sorte}<details><summary>{unite(c.unit)!.liste ? t.choices : t.columns}</summary><p lang={c.unitLang}>{unite(c.unit)!.detail}</p></details></> : c.unit || "—"}</td><td>{t.types[c.type] || c.type}</td><td>{c.formula ? <code>{c.formula}</code> : "—"}</td></tr>
+          ); })}</tbody>
+        </table>
+      </div>
+    </div>
+  ))}
+  <div id="apres-tableaux" tabindex="-1">
+    {m.sources?.length > 0 && <section aria-labelledby="sources"><h2 id="sources">{t.sources}</h2><p>{t.sourcesLead}</p><ul>{m.sources.map((d: any) => <li><b lang="en">{d.title}</b>. <span lang="en">{d.publisher}</span>, {t.sourceDate} {jour(d.date)}, {t.sourceRead} {jour(d.read)}.</li>)}</ul></section>}
+    {m.rules.length > 0 && <section aria-labelledby="regles"><h2 id="regles">{t.rules}</h2><ul>{m.rules.map((r: string) => <li>{r}</li>)}</ul></section>}
+    <p class="lien-limites"><a href={chemin("frameworks", lang)}>{t.all}<Icon name="arrow" /></a></p>
+  </div>
+</div></div>

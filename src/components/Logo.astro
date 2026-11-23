@@ -1,0 +1,9 @@
+---
+// Le logo : une case et une coche d'auditeur qui en sort. Le nom vient de site.config.mjs.
+import { config } from "../lib/content";
+const { href } = Astro.props;
+---
+<a class="brand" href={href}>
+  <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect x="3" y="8" width="21" height="21" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M9 18.5l5 5L29 5.5" fill="none" stroke="var(--mark)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span>{config.name}</span>
+</a>

@@ -1,0 +1,56 @@
+---
+// Visite guidée par rôle : les vrais écrans de l'outil, avec la société fictive de la démo
+// (src/content/<langue>/_tour.json). Un rôle = une section avec son ancre (/tour/#auditor), reliée au sommaire du haut :
+// tout se lit sans JavaScript. Les captures sont dans public/tour/ ; elles se refont avec qa/tour-shots.mjs.
+import Icon from "./Icon.astro";
+import ToolLoop from "./ToolLoop.astro";
+import { chemin, fichier, donnees, site } from "../lib/content";
+import { nom } from "../lib/pages";
+const { lang } = Astro.props;
+const v = donnees(lang, "tour");
+const t = site(lang);
+const etape = (n: number, total: number) => v.stepLabel.replace("{n}", String(n)).replace("{total}", String(total));
+---
+<div class="page large visite"><div class="wrap">
+  <h1>{v.title}</h1>
+  <p class="lead">{nom(v.lead)}</p>
+  <p class="note">{nom(v.note)}</p>
+  <div class="visite-boucle"><ToolLoop lang={lang} /></div>
+  <nav class="visite-roles" id="roles" aria-labelledby="visite-roles-t">
+    <h2 id="visite-roles-t">{v.rolesTitle}</h2>
+    <ul>
+      {v.roles.map((r: any) => <li><a href={`#${r.id}`}><b>{r.role}</b><span>{r.short}</span></a></li>)}
+    </ul>
+  </nav>
+  {v.roles.map((r: any, j: number) => (
+    <section class="visite-role" id={r.id} aria-labelledby={`${r.id}-t`}>
+      <h2 id={`${r.id}-t`}>{r.role}</h2>
+      <p class="visite-qui">{nom(r.who)}</p>
+      <ol class="visite-etapes">
+        {r.steps.map((s: any, i: number) => (
+          <li class="visite-etape">
+            <div class="visite-texte">
+              <p class="visite-num">{etape(i + 1, r.steps.length)} · {r.role}</p>
+              <h3>{s.title}</h3>
+              <p>{nom(s.text)}</p>
+            </div>
+            {/* la capture s'ouvre en grand : un simple lien vers l'image, au clavier comme au doigt, sans script */}
+            <a class="visite-zoom" href={fichier(`tour/${s.img}.webp`)}>
+              <img class="visite-image" src={fichier(`tour/${s.img}.webp`)} alt={nom(s.alt)} width="1600" height="1200" loading={j === 0 && i === 0 ? "eager" : "lazy"} decoding="async" />
+              <span class="visite-zoom-texte"><Icon name="maximize" />{t.common.enlarge}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <p class="visite-autres">
+        {v.roles[j + 1] && <a href={`#${v.roles[j + 1].id}`}>{v.nextRole.replace("{role}", v.roles[j + 1].role)}<Icon name="arrow" /></a>}
+        <a href="#roles">{v.backToRoles}</a>
+      </p>
+    </section>
+  ))}
+  <div class="visite-suite">
+    <h2>{v.next.title}</h2>
+    <p>{nom(v.next.text)}</p>
+    <p class="cta-row"><a class="btn" href={chemin("get", lang)}>{nom(v.next.get)}</a><a class="btn ghost" href={`${chemin("", lang)}#try`}>{v.next.try}<Icon name="arrow" /></a></p>
+  </div>
+</div></div>

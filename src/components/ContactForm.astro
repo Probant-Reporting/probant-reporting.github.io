@@ -1,0 +1,19 @@
+---
+// Contact : un lien vers LinkedIn, et l'adresse e-mail si elle est réglée. Pas de formulaire : Probant est un projet
+// gratuit, on ne démarche pas ; on répond aux questions.
+import Icon from "./Icon.astro";
+import { site, config } from "../lib/content";
+const { lang, dark = false } = Astro.props;
+const t = site(lang).contact;
+---
+<div class={`contact-simple${dark ? " sur-sombre" : ""}`}>
+  <a class="btn" href={config.linkedin} target="_blank" rel="noopener">{t.linkedin}<span class="sr"> {t.newTab}</span><Icon name="arrow" /></a>
+  {config.contactEmail && (
+    <p class="contact-mail"><span>{t.direct}</span> <b>{config.contactEmail}</b>
+      <button type="button" class="btn ghost small" data-copier={config.contactEmail} data-fait={t.copied}><Icon name="copy" />{t.copy}</button><span role="status" data-copie-etat></span></p>
+  )}
+</div>
+{config.contactEmail && <script>
+  const b = document.querySelector("[data-copier]");
+  b?.addEventListener("click", async () => { const z = document.querySelector("[data-copie-etat]"); try { await navigator.clipboard.writeText(b.dataset.copier); z.textContent = b.dataset.fait; } catch { z.textContent = b.dataset.copier; } });
+</script>}

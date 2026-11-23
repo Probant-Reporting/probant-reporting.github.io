@@ -1,0 +1,116 @@
+---
+// Toutes les pages du site, pour toutes les langues, à partir des fichiers de contenu.
+import Base from "../layouts/Base.astro";
+import ThemePage from "../components/ThemePage.astro";
+import Icon from "../components/Icon.astro";
+import ContactForm from "../components/ContactForm.astro";
+import DocPage from "../components/DocPage.astro";
+import DocsIndex from "../components/DocsIndex.astro";
+import ProsePage from "../components/ProsePage.astro";
+import GuidesIndex from "../components/GuidesIndex.astro";
+import FrameworksIndex from "../components/FrameworksIndex.astro";
+import FrameworkPage from "../components/FrameworkPage.astro";
+import Tour from "../components/Tour.astro";
+import WhatsNew from "../components/WhatsNew.astro";
+import { pagesDe, nom, titre } from "../lib/pages";
+import { pagesDuSite } from "../lib/routes";
+import { config, langs, site, themes, chemin, defaultLang, absolu, fichier, donnees } from "../lib/content";
+
+export function getStaticPaths() {
+  // la liste des pages de chaque langue : src/lib/routes.ts (la même que celle du plan du site)
+  return langs.flatMap((lang) => pagesDuSite(lang).map((p) => ({
+    params: { path: [lang === defaultLang ? "" : lang, p.page].filter(Boolean).join("/") || undefined },
+    props: { lang, kind: p.kind, slug: p.slug, page: p.page },
+  })));
+}
+const { lang, kind, slug, page } = Astro.props;
+// titre et description des pages au-delà de l'accueil
+function metaDe(): any {
+  const md = (k: string) => { const p = pagesDe(k, lang).find((x) => x.slug === slug)!; return { title: `${nom(p.fm.title)} – ${config.name}`, description: nom(p.fm.description || p.fm.title) }; };
+  const ui = (k: string) => ({ title: nom(site(lang)[k].meta.title), description: nom(site(lang)[k].meta.description) });
+  // documentation : la description vient de la table tenue dans le site (_doc_descriptions.json), pas de l'extrait automatique
+  if (kind === "doc") { const p = pagesDe("docs", lang).find((x) => x.slug === slug)!; return { title: nom(site(lang).docsUi.metaTitle.replace("{page}", p.fm.title)), description: nom(donnees(lang, "doc_descriptions").descriptions[slug] || p.fm.description || `${p.fm.title}${site(lang).common.colon}${site(lang).docsUi.meta.description}`) }; }
+  if (kind === "guide") { const p = pagesDe("guides", lang).find((x) => x.slug === slug)!; return { ...md("guides"), title: nom(site(lang).guidesUi.metaTitle.replace("{role}", p.fm.title)) }; }
+  if (kind === "prose") return md("pages");
+  if (kind === "docs-index") return ui("docsUi");
+  if (kind === "guides-index") return ui("guidesUi");
+  if (kind === "frameworks-index") return ui("frameworksUi");
+  if (kind === "whats-new") return ui("whatsNew");
+  if (kind === "tour") { const v = donnees(lang, "tour"); return { title: nom(v.meta.title), description: nom(v.meta.description) }; }
+  if (kind === "framework") { const m = donnees(lang, "library").templates.find((x: any) => x.slug === slug); const f = site(lang).frameworksUi; return { title: nom(f.metaTitle.replace("{framework}", m.name)), description: nom(f.metaDescription.replace("{framework}", m.name)) }; }
+  return null;
+}
+const plus = metaDe();
+const t = site(lang);
+const theme = kind === "theme" ? themes(lang)[slug] : null;
+const lim = kind === "limits" ? themes(lang)[slug].limits : null;
+const meta = theme ? theme.meta : lim ? lim.meta : plus ? plus : t[kind].meta;
+const home = kind === "theme";
+const jsonld = theme && {
+  "@context": "https://schema.org", "@type": "SoftwareApplication", name: config.name, description: theme.meta.description,
+  applicationCategory: "BusinessApplication", operatingSystem: "Web", url: absolu(chemin(page, lang)), image: absolu(fichier("og.png")),
+  inLanguage: config.productLanguages, offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+};
+const faqld = theme && { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: theme.faq.items.map((q: any) => ({ "@type": "Question", name: q.q, acceptedAnswer: { "@type": "Answer", text: q.a } })) };
+const morceaux = page.split("/").filter(Boolean);
+const fil = morceaux.length > 1 && { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: morceaux.map((m: string, i: number) => ({ "@type": "ListItem", position: i + 1, name: i === morceaux.length - 1 ? meta.title.split(" – ")[0] : m, item: absolu(chemin(morceaux.slice(0, i + 1).join("/"), lang)) })) };
+const p = config.publisher;
+---
+<Base lang={lang} title={meta.title} description={meta.description} page={page} home={home} jsonld={theme ? [jsonld, faqld] : fil || null}>
+  {theme && <ThemePage lang={lang} theme={theme} page={page} />}
+
+  {kind === "doc" && <DocPage lang={lang} slug={slug} />}
+  {kind === "docs-index" && <DocsIndex lang={lang} />}
+  {kind === "guide" && <ProsePage lang={lang} kind="guides" slug={slug} />}
+  {kind === "prose" && <ProsePage lang={lang} kind="pages" slug={slug} />}
+  {kind === "guides-index" && <GuidesIndex lang={lang} />}
+  {kind === "frameworks-index" && <FrameworksIndex lang={lang} />}
+  {kind === "framework" && <FrameworkPage lang={lang} slug={slug} />}
+  {kind === "tour" && <Tour lang={lang} />}
+  {kind === "whats-new" && <WhatsNew lang={lang} />}
+
+  {lim && (
+    <div class="page page-limites"><div class="wrap">
+      <h1>{titre(lim.title)}</h1>
+      <p class="lead">{lim.lead}</p>
+      <ul class="limits">{lim.items.map((l: any) => <li><h2>{l.title}</h2><p>{l.text}</p></li>)}</ul>
+      <p class="lien-limites"><a href={chemin(page.replace(/\/?limits$/, ""), lang)}>{t.common.back}<Icon name="arrow" /></a></p>
+    </div></div>
+  )}
+
+  {kind === "contact" && (
+    <div class="page"><div class="wrap">
+      <h1>{t.contact.title}</h1>
+      <p class="lead">{t.contact.lead}</p>
+      <ContactForm lang={lang} />
+    </div></div>
+  )}
+
+  {kind === "legal" && (
+    <div class="page"><div class="wrap">
+      <h1>{t.legal.title}</h1>
+      <h2>{t.legal.publisher}</h2>
+      <dl>
+        <div><dt>{t.legal.company}</dt><dd>{p.company}</dd></div>
+        {p.address && <div><dt>{t.legal.address}</dt><dd>{p.address}</dd></div>}
+        {p.registration && <div><dt>{t.legal.registration}</dt><dd>{p.registration}</dd></div>}
+        {p.director && p.director !== p.company && <div><dt>{t.legal.director}</dt><dd>{p.director}</dd></div>}
+        <div><dt>{t.legal.contact}</dt><dd>{config.contactEmail || <a href={config.linkedin} rel="noopener">LinkedIn</a>}</dd></div>
+        <div><dt>{t.legal.host}</dt><dd>{p.host}</dd></div>
+      </dl>
+      <h2>{t.legal.licence}</h2><p>{t.legal.licenceText}</p>
+      <p><a href={config.repo} rel="noopener">{t.legal.licenceLink}</a></p>
+      <h2>{t.legal.ip}</h2><p>{t.legal.ipText}</p>
+      <h2>{t.legal.fonts}</h2><p>{t.legal.fontsText}</p>
+    </div></div>
+  )}
+
+  {kind === "privacy" && (
+    <div class="page"><div class="wrap">
+      <h1>{t.privacy.title}</h1>
+      <p class="lead">{t.privacy.lead}</p>
+      {t.privacy.items.map((i: any) => <><h2>{i.title}</h2><p>{i.text}</p></>)}
+      <p class="note"><a href={chemin("contact", lang)}>{t.footer.contact}</a></p>
+    </div></div>
+  )}
+</Base>

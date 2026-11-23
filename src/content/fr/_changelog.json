@@ -1,0 +1,85 @@
+{
+  "note": "Traduction française des notes de version, tenue dans le site : le CHANGELOG.md de l'outil n'existe qu'en anglais. Une entrée par version ; « sourceHash » est l'empreinte du texte anglais traduit, donnée par « npm run sync ». La date vient du fichier anglais.",
+  "source": "CHANGELOG.md",
+  "entries": [
+    {
+      "version": "1.0.0",
+      "sourceHash": "329ebe340f58",
+      "sections": [
+        {
+          "title": "",
+          "items": [
+            "Première version publique de Probant, un outil pour collecter des indicateurs (KPI) et accompagner les audits. Vous le réglez pour n'importe quel département : RSE, achats, ressources humaines, qualité et d'autres."
+          ]
+        },
+        {
+          "title": "L'essentiel",
+          "items": [
+            "**Collecter et suivre les données**",
+            "Définissez vos indicateurs une seule fois, dans un catalogue. Rangez-les dans un ou plusieurs référentiels, chacun avec son arbre de thèmes.",
+            "Réglez les niveaux de votre organisation (par exemple groupe, pays, filiale, site), les unités, les formats de réponse et les périodes (année, semestre, trimestre, mois).",
+            "Choisissez la monnaie de référence de chaque espace : les montants des modèles de la bibliothèque l'utilisent (par exemple $ au lieu de €). L'outil ne convertit aucune valeur.",
+            "Formats de réponse : nombre, pourcentage, oui / non, liste de choix, texte rédigé (Markdown) et tableau.",
+            "Les KPI calculés utilisent des formules. Les totaux, les ratios et les moyennes se mettent à jour quand les données changent.",
+            "Les contributeurs saisissent les valeurs et joignent les preuves (PDF, JPG ou PNG). Ils valident leur saisie. Les validateurs et les administrateurs suivent le taux de remplissage et rouvrent une valeur quand il le faut.",
+            "Les contrôles de cohérence, les alertes et les règles entre KPI vous aident à trouver un chiffre faux avant la clôture de l'exercice.",
+            "Les relances par e-mail partent vers les personnes qui ont encore des valeurs à saisir. Vous écrivez le modèle de la relance.",
+            "Clôturez un exercice, et rouvrez-le quand un chiffre doit être corrigé. Vous choisissez de garder les chiffres de l'époque ou de recalculer.",
+            "**Lire et partager**",
+            "Une Visualisation avec des vues, des graphiques et des tableaux. Chaque personne garde ses vues personnelles, et les administrateurs partagent des vues avec tout le monde.",
+            "Importez des valeurs et une structure depuis Excel ou CSV. Exportez des tableaux, et des fichiers à remplir, vers Excel.",
+            "Un import lit un nombre écrit en texte dans la langue du fichier : dans un fichier CSV, le séparateur de colonnes l'indique (« ; » avec la virgule décimale, « , » avec le point décimal) ; sinon c'est l'en-tête de la colonne des valeurs (en anglais, « 1,234 » vaut 1234). Les nombres d'Excel sont lus tels quels. L'aperçu dit comment il a lu les nombres, signale une valeur comme « 1,234 » et refuse un texte qui n'est pas un nombre dans cette langue. L'assistant « Reprendre un ancien système » lit ces nombres dans la langue de votre écran.",
+            "Un chiffre importé pour un KPI calculé d'un exercice ouvert ne devient une valeur forcée qu'après votre confirmation, et seulement si vous avez le droit de forcer cette valeur ; les totaux et les formules qui s'en servent se mettent à jour aussitôt.",
+            "À la clôture d'une période, un chiffre importé tel quel pour un KPI calculé devient son chiffre officiel, et les périodes ouvertes qui le citent (par exemple avec `[ID@N-1]`) se mettent à jour aussitôt. Les chiffres de la période clôturée ne changent pas.",
+            "Un dossier d'audit pour les administrateurs et les auditeurs : un seul fichier Excel avec, pour chaque KPI et chaque organisation, la valeur, qui l'a saisie et validée, les preuves, les alertes et leurs justifications, et l'historique des modifications. Il ne fait que lire les données.",
+            "Un certificat de clôture pour chaque campagne clôturée, à imprimer ou à enregistrer en PDF, avec une empreinte des chiffres. Il ne fait que lire les données. Un auditeur limité à certaines organisations reçoit un certificat partiel, clairement signalé, sur ces seules organisations.",
+            "Une courte visite guidée à la première connexion : quelques repères pour chaque rôle. Elle ne bloque jamais l'écran.",
+            "Cinq rôles : administrateur, validateur, contributeur, lecteur et auditeur. Le lecteur et l'auditeur n'écrivent jamais rien.",
+            "Un historique de chaque modification, et un historique des connexions.",
+            "**Des modèles prêts à l'emploi**",
+            "Une bibliothèque de modèles. Cette version contient la norme volontaire européenne (VS) en deux modules, le module de base (123 KPI) et le module complet (65 KPI), et un modèle pour la transparence des rémunérations (directive (UE) 2023/970, 45 KPI).",
+            "Les normes européennes d'information en matière de durabilité révisées (ESRS, règlement délégué (UE) 2026/1563) en onze modèles, un par norme (ESRS 2, E1 à E5, S1 à S4, G1) : installez l'ESRS 2 et les modèles de vos sujets importants. Un KPI que deux modèles ont en commun se saisit une seule fois. Ils sont construits d'après le texte du règlement. Leurs noms (KPI, thèmes, colonnes, options de liste, règles de cohérence) existent aussi en espagnol, en allemand, en italien, en néerlandais et en portugais, et s'installent dans la langue de l'installation ; les descriptions et les consignes des onze modèles sont traduites aussi (une description ne s'affiche dans une langue que si elle y est entièrement traduite). La relecture par des personnes dont c'est la langue reste à faire.",
+            "Exportez les valeurs d'un exercice dans le classeur officiel de l'EFRAG pour la norme volontaire.",
+            "Chaque modèle liste les documents sur lesquels il repose : titre, éditeur, version, date du document et jour de lecture. La liste apparaît sur la carte du modèle, avant l'installation, et sur la page du référentiel installé.",
+            "Un assistant Mise en place construit un premier référentiel en quelques étapes.",
+            "**Pour plusieurs équipes et plusieurs langues**",
+            "Les espaces : plusieurs départements partagent une même installation, et chaque espace est séparé des autres.",
+            "L'interface existe en sept langues : anglais, français, espagnol, allemand, italien, néerlandais et portugais. Un guide par rôle se trouve dans l'outil (icône Aide), dans les mêmes sept langues. Les textes allemands, italiens, néerlandais et portugais doivent encore être relus par des personnes dont c'est la langue.",
+            "La démo (`load_demo`) suit la langue de l'installation et existe dans les sept langues (`--language` en choisit une). Elle installe aussi les onze modèles ESRS, sans aucune valeur et dans aucune campagne, pour que vous les voyiez dans la bibliothèque et dans les paramètres.",
+            "Chaque façon d'obtenir l'outil démarre vide ou avec la démo. La version tout-en-un le demande à son premier démarrage : la démo, ou un outil vide avec l'assistant de mise en place. Sur un serveur ou avec un hébergement clé en main, l'installation est vide, et le guide dit comment charger la démo pour une évaluation.",
+            "L'accessibilité suit WCAG 2.1 AA. Les pages fonctionnent aussi sur téléphone.",
+            "**Des connexions facultatives (éteintes par défaut)**",
+            "Assistants (MCP) : un assistant IA que vous utilisez déjà peut lire et agir dans l'outil avec les droits de la personne qui le connecte. Chaque personne crée et révoque ses jetons personnels dans Mon compte.",
+            "Assistant IA : un administrateur peut ajouter la clé de l'organisation pour obtenir de l'aide : expliquer une alerte, rapprocher des KPI, traduire. Rien n'est envoyé sans cette étape. Les noms des organisations ne sont jamais envoyés."
+          ]
+        },
+        {
+          "title": "Pour l'IT",
+          "items": [
+            "Installez avec Docker (`./install.sh`, puis `./update.sh` à chaque mise à jour), ou hébergez sur Clever Cloud. Les guides sont `docs/fr/installation.md` et `docs/fr/hebergement_cle_en_main.md`.",
+            "La base de données est SQLite ou PostgreSQL. SQLite suffit pour une petite installation. Passez à PostgreSQL au-delà d'une vingtaine de personnes qui travaillent en même temps.",
+            "Les fichiers de preuve et les données sont dans un seul dossier de données. Sauvegardez ce dossier hors du serveur.",
+            "L'outil fait des sauvegardes automatiques, et une avant chaque mise à jour. La mise à jour applique les migrations de la base au démarrage. Vous restaurez une sauvegarde depuis l'outil ou avec `manage.py restore`.",
+            "Supervisez `/sante/`. La page Paramètres › Santé montre l'état de l'installation.",
+            "Avec PostgreSQL, l'outil met à jour les statistiques du planificateur (`ANALYZE`) après un gros chargement fait en une seule fois : restauration, modèle de la bibliothèque, fichier de configuration, reprise de données.",
+            "Les relances par e-mail demandent un compte SMTP.",
+            "Les comptes sont créés et gérés dans l'outil. Il n'y a pas d'authentification unique (SSO).",
+            "Les réglages que l'IT peut changer (par exemple la taille maximale d'un fichier de preuve, 5 Mo par défaut) sont dans `docs/fr/installation.md`.",
+            "Licence : AGPL-3.0-or-later (la version 3 ou toute version ultérieure)."
+          ]
+        },
+        {
+          "title": "Sécurité",
+          "items": [
+            "Les sauvegardes sont signées avec le secret de l'installation. L'outil refuse une sauvegarde non signée ou modifiée. L'IT peut tout de même restaurer une archive de confiance avec `restore --unsigned`.",
+            "Les fichiers et les dossiers que l'outil crée sont réservés au compte qui le fait tourner (`0600` et `0700`). Dans l'image Docker, l'outil ne peut que lire le code du programme.",
+            "Une politique de sécurité des contenus s'applique à chaque page : aucun script ni style sans jeton, et aucun gestionnaire d'événement dans un attribut.",
+            "Vingt échecs de connexion sur un même compte, toutes adresses confondues, le bloquent 15 minutes. Changer de mot de passe demande l'ancien mot de passe, avec un nombre d'essais limité.",
+            "Les jetons des assistants ne sont jamais dans une sauvegarde. Une restauration ou un changement de mot de passe les révoque.",
+            "Pour signaler une vulnérabilité, utilisez le signalement privé de vulnérabilité de GitHub. Voir `SECURITY.md` : le signalement est confirmé sous 7 jours, et vous recevez une réponse sur le problème sous 30 jours."
+          ]
+        }
+      ]
+    }
+  ]
+}

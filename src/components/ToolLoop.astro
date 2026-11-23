@@ -1,0 +1,25 @@
+---
+// Courte animation de l'outil réel : cinq vraies captures de la démo (société fictive Exemplia), enchaînées en fondu.
+// Sans JavaScript, ou avec « réduire les animations » : l'image fixe de la fin (valeur validée) et la liste des étapes.
+// Avec JavaScript : les autres images ne sont chargées qu'à l'approche du bloc ; la lecture s'arrête au survol, au
+// focus et par le bouton Pause (src/scripts/ui.js). Les dimensions sont réservées : rien ne saute au chargement.
+// Textes : src/content/<langue>/_tour.json (« loop ») ; images : public/tour/loop/, refaites par qa/tour-shots.mjs.
+import { fichier, donnees, site } from "../lib/content";
+import { nom } from "../lib/pages";
+const { lang } = Astro.props;
+const v = donnees(lang, "tour").loop;
+const t = site(lang);
+const images = v.steps.map((_: string, i: number) => fichier(`tour/${v.dir}/${i + 1}.webp`));
+const fin = images.length - 1;
+---
+<figure class="boucle" data-boucle data-images={images.join(" ")}>
+  <div class="boucle-cadre">
+    <img class="boucle-image actif" src={images[fin]} alt={nom(v.alt)} width="960" height="880" loading="lazy" decoding="async" />
+  </div>
+  <figcaption>
+    <p class="boucle-titre">{nom(v.title)}</p>
+    <ol class="boucle-etapes">{v.steps.map((s: string, i: number) => <li class={i === fin ? "actif" : undefined}>{s}</li>)}</ol>
+    <button type="button" class="btn ghost small boucle-pause" data-boucle-pause data-pause-texte={t.common.pause} data-lecture-texte={t.common.play} data-js-seul hidden><span data-pause-libelle>{t.common.play}</span><span class="sr"> {v.playLabel}</span></button>
+    <p class="sr" role="status" data-boucle-etat data-arret={v.paused} data-lecture={v.playing}></p>
+  </figcaption>
+</figure>

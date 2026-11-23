@@ -1,0 +1,40 @@
+---
+// Installer un référentiel depuis la bibliothèque : reproduction des 3 écrans de l'outil
+// (parametres/templates/parametres/installer_modeles.html, installer_kpi.html, installer_resume.html),
+// avec les vrais modèles (src/content/en/_library.json, synchronisé depuis docs/library.md de l'outil).
+// La page ne porte que la liste des modèles ; les KPI d'un modèle viennent de library-data/<langue>/<modèle>.json.
+// Sans JavaScript : l'écran 1 (les modèles) s'affiche, en lecture, avec un renvoi vers la page des modèles.
+import { site, fichier, chemin } from "../lib/content";
+import { listeModeles } from "../lib/library";
+const { lang } = Astro.props;
+const T = site(lang).installer;
+const modeles = listeModeles(lang);
+// le détail d'un modèle (ses KPI) n'est pas dans la page : un fichier par modèle et par langue, chargé au choix du modèle
+const data = { templates: modeles, T, urlDetail: fichier(`library-data/${lang}/{id}.json`), urlBibliotheque: chemin("frameworks", lang) };
+const couleurs = ["#2A78D6", "#0A6E6C", "#9D5516", "#5B4FB3"];
+---
+<div class="frame tool installateur" role="group" aria-label={T.frameLabel}>
+  <div class="pad" id="installateur" aria-live="polite">
+    <div class="tete-installation">
+      <h3 class="titre-installation">{T.title}</h3>
+      <nav class="etapes-installation" aria-label={T.stepsAria}><ol class="etapes-numerotees">
+        {T.steps.map((s: string, i: number) => <li class={i === 0 ? "actuelle" : ""} aria-current={i === 0 ? "step" : undefined}><span class="num" aria-hidden="true">{i + 1}</span><span class="texte"><span class="visually-hidden">{T.stepOf.replace("{n}", String(i + 1))} </span>{s}</span></li>)}
+      </ol></nav>
+    </div>
+    <p class="intro-page">{T.intro}</p>
+    <ul class="grille-modeles">
+      {modeles.map((t: any, i: number) => (
+        <li class="carte carte-modele" style={`--c-ref:${couleurs[i % 4]}`}>
+          <h4><span class="pastille-ref grande" aria-hidden="true"></span> {t.name}</h4>
+          <p class="description-modele">{t.text}</p>
+          <div class="actions-carte-modele"><button type="button" class="bouton" data-modele={t.id} aria-label={T.chooseAria.replace("{framework}", t.name)} data-js-seul hidden>{T.choose}</button></div>
+        </li>
+      ))}
+    </ul>
+    <noscript><p class="discret">{T.noScript} <a href={data.urlBibliotheque}>{T.libraryLink}</a></p></noscript>
+  </div>
+</div>
+<script type="application/json" id="installateur-donnees" set:html={JSON.stringify({ ...data, couleurs })} />
+<script>
+  import "../scripts/installer.js";
+</script>

@@ -1,0 +1,17 @@
+{
+  "note": "Une vraie phrase par page de la documentation, écrite pour ce site. Les pages elles-mêmes sont copiées depuis le dépôt de l'outil (npm run sync) : ce fichier, non.",
+  "descriptions": {
+    "prerequisites": "Ce qu'il faut avant d'installer : un serveur Linux 64 bits avec Docker et Git, un port ouvert ou un nom de domaine pour HTTPS, et un compte SMTP si vous voulez des e-mails.",
+    "install-the-tool": "Récupérez le code et lancez le script d'installation. L'outil démarre dans un seul conteneur Docker, en HTTPS si vous donnez un nom de domaine. Comptez 3 à 5 minutes.",
+    "managed-hosting": "Faire tourner l'outil chez un hébergeur clé en main, sans serveur à gérer : comment choisir l'hébergeur, et le déploiement sur Clever Cloud, pas à pas.",
+    "set-up-the-tool-on-first-launch": "L'assistant Mise en place s'ouvre au premier lancement et compte 8 étapes. Créez le compte administrateur juste après l'installation, avant de diffuser l'adresse.",
+    "change-the-settings": "Chaque réglage du fichier .env, avec sa valeur par défaut et son rôle : adresse, HTTPS, port, base de données, tailles maximales et sauvegardes. La sécurité déjà active.",
+    "back-up-and-restore": "Ce que contiennent le volume de données et une sauvegarde, comment sauvegarder l'outil, et comment restaurer une archive, pour un espace ou pour plusieurs. Que faire si une restauration s'arrête.",
+    "update-the-tool": "La mise à jour tient en un script. Il sauvegarde d'abord chaque espace, récupère la nouvelle version et redémarre l'outil. Comment revenir à la version précédente s'il le faut.",
+    "set-up-emails": "Configurer le compte SMTP qui envoie les relances. Sans SMTP, l'outil n'envoie aucun e-mail : il écrit seulement les messages dans le journal.",
+    "use-postgresql": "SQLite est la base par défaut. Ce que les essais de charge ont mesuré, quand choisir PostgreSQL, et comment y passer avec une installation existante.",
+    "monitor-the-tool-and-read-the-logs": "Vérifier que l'outil va bien et que les données sont cohérentes, suivre un gros import, lire le journal et gérer les services.",
+    "troubleshooting": "Les problèmes courants à l'installation ou en fonctionnement, avec leur cause probable et la solution : adresse refusée, HTTPS, stockage, base de données et espace disque.",
+    "test-the-installation": "Un script reproduit une installation sur une machine vierge, puis vérifie la page de santé, l'assistant, les en-têtes de sécurité, la sauvegarde et la mise à jour."
+  }
+}

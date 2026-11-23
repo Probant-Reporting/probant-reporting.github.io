@@ -1,0 +1,182 @@
+---
+// Le gabarit d'une thématique. Tout le texte vient du fichier src/content/<langue>/<thématique>.json :
+// une nouvelle thématique = un nouveau fichier, sans toucher à ce composant.
+import Icon from "./Icon.astro";
+import Sandbox from "./Sandbox.astro";
+import Mock from "./Mock.astro";
+import ContactForm from "./ContactForm.astro";
+import FrameworkInstaller from "./FrameworkInstaller.astro";
+import { site, chemin } from "../lib/content";
+const { lang, theme: c, page = "" } = Astro.props;
+const t = site(lang);
+const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
+---
+{/* Haut de page : l'essai de l'outil, directement. L'ancre #try reste valable. */}
+<section class="hero" aria-labelledby="titre">
+  <div class="wrap">
+    <div class="hero-texte">
+      <h1 id="titre">{c.hero.title}</h1>
+      <p class="lead">{c.hero.lead}</p>
+    </div>
+    <div class="hero-essai" id="try">
+      <h2 class="sr">{c.try.title}</h2>
+      <p class="essai-consigne" data-js-seul>{c.try.lead}</p>
+      <Sandbox lang={lang} />
+      <p class="lien-limites lien-visite"><a href={chemin("tour", lang)}>{c.try.tour}<Icon name="arrow" /></a></p>
+      <div class="glossary">
+        <h2>{t.tool.glossaryTitle}{t.common.colon}</h2>
+        <dl>{t.tool.glossary.map((g: any) => <div><dt>{g.term}</dt><dd>{g.text}</dd></div>)}</dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Les messages : onglets à lecture automatique avec JavaScript ; sans JavaScript, tout s'affiche à la suite */}
+<section class="band" id="features" aria-labelledby="features-t">
+  <div class="wrap">
+    <div class="head"><h2 id="features-t">{c.featuresHead.title}</h2>{c.featuresHead.lead && <p>{c.featuresHead.lead}</p>}</div>
+    <div class="onglets-auto" data-onglets-auto>
+      <div class="oa-nav tool" data-js-seul hidden>
+        <div class="sous-onglets" role="tablist" aria-labelledby="features-t">
+          {c.features.map((f: any, i: number) => (
+            <button type="button" role="tab" id={`oa-tab-${f.id}`} aria-controls={f.id} aria-selected={i === 0 ? "true" : "false"} tabindex={i === 0 ? "0" : "-1"}>{f.tab}<span class="oa-jauge" aria-hidden="true"></span></button>
+          ))}
+        </div>
+        <button type="button" class="btn ghost small oa-pause" data-pause data-pause-texte={t.common.pause} data-lecture-texte={t.common.play}><span data-pause-libelle>{t.common.pause}</span><span class="sr"> {t.common.autoPlay}</span></button>
+        <p class="sr" role="status" data-oa-etat data-arret={t.common.autoPaused} data-lecture={t.common.autoPlaying}></p>
+      </div>
+      <div class="oa-panneaux">
+        {c.features.map((f: any) => (
+          <div class="feature" id={f.id} role="tabpanel" aria-labelledby={`${f.id}-t`} tabindex="-1">
+            <div class="f-text">
+              <h3 id={`${f.id}-t`}>{f.title}</h3>
+              <p>{f.lead}</p>
+              {f.points.length > 0 && <ul class="points">{f.points.map((p: string) => <li>{p}</li>)}</ul>}
+              {f.cta && <p class="cta-row"><a class="btn ghost" href={chemin("get", lang)}>{c.get.cta}</a></p>}
+            </div>
+            <div class="f-visual">
+              {f.visual === "hosting"
+                ? <dl class="specs">{c.specs.map((s: any) => <div><dt>{s.term}</dt><span class="dots" aria-hidden="true"></span><dd>{s.value}</dd></div>)}</dl>
+                : <figure><Mock kind={f.visual} lang={lang} /><figcaption class="caption">{t.tool.frameLabel}.</figcaption></figure>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Norme volontaire VS : les deux modèles de la bibliothèque et l'export vers le classeur officiel de l'EFRAG */}
+{c.vs && (
+<section id="vs" aria-labelledby="vs-t">
+  <div class="wrap duo">
+    <div>
+      <h2 id="vs-t">{c.vs.title}</h2>
+      <p class="duo-lead">{c.vs.lead}</p>
+      <ul class="ticks">{c.vs.points.map((p: string) => <li>{p}</li>)}</ul>
+      <p class="cta-row"><a class="btn ghost" href={chemin("frameworks", lang)}>{c.vs.cta}<Icon name="arrow" /></a></p>
+    </div>
+    <div class="vs-visuel">
+      <h3>{c.vs.templatesLabel}</h3>
+      <ul class="vs-modeles">
+        {c.vs.templates.map((m: any) => (
+          <li><b>{m.name}</b><span>{m.text}</span><a class="btn ghost small" href={chemin(`frameworks/${m.slug}`, lang)}>{c.vs.see}<span class="sr">{t.common.colon}{m.name}</span></a></li>
+        ))}
+      </ul>
+      <h3>{c.vs.exportLabel}</h3>
+      <ol class="vs-export">
+        {c.vs.export.map((e: string, i: number) => <li><span class="vs-num" aria-hidden="true">{i + 1}</span><span>{e}</span></li>)}
+      </ol>
+      <p class="spec-note">{c.vs.note}</p>
+    </div>
+  </div>
+</section>
+)}
+
+{/* Référentiels : l'assistant d'installation de l'outil, avec les vrais modèles de la bibliothèque */}
+<section class="band" id="frameworks" aria-labelledby="frameworks-t">
+  <div class="wrap">
+    <div class="head"><h2 id="frameworks-t">{c.frameworks.title}</h2><p>{c.frameworks.lead}</p></div>
+    <FrameworkInstaller lang={lang} />
+    <div class="propre-ref">
+      <h3>{c.frameworks.ownTitle}</h3>
+      <ul class="points">{c.frameworks.own.map((x: string) => <li>{x}</li>)}</ul>
+    </div>
+  </div>
+</section>
+
+<section id="roles" aria-labelledby="roles-t">
+  <div class="wrap">
+    <div class="head"><h2 id="roles-t">{c.roles.title}</h2></div>
+    <div class="matrice-defile" tabindex="0" role="region" aria-label={c.roles.tableLabel}>
+      <table class="matrice">
+        <thead><tr><th scope="col" class="m-role"><span class="sr">{c.roles.title}</span></th>{c.roles.columns.map((x: string) => <th scope="col">{x}</th>)}<th scope="col">{c.roles.changesLabel}</th></tr></thead>
+        <tbody>
+          {c.roles.items.map((r: any) => (
+            <tr>
+              <th scope="row" class="m-role"><span class="m-nom">{r.role}</span><span class="m-qui">{r.who}</span></th>
+              {r.jobs.map((j: number) => <td>{j ? <span class="m-pastille m-oui" role="img" aria-label={c.roles.yes}></span> : <span class="m-pastille m-non" role="img" aria-label={c.roles.no}></span>}</td>)}
+              <td>{r.readOnly ? <span class="m-etat"><Icon name="eye" />{c.roles.readOnly}</span> : <span class="m-etat"><Icon name="pencil" />{c.roles.yes}</span>}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{/* Assistants IA : le serveur MCP de l'outil (éteint par défaut, droits de la personne) */}
+{c.assistant && (
+<section class="band" id="assistant" aria-labelledby="assistant-t">
+  <div class="wrap duo">
+    <div>
+      <h2 id="assistant-t">{c.assistant.title}</h2>
+      <p class="duo-lead">{c.assistant.lead}</p>
+    </div>
+    <dl class="specs" aria-label={c.assistant.tableLabel}>{c.assistant.specs.map((x: any) => <div><dt>{x.term}</dt><dd>{x.value}</dd></div>)}</dl>
+  </div>
+</section>
+)}
+
+<section id="free" aria-labelledby="free-t">
+  <div class="wrap prix">
+    <p class="prix-montant" aria-hidden="true">{c.free.price}</p>
+    <div class="prix-texte">
+      <h2 id="free-t">{c.free.title}</h2>
+      <p>{c.free.text}</p>
+      <h3>{c.free.provideTitle}</h3>
+      <p>{c.free.provide.join(" ")}</p>
+      <a class="btn ghost" href={chemin("get", lang)}>{c.get.cta}</a>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="faq" aria-labelledby="faq-t">
+  <div class="wrap">
+    <div class="head"><h2 id="faq-t">{c.faq.title}</h2></div>
+    <div class="faq tool">
+      {c.faq.items.map((q: any) => <details class="repli"><summary>{q.q}</summary><p>{q.a}</p></details>)}
+    </div>
+    <p class="lien-limites"><a href={limites}>{c.limits.link}<Icon name="arrow" /></a></p>
+  </div>
+</section>
+
+{/* Obtenir l'outil : les trois chemins de la page « Get », et la visite guidée. Jamais de vrais écrans sur l'accueil
+    (décision de Florent) : ils sont dans la visite guidée. */}
+<section id="get" aria-labelledby="get-t">
+  <div class="wrap">
+    <div class="head"><h2 id="get-t">{c.get.title}</h2><p>{c.get.lead}</p></div>
+    <ul class="cartes-liens obtenir">
+      {c.get.paths.map((p: any) => <li><a href={`${chemin("get", lang)}#${p.anchor}`}><b>{p.title}</b><span>{p.text}</span></a></li>)}
+    </ul>
+    <p class="cta-row"><a class="btn" href={chemin("get", lang)}>{c.get.cta}</a><a class="btn ghost" href={chemin("tour", lang)}>{c.get.tour}<Icon name="arrow" /></a></p>
+  </div>
+</section>
+
+<section class="closing" id="contact" aria-labelledby="cta-t">
+  <div class="wrap">
+    <h2 id="cta-t">{c.cta.title}</h2>
+    <p>{c.cta.text}</p>
+    <ContactForm lang={lang} dark />
+  </div>
+</section>

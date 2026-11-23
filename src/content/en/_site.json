@@ -1,0 +1,579 @@
+{
+  "langName": "English",
+  "tagline": "KPI collection, with the evidence ready for the audit",
+  "skip": "Skip to content",
+  "nav": {
+    "label": "Main menu",
+    "theme": {
+      "toDark": "Use the dark appearance",
+      "toLight": "Use the light appearance"
+    },
+    "language": "Language",
+    "menu": "Menu",
+    "frameworks": "Library templates",
+    "guides": "Guides",
+    "docs": "IT documentation",
+    "tour": "Tour",
+    "get": "Get {name}"
+  },
+  "footer": {
+    "line": "{name} is free software for KPI collection and audit support. All figures on this site are made up.",
+    "legal": "Legal notice",
+    "privacy": "Privacy",
+    "contact": "Contact",
+    "fictitious": "All the data shown on this site is fictitious.",
+    "limits": "What {name} does not do",
+    "product": "Product",
+    "help": "Help",
+    "trust": "Trust",
+    "legalTitle": "Legal",
+    "home": "Home",
+    "tour": "Guided tour",
+    "whatsNew": "What's new",
+    "source": "Source code on GitHub"
+  },
+  "common": {
+    "replay": "Play again",
+    "fictitious": "Fictitious data",
+    "back": "Back to the home page",
+    "pause": "Pause",
+    "play": "Play",
+    "autoPlay": "automatic play",
+    "autoPaused": "Automatic play is paused.",
+    "autoPlaying": "Automatic play is on.",
+    "enlarge": "Enlarge the screen",
+    "close": "Close",
+    "colon": ": ",
+    "quoteOpen": "“",
+    "quoteClose": "”",
+    "table": "table"
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact – {name}",
+      "description": "Questions about {name}? Ask Florent Liaigre, who builds it and shares it for free, on LinkedIn. There's no form and no email address on this site."
+    },
+    "title": "Contact",
+    "lead": "I'm Florent. I build {name} and share it for free. If you have a question about the tool, send me a message on LinkedIn, I'm happy to help.",
+    "direct": "Or write to this address:",
+    "or": "Nothing is sent from this page: you copy your message and send it to me on LinkedIn.",
+    "name": "Your name",
+    "org": "Your organisation",
+    "role": "Your role",
+    "roles": [
+      "ESG or sustainability reporting",
+      "Finance or management control",
+      "IT",
+      "Audit",
+      "Other"
+    ],
+    "message": "Your message",
+    "messageHelp": "For example: your frameworks, your current tool, your questions.",
+    "submit": "Prepare my message",
+    "subject": "Question about {name}",
+    "required": "Enter your name.",
+    "after": "Your message is ready. Copy it and paste it into a LinkedIn message.",
+    "sites": "Sites or entities",
+    "optional": "optional",
+    "copy": "Copy the address",
+    "copied": "Address copied.",
+    "copyMessage": "Copy the message",
+    "messageCopied": "Message copied.",
+    "linkedin": "Message me on LinkedIn",
+    "copyAndOpen": "Copy and open LinkedIn",
+    "requiredMessage": "Write your message.",
+    "requiredNote": "All fields are required unless marked optional.",
+    "newTab": "(opens in a new tab)",
+    "requiredMark": "required"
+  },
+  "legal": {
+    "meta": {
+      "title": "Legal notice – {name}",
+      "description": "Legal notice for the {name} website: publisher, host, licence of the software, and the fonts that the site uses."
+    },
+    "title": "Legal notice",
+    "publisher": "Publisher",
+    "company": "Publisher",
+    "address": "Address",
+    "registration": "Registration",
+    "director": "Publication director",
+    "contact": "Contact",
+    "host": "Host",
+    "ip": "Content",
+    "ipText": "The screens on this site are copies or screenshots of the tool with made-up data. The names of organisations and people are invented.",
+    "fonts": "Fonts",
+    "fontsText": "Source Sans 3 and Source Serif 4, SIL Open Font License 1.1. The fonts are served by this site.",
+    "licence": "Software licence",
+    "licenceText": "{name} is free software, published under the GNU Affero General Public License, version 3 or later (AGPL-3.0-or-later). Its source code is on GitHub.",
+    "licenceLink": "Source code of {name}"
+  },
+  "privacy": {
+    "meta": {
+      "title": "Privacy – {name}",
+      "description": "Privacy on the {name} website: no cookies, no trackers, and nothing you type is sent."
+    },
+    "title": "Privacy",
+    "lead": "This site uses no cookies and no trackers.",
+    "items": [
+      {
+        "title": "No cookies, no trackers",
+        "text": "This site doesn't count visitors and doesn't load anything from other sites, fonts included."
+      },
+      {
+        "title": "Hosting",
+        "text": "This site is hosted on GitHub Pages. Like any web host, GitHub receives technical data when you open a page, such as your IP address, and keeps it for its own security logs. I don't have access to these logs."
+      },
+      {
+        "title": "Appearance",
+        "text": "If you choose the light or the dark appearance, your browser keeps this choice on your device. It is not sent anywhere."
+      },
+      {
+        "title": "The trial",
+        "text": "What you type in the trial, and the names of the files you add, stay in the page. Nothing is sent or kept: it's gone when you close or reload the page. The files themselves are never read."
+      },
+      {
+        "title": "Contacting me",
+        "text": "There's no form on this site, and no email address to write to. If you message me on LinkedIn, I only use your details to answer you."
+      },
+      {
+        "title": "New versions",
+        "text": "To hear about new versions, watch the repository on GitHub or follow the RSS feed. Neither gives me your email address."
+      },
+      {
+        "title": "The tool itself",
+        "text": "This page only covers this website. What you enter in {name} stays on the hosting you choose: your own server, or managed hosting."
+      },
+      {
+        "title": "Your rights",
+        "text": "To see, correct, or delete what you sent me, just ask me."
+      }
+    ]
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "This page does not exist, or it has moved.",
+    "links": "These pages may help:",
+    "description": "This page does not exist, or it has moved. Go back to the home page of {name}, get the tool, take the guided tour, or read the documentation."
+  },
+  "tool": {
+    "frameLabel": "Reproduction of the tool, with fictitious data",
+    "tabs": {
+      "entry": "Data entry",
+      "dashboard": "Dashboard",
+      "visualisation": "Visualisation",
+      "consistency": "Consistency"
+    },
+    "status": {
+      "validated": "Validated",
+      "draft": "Draft",
+      "todo": "To fill in",
+      "calculated": "Calculated",
+      "incomplete": "Incomplete",
+      "toHandle": "To be handled",
+      "justified": "Justified"
+    },
+    "cols": {
+      "indicator": "Indicator",
+      "value": "Value",
+      "unit": "Unit",
+      "n1": "N-1",
+      "variance": "Variance vs N-1",
+      "status": "Status",
+      "evidence": "Evidence",
+      "organisation": "Organisation",
+      "progress": "Progress",
+      "rate": "Rate",
+      "check": "Check",
+      "finding": "Finding",
+      "total": "Group total"
+    },
+    "levels": {
+      "group": "Group",
+      "country": "Country",
+      "site": "Site"
+    },
+    "types": {
+      "input": "Input",
+      "calculated": "Calculated"
+    },
+    "campaign": "Sustainability reporting · 2026",
+    "campaignStatus": "Open for data entry",
+    "group": "Halden Group",
+    "demoTag": "demo",
+    "tabsLabel": "Pages of the tool",
+    "seedComment": "Renewable electricity contract since March 2026.",
+    "orgs": {
+      "fr": "France",
+      "es": "Spain",
+      "lyon": "Head office",
+      "nantes": "Production site",
+      "valencia": "Sales office",
+      "bilbao": "Service centre"
+    },
+    "people": {
+      "contributor": "Maya Okafor",
+      "other": "Luis Ortega",
+      "validator": "Anne Keller"
+    },
+    "kpis": {
+      "elec": {
+        "name": "Purchased electricity consumed",
+        "unit": "kWh",
+        "theme": "B3 – Energy and greenhouse gas emissions"
+      },
+      "ren": {
+        "name": "Purchased renewable electricity",
+        "unit": "kWh",
+        "theme": "B3 – Energy and greenhouse gas emissions"
+      },
+      "share": {
+        "name": "Share of renewable electricity",
+        "unit": "%",
+        "theme": "Renewable energy"
+      },
+      "head": {
+        "name": "Total headcount at end of period",
+        "unit": "employees",
+        "theme": "B1 – Basis for preparation"
+      }
+    },
+    "role": {
+      "label": "View as",
+      "contributor": "Contributor",
+      "validator": "Validator",
+      "auditor": "Auditor",
+      "contributorText": "Head office contributor: enters the KPIs, attaches the evidence, and validates.",
+      "validatorText": "France validator: checks the head office and the production site, and can send a validated value back to draft.",
+      "auditorText": "Auditor: reads every site, with its evidence and history. Cannot change anything."
+    },
+    "reset": "Start again",
+    "banner": {
+      "progress": "{org}: {todo} to fill in · {drafts} to validate · data entry ends on 15 January 2027",
+      "done": "All done: {n} values validated out of {total}.",
+      "continue": "Enter the next value",
+      "validatedPct": "{pct}% validated",
+      "auditor": "Read-only access. You can read the values, the evidence, and the history. You cannot change anything.",
+      "continueDraft": "Open the next draft"
+    },
+    "panel": {
+      "close": "Close",
+      "value": "Value",
+      "comment": "Comment",
+      "commentPlaceholder": "Context, source, explanation of a variance…",
+      "commentRule": "Comment required beyond 20% variance vs N-1.",
+      "evidence": "Evidence",
+      "evidenceRequired": "required",
+      "choose": "Choose a file",
+      "formats": "PDF, JPG or PNG, 5 MB maximum.",
+      "stays": "In this trial, the file stays on your device. Only its name is shown.",
+      "noEvidence": "No evidence.",
+      "remove": "Delete the evidence “{file}”",
+      "save": "Save the draft",
+      "validate": "Validate",
+      "validateHelp": "Validating confirms that your entry is complete, and a validator or an administrator can still put it back to draft.",
+      "history": "History",
+      "enter": "Enter",
+      "by": "by {person}",
+      "toCheck": "To check",
+      "blocks": "Blocks validation",
+      "needEvidenceHint": "Add evidence below, then validate.",
+      "sample": "Use a sample file",
+      "sampleName": "sample-invoice.pdf",
+      "validatedNote": "This value is validated. A validator or an administrator can put it back to draft.",
+      "reopen": "Back to draft",
+      "reopenHelp": "The entry goes back to draft. The contributor must validate it again.",
+      "format": "Digits only. Use a point for decimals, for example 1250.5."
+    },
+    "msg": {
+      "notNumber": "This value is not a number. Enter a number.",
+      "needEvidence": "This KPI requires evidence. Add a file to validate.",
+      "needComment": "The variance vs N-1 is more than 20%. Add a comment to validate.",
+      "renRule": "Purchased renewable electricity is higher than purchased electricity.",
+      "badFile": "This file is not a PDF, JPG, or PNG file. Select a PDF, JPG, or PNG file.",
+      "bigFile": "This file is larger than 5 MB. Select a smaller file.",
+      "draftSaved": "Draft saved.",
+      "validated": "Value validated. The group total is up to date.",
+      "evidenceAdded": "Evidence added.",
+      "evidenceRemoved": "Evidence deleted.",
+      "reset": "The trial is back to its starting state.",
+      "reopened": "The entry is back to draft.",
+      "blocked": "A rule blocks validation. Correct one of the two values.",
+      "readAs": "This value is read as {read}. To enter {guess}, enter {digits}.",
+      "validatedTotal": "Value validated. Group total: {total}."
+    },
+    "history": {
+      "imported": "Value imported from an Excel file",
+      "entered": "Value entered: {value}",
+      "validated": "Entry validated",
+      "evidence": "Evidence added: {file}",
+      "evidenceRemoved": "Evidence deleted: {file}",
+      "comment": "Comment changed",
+      "reopened": "Entry put back to draft"
+    },
+    "dash": {
+      "title": "Completion rate",
+      "validatedOf": "{n} validated out of {total}",
+      "legendValidated": "validated",
+      "legendDraft": "draft",
+      "legendTodo": "to fill in",
+      "consolidation": "Consolidation",
+      "provisional": "provisional",
+      "provisionalHelp": "Provisional: at least one value is still a draft.",
+      "incompleteHelp": "Incomplete: at least one value is missing.",
+      "sitesOf": "{n} of {total} sites",
+      "scopeNote": "In the tool, a contributor sees only their own organisations. This trial shows the whole group.",
+      "yourValue": "Your value in the group total",
+      "draftsOf": "{n} validated and {d} drafts out of {total}"
+    },
+    "cons": {
+      "title": "Data consistency",
+      "lead": "Values to check. Correct the entry, or justify it if the value is correct.",
+      "none": "No alerts. Enter a value far from N-1 in Data entry to see a check.",
+      "varianceN1": "Variance with N-1",
+      "rule": "Rule between KPIs",
+      "finding": "{value}, compared with {n1} in 2025: {pct}.",
+      "since": "Since {date}"
+    },
+    "viz": {
+      "sub": "{org} · 2026 · {unit}",
+      "vs": "vs 2025",
+      "showData": "Show data",
+      "byOrg": "By organisation",
+      "trendAlt": "Trend from 2022 to 2026: from {from} to {to}"
+    },
+    "todo": {
+      "title": "To be handled",
+      "late": "late organisation",
+      "lateText": "The completion rate of its own KPIs is below the expected pace.",
+      "seeReminders": "See and send reminders",
+      "noSpoc": "cells without a SPOC",
+      "noSpocText": "Nobody is in charge of these cells, and nobody gets a reminder.",
+      "assign": "Assign"
+    },
+    "reminder": {
+      "label": "Reminder email",
+      "subject": "Sustainability reporting 2026: 1 value left to fill in",
+      "body": "Hello Maya, data entry ends on 15 January 2027. You still have 1 value to fill in for Head office.",
+      "button": "Open my data entry"
+    },
+    "evidenceMock": {
+      "file": "electricity-invoices-2026.pdf",
+      "validatedBy": "by Maya Okafor",
+      "validatedOn": "on 12/01/2027 at 09:41",
+      "auditor": "Auditor · read-only",
+      "h1": "12/01/2027 09:41 · Maya Okafor · Entry validated",
+      "h2": "12/01/2027 09:38 · Maya Okafor · Evidence added",
+      "h3": "08/01/2027 16:12 · Maya Okafor · Value entered: 412,300 kWh"
+    },
+    "libraryMock": [
+      {
+        "name": "Voluntary Standard VS – Basic Module",
+        "text": "Disclosures B1 to B11 of the European voluntary standard, from the basis for preparation to corruption and bribery.",
+        "examples": [
+          "Purchased electricity consumed",
+          "Direct emissions (scope 1)",
+          "Total headcount at end of period"
+        ]
+      },
+      {
+        "name": "Voluntary Standard VS – Comprehensive Module",
+        "text": "Disclosures C1 to C9, added to the Basic module: strategy, climate targets and risks, workforce, human rights.",
+        "examples": [
+          "Greenhouse gas reduction targets",
+          "Leavers on permanent contracts",
+          "Female members of the governance body"
+        ]
+      },
+      {
+        "name": "Pay transparency – gender pay gap reporting",
+        "text": "One report per employer under the EU directive 2023/970: mean and median gaps, variable pay, quartiles, gaps by category.",
+        "examples": [
+          "Gender pay gap (hourly)",
+          "Share of women in pay quartile 1 (lowest)",
+          "Joint pay assessment required"
+        ]
+      },
+      {
+        "name": "ESRS E1 – Climate change",
+        "text": "One of eleven templates for the revised ESRS: transition plan, targets, energy, and greenhouse gas emissions.",
+        "examples": [
+          "Total energy consumption (MWh)",
+          "Gross scope 1 GHG emissions",
+          "Status of the transition plan"
+        ]
+      }
+    ],
+    "libraryInstall": "Template",
+    "phone": {
+      "title": "Data entry",
+      "langs": "Interface languages"
+    },
+    "glossaryTitle": "Terms used in the tool",
+    "glossary": [
+      {
+        "term": "N-1",
+        "text": "the same period, one year before"
+      },
+      {
+        "term": "To be handled",
+        "text": "the values to check"
+      },
+      {
+        "term": "Blocks validation",
+        "text": "correct this value before you validate"
+      },
+      {
+        "term": "Calculated",
+        "text": "the tool calculates this value from other values"
+      },
+      {
+        "term": "SPOC",
+        "text": "the person in charge of a value"
+      }
+    ]
+  },
+  "installer": {
+    "frameLabel": "Reproduction of the tool: install a framework from the library",
+    "title": "Install from the library",
+    "stepsAria": "Installation steps",
+    "steps": [
+      "Template",
+      "KPIs",
+      "Install"
+    ],
+    "stepOf": "Step {n} of 3:",
+    "stepDone": "Step {n} of 3, done:",
+    "intro": "Choose a template, then select the KPIs that you want on the next screen. The tool installs their definitions, units, and formulas, and attaches them to your tree.",
+    "choose": "Choose",
+    "chooseAria": "Choose “{framework}”",
+    "allSelected": "All KPIs are selected. Deselect the ones that you do not need. A KPI used to calculate a selected KPI is added anyway.",
+    "selected": "selected out of {total}",
+    "search": "Search for a KPI",
+    "searchPlaceholder": "Search (name or code)",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "noResult": "No KPI matches the search.",
+    "colIndicator": "Indicator",
+    "colType": "Type",
+    "colUnit": "Unit",
+    "colState": "In your tool",
+    "new": "new",
+    "calculation": "Calculation:",
+    "definition": "Definition",
+    "addedAnyway": "Will be added anyway: used by {list}",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "continue": "Continue ›",
+    "cancel": "Cancel",
+    "selectOne": "Select at least one KPI",
+    "summary": "Summary",
+    "sentenceInstalled": "{n} KPIs will be installed in the framework “{framework}”, in {themes} themes.",
+    "sentenceAdded": "{n} KPIs added anyway, because a selected KPI uses them:",
+    "usedBy": "(used by {list})",
+    "sentenceLevels": "Attachment in your tree: entered KPIs at level Site (the lowest), inherited parameters, such as emission factors, at level Group (the highest, a single value carried down), calculated KPIs at the level of their sources.",
+    "levelsChange": "You can change the level of each KPI in its sheet, or of several at once in the content of the framework.",
+    "frameworkName": "Name of the framework",
+    "frequency": "Collection frequency",
+    "frequencies": [
+      "Annual",
+      "Half-yearly",
+      "Quarterly",
+      "Monthly"
+    ],
+    "install": "Install",
+    "back": "‹ Back to the KPIs",
+    "done": "“{framework}” is installed: {n} KPIs, attached to your tree.",
+    "trialNote": "This is a reproduction with the real templates. Nothing is saved.",
+    "again": "Install another template",
+    "loading": "Loading the KPIs of “{framework}”…",
+    "loadFailed": "The KPIs of “{framework}” could not be loaded. Check your connection, then choose the template again.",
+    "noScript": "The KPIs of a template open here when JavaScript is on. Without it, read the full lists in",
+    "libraryLink": "Library templates",
+    "types": {
+      "Input": "Entered",
+      "Calculated": "Calculated",
+      "Emission factor": "Emission factor"
+    }
+  },
+  "docsUi": {
+    "meta": {
+      "title": "IT documentation – {name}",
+      "description": "Install, run, and secure {name}: prerequisites, Docker, managed hosting, backups, updates, emails, and monitoring. For IT teams."
+    },
+    "title": "IT documentation",
+    "lead": "Install, run, and update {name} on your own server with Docker, or with a managed hosting provider. These pages are for your IT team.",
+    "menu": "IT documentation",
+    "onThisPage": "On this page",
+    "source": "From the tool's documentation: {source}.",
+    "groups": {
+      "Get started": "Get started",
+      "Run": "Run"
+    },
+    "previous": "Previous",
+    "next": "Next",
+    "more": "Also for IT",
+    "metaTitle": "{page} – {name}",
+    "pages": "Pages of the documentation"
+  },
+  "guidesUi": {
+    "meta": {
+      "title": "Guides – {name}",
+      "description": "A short guide for each role in {name}: administrator, contributor, validator, reader, and auditor."
+    },
+    "title": "Guides",
+    "lead": "A short guide for each role. The same guides open in the tool from the help icon, in the language of the interface.",
+    "all": "Guides",
+    "metaTitle": "{role} guide – {name}"
+  },
+  "frameworksUi": {
+    "meta": {
+      "title": "Library templates – {name}",
+      "description": "The fourteen templates provided with {name}: the voluntary standard VS, pay transparency, and the revised ESRS, with their KPIs, units, formulas, and source documents."
+    },
+    "title": "Library templates",
+    "lead": "{name} comes with fourteen templates: the European voluntary standard for sustainability reporting (VS), as a Basic and a Comprehensive template; pay transparency, for the EU directive 2023/970; and the revised ESRS of the CSRD, as eleven templates, one for each standard. They are collection templates built from the text of the standards. Install the KPIs you need, then adjust anything in the tool: KPIs, definitions, units, formulas, and themes. For the ESRS, install ESRS 2 and the templates of your material topics. A KPI that several templates share is entered once.",
+    "see": "See the KPIs",
+    "code": "Code",
+    "kpi": "KPI",
+    "unit": "Unit",
+    "type": "Type",
+    "formula": "Formula",
+    "definition": "Definition",
+    "rules": "Consistency rules",
+    "optional": "optional",
+    "metaTitle": "{framework} template – {name}",
+    "metaDescription": "The KPIs in the {framework} template of {name}, with their units, formulas, and definitions.",
+    "install": "Install it in a few clicks. The tool sets up the definitions, units, and formulas, and attaches each KPI to your organisation tree.",
+    "tryInstall": "Try the installation",
+    "all": "Library templates",
+    "sources": "Source documents",
+    "sourcesLead": "The documents this template is based on, with the date of each document and the day it was read.",
+    "sourceDate": "document date:",
+    "sourceRead": "read on",
+    "types": {
+      "Input": "Entered",
+      "Calculated": "Calculated",
+      "Emission factor": "Emission factor"
+    },
+    "skipTable": "Skip the table",
+    "scrollHint": "Scroll the table sideways to see every column.",
+    "choices": "Choices",
+    "columns": "Columns"
+  },
+  "whatsNew": {
+    "meta": {
+      "title": "What's new – {name}",
+      "description": "What changes in each version of {name}, with the notes for IT and for security. Also available as an RSS feed."
+    },
+    "title": "What's new",
+    "lead": "What changes in each version of {name}, newest first.",
+    "rss": "RSS feed",
+    "releases": "Releases on GitHub",
+    "get": "Get {name}",
+    "version": "Version {version}",
+    "untranslated": "The notes of this version are in English.",
+    "updateTitle": "How to update",
+    "updateText": "Your IT team runs `./update.sh` in the tool's folder. The script backs up the data first, then installs the new version. See [Update the tool](/docs/update-the-tool/)."
+  },
+  "ogImageAlt": "{name}: collect KPIs from all your sites, with the evidence attached"
+}

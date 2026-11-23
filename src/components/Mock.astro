@@ -1,0 +1,150 @@
+---
+// Reproductions fixes de composants de l'outil, pour illustrer chaque message. Données fictives (src/lib/demo.mjs).
+import Icon from "./Icon.astro";
+import { site, config } from "../lib/content";
+import { COMPLET, N1, SITES, somme, ecart, nombre, ecartTexte, fleche, pourcent } from "../lib/demo.mjs";
+const { kind, lang } = Astro.props;
+const T = site(lang).tool, C = site(lang).common;
+const n = (v: number) => nombre(v, lang);
+const tot = (k: string, sites = SITES) => somme(sites.map((s) => COMPLET[s][k]));
+const totN1 = (k: string, sites = SITES) => somme(sites.map((s) => N1[s][k]));
+const elec = tot("elec"), elecN1 = totN1("elec"), eElec = ecart(elec, elecN1);
+const barres = [
+  { nom: T.orgs.fr, v: tot("elec", ["lyon", "nantes"]), p: totN1("elec", ["lyon", "nantes"]) },
+  { nom: T.orgs.es, v: tot("elec", ["valencia", "bilbao"]), p: totN1("elec", ["valencia", "bilbao"]) },
+];
+const max = Math.max(...barres.flatMap((b) => [b.v, b.p])) * 1.04;
+const tendance = [1068000, 1049300, 1033900, elecN1, elec];
+const tMin = Math.min(...tendance), tMax = Math.max(...tendance);
+const points = tendance.map((v, i) => [4 + i * 28, 30 - ((v - tMin) / (tMax - tMin)) * 24]);
+const eHead = ecart(352, N1.valencia.head);
+---
+{kind === "campaign" && (
+  <div class="frame tool">
+    <div class="pad">
+      <div class="carte resume">
+        <p class="phrase"><span set:html={T.banner.progress.replace("{org}", `<b>${T.orgs.lyon}</b>`).replace("{todo}", "<b>1</b>").replace("{drafts}", "<b>1</b>")} /></p>
+        <div class="progression" role="img" aria-label={T.dash.draftsOf.replace("{n}", "1").replace("{d}", "1").replace("{total}", "3")}><span class="v" style="width:33.3%"></span><span class="d" style="width:33.3%"></span></div>
+        <p class="compteurs"><span><i class="point v"></i><b>1</b> {T.status.validated}</span><span><i class="point d"></i><b>1</b> {T.status.draft}</span><span><i class="point t"></i><b>1</b> {T.status.todo}</span><span class="pct nombre">{T.banner.validatedPct.replace("{pct}", "33")}</span></p>
+      </div>
+      <div class="carte courriel">
+        <span class="etiquette e-bleu"><Icon name="mail" class="" />{T.reminder.label}</span>
+        <p class="objet">{T.reminder.subject}</p>
+        <p>{T.reminder.body}</p>
+        <span class="b compact" aria-hidden="true">{T.reminder.button}</span>
+      </div>
+    </div>
+  </div>
+)}
+
+{kind === "evidence" && (
+  <div class="frame tool">
+    <div class="pad">
+      <p class="info-lecture"><Icon name="eye" class="" /><span>{T.banner.auditor}</span></p>
+      <div class="carte">
+        <div class="panneau-haut"><span class="statut-panneau"><span class="statut statut-valide">{T.status.validated}</span><span>{T.evidenceMock.validatedBy}<br />{T.evidenceMock.validatedOn}</span></span></div>
+        <p class="titre-cellule">{T.kpis.elec.name}</p>
+        <div class="puces-cellule"><span class="id-chip">NRJ-ELEC</span><span class="niveau niveau-site">{T.levels.site}</span><span>{T.orgs.lyon}</span></div>
+        <div class="carte-saisie">
+          <div class="saisie-duo">
+            <div><span class="titre">{T.panel.value} <span class="annee-courante">2026</span></span><span class="champ-valeur fige"><b>{n(COMPLET.lyon.elec)}</b><span class="u">{T.kpis.elec.unit}</span></span></div>
+            <div class="saisie-n1"><span class="n1-libelle">N-1 · 2025</span><strong>{n(N1.lyon.elec)} <span class="unite">{T.kpis.elec.unit}</span></strong><span class="ecart-direct"><span class="ecart-fleche" aria-hidden="true">{fleche(ecart(COMPLET.lyon.elec, N1.lyon.elec))}</span>{ecartTexte(ecart(COMPLET.lyon.elec, N1.lyon.elec), lang)}</span></div>
+          </div>
+          <span class="titre">{T.panel.evidence}</span>
+          <ul class="preuves"><li><Icon name="file" class="" /><span>{T.evidenceMock.file}</span></li></ul>
+        </div>
+        <span class="titre">{T.panel.history}</span>
+        <ul class="histo">{[T.evidenceMock.h1, T.evidenceMock.h2, T.evidenceMock.h3].map((h) => <li><span>{h}</span></li>)}</ul>
+      </div>
+    </div>
+  </div>
+)}
+
+{kind === "consolidation" && (
+  <div class="frame tool">
+    <div class="pad viz-grille">
+      <figure class="carte visuel">
+        <h3>{T.kpis.elec.name}</h3>
+        <p class="discret">{T.viz.sub.replace("{org}", T.group).replace("{unit}", T.kpis.elec.unit)}</p>
+        <p class="grand">{n(elec)} <small>{T.kpis.elec.unit}</small></p>
+        <p style="margin-top:6px"><span class="ecart-fleche" aria-hidden="true">{fleche(eElec)}</span><b class="nombre">{ecartTexte(eElec, lang)}</b>{" "}<span class="discret">{T.viz.vs}{C.colon}<span class="nombre">{`${n(elecN1)} ${T.kpis.elec.unit}`}</span></span></p>
+        <svg class="tendance" viewBox="0 0 120 36" role="img" aria-label={T.viz.trendAlt.replace("{from}", `${n(tendance[0])} ${T.kpis.elec.unit}`).replace("{to}", `${n(tendance[4])} ${T.kpis.elec.unit}`)}><polyline points={points.map((p) => p.join(",")).join(" ")} /><circle cx={points[4][0]} cy={points[4][1]} r="4" /></svg>
+      </figure>
+      <figure class="carte visuel">
+        <h3>{T.kpis.elec.name}</h3>
+        <p class="discret">{T.viz.byOrg} · 2026 · {T.kpis.elec.unit}</p>
+        <ul class="barres">
+          {barres.map((b) => (
+            <li><span>{b.nom}</span><span class="piste"><span class="barre" style={`width:${(100 * b.v) / max}%`}></span><span class="repere" style={`left:${(100 * b.p) / max}%`}></span></span><span class="val">{`${n(b.v)} ${T.kpis.elec.unit} `}<span class="discret">{`· 2025${C.colon}${n(b.p)}`}</span></span></li>
+          ))}
+        </ul>
+        <p class="legende"><span><i></i>2026</span><span><i class="trait"></i>2025</span></p>
+      </figure>
+    </div>
+  </div>
+)}
+
+{kind === "consistency" && (
+  <div class="frame tool">
+    <div class="pad">
+      <div class="carte">
+        <p class="titre-cellule" style="font-size:var(--taille-sous-titre);display:flex;gap:8px;align-items:center;margin:0">{T.todo.title} <span class="compteur-titre nombre">2</span></p>
+        <ul class="liste-traiter">
+          <li><Icon name="alert" class="icone-alerte" /><p><b>1 {T.todo.late}</b> · {T.todo.lateText}</p><span class="faux-lien">{T.todo.seeReminders}</span></li>
+          <li><Icon name="alert" class="icone-alerte" /><p><b>2 {T.todo.noSpoc}</b> · {T.todo.noSpocText}</p><span class="faux-lien">{T.todo.assign}</span></li>
+        </ul>
+      </div>
+      <div class="defile" style="margin-top:12px">
+        <table>
+          <thead><tr><th scope="col">{T.cols.check}</th><th scope="col">KPI · {T.cols.organisation}</th><th scope="col" class="mq">{T.cols.status}</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="vertical-align:top"><span class="etiquette e-orange"><Icon name="alert" class="" />{T.cons.varianceN1}</span></td>
+              <th scope="row">{T.kpis.head.name}
+                <span class="constat" style="margin:4px 0"><span class="niveau niveau-site">{T.levels.site}</span> {T.orgs.valencia}</span>
+                <span class="constat">{T.cons.finding.replace("{value}", `352 ${T.kpis.head.unit}`).replace("{n1}", `286 ${T.kpis.head.unit}`).replace("{pct}", ecartTexte(eHead, lang))}</span>
+                <span class="sous"><span class="etiquette e-orange">{T.status.toHandle}</span></span>
+              </th>
+              <td class="mq" style="vertical-align:top"><span class="etiquette e-orange">{T.status.toHandle}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+)}
+
+{kind === "library" && (
+  <div class="frame tool">
+    <div class="pad socles">
+      {T.libraryMock.map((s: any) => (
+        <figure class="carte socle">
+          <span><span class="etiquette e-neutre">{T.libraryInstall}</span></span>
+          <h3>{s.name}</h3>
+          <p>{s.text}</p>
+          <ul>{s.examples.map((e: string) => <li class="etiquette ref-chip">{e}</li>)}</ul>
+        </figure>
+      ))}
+    </div>
+  </div>
+)}
+
+{kind === "phone" && (
+  <div>
+    <div class="phone">
+      <div class="tool">
+        <div class="bandeau"><div class="marque"><span class="logo" aria-hidden="true">HG</span><span><b>{config.name}</b><span>{T.group} · {T.demoTag}</span></span></div></div>
+        <div class="ecran">
+          <div class="carte resume">
+            <p class="phrase"><span set:html={T.banner.progress.replace("{org}", `<b>${T.orgs.lyon}</b>`).replace("{todo}", "<b>1</b>").replace("{drafts}", "<b>1</b>")} /></p>
+            <div class="progression" role="img" aria-label={T.dash.draftsOf.replace("{n}", "1").replace("{d}", "1").replace("{total}", "3")}><span class="v" style="width:33.3%"></span><span class="d" style="width:33.3%"></span></div>
+          </div>
+          <div class="carte cellule"><span class="ligne1"><b>{T.kpis.elec.name}</b><span class="saisir">{T.panel.enter}</span></span><span><span class="statut">{T.status.todo}</span></span></div>
+          <div class="carte cellule"><span class="ligne1"><b>{T.kpis.ren.name}</b><span class="valeur">{n(COMPLET.lyon.ren)} <span class="unite">{T.kpis.ren.unit}</span></span></span><span><span class="statut statut-brouillon">{T.status.draft}</span></span></div>
+          <div class="carte cellule"><span class="ligne1"><b>{T.kpis.head.name}</b><span class="valeur">{n(COMPLET.lyon.head)} <span class="unite">{T.kpis.head.unit}</span></span></span><span><span class="statut statut-valide">{T.status.validated}</span></span></div>
+        </div>
+      </div>
+    </div>
+    <p class="langues-outil"><span class="sr">{T.phone.langs}{C.colon}</span>{[["en", "English"], ["fr", "Français"], ["es", "Español"], ["de", "Deutsch"], ["it", "Italiano"], ["nl", "Nederlands"], ["pt", "Português"]].map(([l, n], i) => <Fragment>{i > 0 && " · "}<span lang={l}>{n}</span></Fragment>)}</p>
+  </div>
+)}

@@ -1,0 +1,463 @@
+{
+  "navLabel": "ESG reporting",
+  "meta": {
+    "title": "{name} – collect KPIs from all your sites, with the evidence",
+    "description": "Free software to collect KPIs from across your organisation, with the evidence behind each figure. Totals are calculated at every level, templates for the voluntary standard VS and the revised ESRS are included, and the auditor checks everything in the tool."
+  },
+  "hero": {
+    "title": "Collect KPIs from all your sites, with the evidence attached",
+    "lead": "Contributors enter their figures and attach the supporting file. {name} adds everything up across your organisation and keeps it ready for the auditor. It's free software, and you set it up yourself.",
+    "ctaSecondary": "Ask a question",
+    "proofs": [
+      "A read-only auditor role: values, evidence, and history",
+      "The voluntary standard VS, with an export to EFRAG's official workbook",
+      "Interface in seven languages",
+      "On your server, or managed hosting with Clever Cloud"
+    ]
+  },
+  "try": {
+    "lead": "Try it here: enter the head office's electricity consumption, attach a file, and validate. Then switch to the auditor view. Nothing leaves your browser.",
+    "note": "The screens here are copies of the tool with made-up data.",
+    "title": "Try it",
+    "tour": "See the real screens in the guided tour"
+  },
+  "features": [
+    {
+      "id": "campaigns",
+      "visual": "campaign",
+      "title": "Run the whole collection in one place",
+      "lead": "You open a campaign for the year or the quarter. Each contributor sees what they still have to fill in, and reminders go out automatically.",
+      "points": [
+        "The figure from the comparison period (N-1) appears next to the field, with the variance.",
+        "Numbers, percentages, amounts, yes / no, choice lists, written text, and tables with a variable number of rows.",
+        "A site that opens during the year counts from its opening date.",
+        "You see the completion rate of each organisation live."
+      ],
+      "tab": "Campaigns"
+    },
+    {
+      "id": "evidence",
+      "visual": "evidence",
+      "title": "The evidence sits next to each figure",
+      "lead": "Each value keeps its file and its history: who entered it, who validated it, and when.",
+      "points": [
+        "The auditor gets read-only access and checks everything in the tool.",
+        "A closed year stays as it was published: the organisation tree and the figures of the time are kept.",
+        "No more digging through emails for invoices the day before the audit."
+      ],
+      "tab": "Evidence"
+    },
+    {
+      "id": "consolidation",
+      "visual": "consolidation",
+      "title": "Group totals are calculated for you",
+      "lead": "You set up your organisation with your own levels. A figure entered for a site is counted in every total above it.",
+      "points": [
+        "Your own levels and names, as many as you need.",
+        "You write the formulas yourself, in the tool. You don't need a developer.",
+        "Dashboards and charts, including comparisons with previous periods."
+      ],
+      "tab": "Consolidation"
+    },
+    {
+      "id": "consistency",
+      "visual": "consistency",
+      "title": "Strange values show up before the audit",
+      "lead": "The tool compares each value with the comparison period and with your own rules. Anything that needs a look goes into one list, To be handled.",
+      "points": [
+        "Each alert explains the problem in one sentence.",
+        "The contributor either fixes the value or explains why it's right."
+      ],
+      "tab": "Checks"
+    },
+    {
+      "id": "library",
+      "visual": "library",
+      "title": "Start from a template",
+      "lead": "The library has fourteen templates: the European voluntary standard for sustainability reporting (VS), as two templates, Basic and Comprehensive; pay transparency; and the revised ESRS of the CSRD, as eleven templates, one for each standard. You can change any KPI, unit, or formula afterwards.",
+      "points": [
+        "A setup wizard walks you through it, from your organisation to your first campaign.",
+        "You can import values from Excel or CSV, and export tables that open cleanly in Excel.",
+        "It helps you collect the data you need for the voluntary standard VS, for your ESRS metrics, and for gender pay gap reporting under the EU directive 2023/970.",
+        "For the ESRS, install ESRS 2 and the templates of your material topics. A KPI that two templates share is entered once."
+      ],
+      "tab": "Templates"
+    },
+    {
+      "id": "field",
+      "visual": "phone",
+      "title": "Simple for people who sign in only twice a year",
+      "lead": "The data entry page tells them in one sentence what's left to do. It works on a phone, in seven languages.",
+      "points": [
+        "Statuses use a symbol and a word, not just a colour.",
+        "You can translate your KPIs with an Excel file.",
+        "A short guide for each role opens from the help icon, in the language of the interface."
+      ],
+      "tab": "Contributors"
+    },
+    {
+      "id": "it",
+      "visual": "hosting",
+      "title": "IT only takes care of the hosting",
+      "lead": "{name} runs on a server. Your IT team either installs it on one of your company's servers, or uses a hosting service that runs it for you (Clever Cloud). They also install the updates. Everything else is done in the tool by your administrators.",
+      "points": [],
+      "cta": true,
+      "tab": "For IT"
+    }
+  ],
+  "specs": [
+    {
+      "term": "Hosting",
+      "value": "On your server with Docker, or managed hosting with Clever Cloud"
+    },
+    {
+      "term": "Your IT team",
+      "value": "Hosting and updates. Nothing to develop"
+    },
+    {
+      "term": "Backups",
+      "value": "Automatic"
+    },
+    {
+      "term": "Accounts",
+      "value": "Created and managed by the administrators in the tool. No SSO"
+    },
+    {
+      "term": "Data in and out",
+      "value": "Excel and CSV files. No public REST API: AI assistants connect through the MCP server"
+    },
+    {
+      "term": "Spaces",
+      "value": "Several separate spaces in one installation"
+    },
+    {
+      "term": "Languages",
+      "value": "English, French, Spanish, German, Italian, Dutch, and Portuguese"
+    },
+    {
+      "term": "Accessibility",
+      "value": "Designed to WCAG 2.1 AA"
+    },
+    {
+      "term": "Cost",
+      "value": "The software is free"
+    }
+  ],
+  "roles": {
+    "title": "Who does what",
+    "lead": "",
+    "items": [
+      {
+        "role": "Administrator",
+        "who": "The team that runs the reporting",
+        "text": "Sets up the frameworks and the organisation tree, opens the campaigns, tracks the completion rate, sends the reminders, and exports the data.",
+        "jobs": [
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "readOnly": false
+      },
+      {
+        "role": "Contributor",
+        "who": "Sites and subsidiaries",
+        "text": "Enters the KPIs assigned to them, adds the evidence, and validates the entry.",
+        "jobs": [
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "readOnly": false
+      },
+      {
+        "role": "Validator",
+        "who": "At any level of your organisation",
+        "text": "Reviews the values of their organisation and of the organisations below it.",
+        "jobs": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0
+        ],
+        "readOnly": false
+      },
+      {
+        "role": "Reader",
+        "who": "Management, committees",
+        "text": "Reads the dashboards and the charts. Read-only.",
+        "jobs": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "readOnly": true
+      },
+      {
+        "role": "Auditor",
+        "who": "During an audit",
+        "text": "Reads the values, the evidence, and the history. Read-only.",
+        "jobs": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1
+        ],
+        "readOnly": true
+      }
+    ],
+    "columns": [
+      "Sets up the frameworks and the tree",
+      "Opens campaigns, sends reminders",
+      "Enters KPIs and evidence",
+      "Validates their entry",
+      "Reviews the values of their organisations",
+      "Puts a validated entry back to draft",
+      "Reads dashboards",
+      "Reads values, evidence, history"
+    ],
+    "changesLabel": "Changes data",
+    "yes": "Yes",
+    "readOnly": "Read-only",
+    "mainJob": "Main job",
+    "tableLabel": "Roles and their main jobs",
+    "no": "No"
+  },
+  "limits": {
+    "title": "What {name} does not do",
+    "lead": "{name} collects quantitative data, with the evidence and the checks around it. Here's what it doesn't do, so you know before you try it.",
+    "items": [
+      {
+        "title": "No carbon footprint calculation",
+        "text": "It collects the data and applies your formulas, but it's not carbon accounting software."
+      },
+      {
+        "title": "No sustainability report",
+        "text": "It doesn't write the report, and it doesn't run the double materiality assessment."
+      },
+      {
+        "title": "No audit",
+        "text": "The audit stays the auditor's job. {name} gives them read-only access to what they need."
+      },
+      {
+        "title": "No public REST API, no SSO, no EcoVadis integration",
+        "text": "Data goes in and out as Excel or CSV files, and AI assistants connect through the MCP server. The administrators create the accounts in the tool."
+      }
+    ],
+    "meta": {
+      "title": "What {name} does not do – {name}",
+      "description": "{name} collects quantitative data, with the evidence and the checks around it. Here's what it doesn't do."
+    },
+    "link": "What {name} does not do"
+  },
+  "free": {
+    "title": "{name} is free",
+    "priceLabel": "The software",
+    "price": "€0",
+    "text": "There's no subscription and no paid version. The source code is public, under the AGPL-3.0-or-later licence.",
+    "included": [
+      "Every function on this page",
+      "Five roles",
+      "Interface in seven languages",
+      "The voluntary standard VS, Basic and Comprehensive",
+      "Pay transparency, for the EU directive 2023/970",
+      "The revised ESRS, as eleven templates to install by material topic"
+    ],
+    "provideLabel": "What you provide",
+    "provideTitle": "You pay for your own hosting",
+    "provide": [
+      "On one of your company's servers, or with a hosting service that runs it for you (Clever Cloud). Your IT team installs the updates."
+    ],
+    "priceNote": "for the software"
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "items": [
+      {
+        "q": "Is {name} really free?",
+        "a": "Yes. There's no paid version, and the source code is public under the AGPL-3.0-or-later licence. The only cost is hosting."
+      },
+      {
+        "q": "How do I get {name}?",
+        "a": "You can try it on your computer, install it on a server with Docker, or use managed hosting with Clever Cloud. The Get {name} page gives the commands and the links."
+      },
+      {
+        "q": "Where is the data hosted?",
+        "a": "Wherever you choose: on one of your company's servers, installed by your IT team, or with a hosting service that runs it for you (Clever Cloud). Backups run automatically."
+      },
+      {
+        "q": "Do we have to give up Excel?",
+        "a": "No. You can import values from Excel or CSV files, and export tables back to Excel."
+      },
+      {
+        "q": "Does {name} support the voluntary standard VS?",
+        "a": "Yes. The library has it as a Basic and a Comprehensive template. {name} helps you collect the data you need for it, and exports the values to EFRAG's official workbook."
+      },
+      {
+        "q": "Does {name} help with pay transparency?",
+        "a": "Yes. The library has a template for gender pay gap reporting under the EU directive 2023/970, with one report per employer. Each entity enters its average pay and headcounts, and {name} calculates the mean gaps of each entity and of the group from the totals, never as an average of gaps. National laws that transpose the directive can add details: the template follows the directive."
+      },
+      {
+        "q": "Does {name} have templates for the ESRS?",
+        "a": "Yes. The library has eleven templates for the revised ESRS of the CSRD (Delegated Regulation (EU) 2026/1563): ESRS 2, E1 to E5, S1 to S4, and G1. They are collection templates built from the text of the regulation. Install ESRS 2 and the templates of your material topics, then adapt the KPIs to your company. A KPI that several templates share is entered once. The KPI texts of these templates are in English and French."
+      },
+      {
+        "q": "Does {name} make us compliant with a regulation?",
+        "a": "No, not by itself. It helps you collect the quantitative data you need, for example for the voluntary standard VS, for your ESRS metrics, or for gender pay gap reporting."
+      },
+      {
+        "q": "Does {name} calculate our carbon footprint?",
+        "a": "No. It collects the data and applies the formulas you set. It is not certified carbon accounting software."
+      },
+      {
+        "q": "Do contributors need training?",
+        "a": "No. The data entry page tells them what's left to do, on a computer or a phone."
+      },
+      {
+        "q": "What does the auditor see?",
+        "a": "Each value with its evidence and its history. They can't change anything."
+      },
+      {
+        "q": "What happens to a closed year?",
+        "a": "It stays as it was published, with the organisation tree and the figures of the time. If an administrator reopens it, they choose whether to keep those figures or to recalculate with today's organisation."
+      },
+      {
+        "q": "Can other departments use it?",
+        "a": "Yes. You can create separate spaces in one installation, for example for ESG, purchasing, and HR."
+      },
+      {
+        "q": "Can an AI assistant use {name}?",
+        "a": "Yes, if an administrator allows it. It is off by default. Each person connects their own assistant, with a personal token, and the assistant has that person's rights, never more."
+      },
+      {
+        "q": "What does IT need to do?",
+        "a": "Host it and apply the updates. There's nothing to develop."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Questions?",
+    "text": "I build {name} on my own time and share it for free. If you have a question, send me a message, I'm happy to help."
+  },
+  "featuresHead": {
+    "title": "What changes for your team",
+    "lead": ""
+  },
+  "frameworks": {
+    "title": "Install a framework in 3 steps",
+    "lead": "Pick a template, untick what you don't need, and install. These are the tool's real templates and KPIs: the voluntary standard VS, pay transparency, and the revised ESRS.",
+    "ownTitle": "Or build your own framework",
+    "own": [
+      "Create your KPIs one by one in the tool, with their units and formulas.",
+      "Reuse KPIs you already have in other frameworks: a shared figure is entered once.",
+      "Import an Excel or JSON file. You see a preview before anything changes."
+    ]
+  },
+  "vs": {
+    "title": "The voluntary standard VS, ready to collect",
+    "lead": "{name} helps you collect the data you need for the voluntary standard VS (formerly VSME). Two templates cover it, and you can export the values to EFRAG's official workbook.",
+    "points": [
+      "Every disclosure is a set of KPIs, with its definition, unit, and the evidence behind each value.",
+      "Consistency rules catch the usual slips, for example, more renewable electricity than total electricity.",
+      "You collect once, site by site, and the values consolidate up the organisation tree."
+    ],
+    "templatesLabel": "The two templates",
+    "templates": [
+      {
+        "slug": "vs-basic",
+        "name": "Basic module",
+        "text": "Disclosures B1 to B11, from the basis for preparation to corruption and bribery."
+      },
+      {
+        "slug": "vs-comprehensive",
+        "name": "Comprehensive module",
+        "text": "Disclosures C1 to C9, added to the Basic module: strategy, climate targets and risks, workforce, human rights, gender diversity."
+      }
+    ],
+    "see": "See the KPIs",
+    "exportLabel": "From {name} to EFRAG's workbook",
+    "export": [
+      "Collect and validate the values in {name}.",
+      "Export them to EFRAG's official Excel workbook. {name} fills in only the input cells.",
+      "Open the workbook in Excel and save it, so that EFRAG's converter can read the calculated values."
+    ],
+    "note": "{name} is not made or endorsed by EFRAG.",
+    "cta": "Library templates"
+  },
+  "assistant": {
+    "title": "With your AI assistant",
+    "lead": "An AI assistant, for example Claude, can work in {name} through its MCP server. It is off until an administrator allows it, and it never has more rights than the person who connects it.",
+    "specs": [
+      {
+        "term": "By default",
+        "value": "Off"
+      },
+      {
+        "term": "Who allows it",
+        "value": "An administrator, for the space"
+      },
+      {
+        "term": "Who connects",
+        "value": "Each person, with a personal token"
+      },
+      {
+        "term": "What it can do",
+        "value": "What that person can do, for example read the completion rate or enter a value"
+      },
+      {
+        "term": "Reader and auditor",
+        "value": "Read-only"
+      },
+      {
+        "term": "Record",
+        "value": "Every call is in the history"
+      }
+    ],
+    "tableLabel": "How AI assistants connect"
+  },
+  "get": {
+    "title": "Get {name}",
+    "lead": "The software is free and its code is public. Choose how you want to start.",
+    "paths": [
+      {
+        "anchor": "try-it-on-your-computer",
+        "title": "Try it on your computer",
+        "text": "A trial with the demo company, to look around before you decide."
+      },
+      {
+        "anchor": "install-it-on-a-server",
+        "title": "Install it on a server",
+        "text": "For your IT team: Docker, one script, and a guide."
+      },
+      {
+        "anchor": "managed-hosting",
+        "title": "Managed hosting",
+        "text": "A provider runs it for you. The guide covers Clever Cloud."
+      }
+    ],
+    "cta": "Get {name}",
+    "tour": "Take the guided tour"
+  }
+}

@@ -1,0 +1,579 @@
+{
+  "langName": "Français",
+  "tagline": "La collecte des KPI, avec les preuves prêtes pour l'audit",
+  "skip": "Aller au contenu",
+  "nav": {
+    "label": "Menu principal",
+    "theme": {
+      "toDark": "Passer à l'apparence sombre",
+      "toLight": "Passer à l'apparence claire"
+    },
+    "language": "Langue",
+    "menu": "Menu",
+    "frameworks": "Modèles de la bibliothèque",
+    "guides": "Guides",
+    "docs": "Documentation IT",
+    "tour": "Visite",
+    "get": "Obtenir {name}"
+  },
+  "footer": {
+    "line": "{name} est un logiciel libre et gratuit de collecte de KPI et d'accompagnement des audits. Tous les chiffres de ce site sont inventés.",
+    "legal": "Mentions légales",
+    "privacy": "Confidentialité",
+    "contact": "Contact",
+    "fictitious": "Toutes les données affichées sur ce site sont fictives.",
+    "limits": "Ce que {name} ne fait pas",
+    "product": "Produit",
+    "help": "Aide",
+    "trust": "Confiance",
+    "legalTitle": "Mentions",
+    "home": "Accueil",
+    "tour": "Visite guidée",
+    "whatsNew": "Nouveautés",
+    "source": "Code source sur GitHub"
+  },
+  "common": {
+    "replay": "Rejouer",
+    "fictitious": "Données fictives",
+    "back": "Retour à l'accueil",
+    "pause": "Pause",
+    "play": "Lecture",
+    "autoPlay": "du défilement automatique",
+    "autoPaused": "Le défilement automatique est en pause.",
+    "autoPlaying": "Le défilement automatique est en marche.",
+    "enlarge": "Agrandir l'écran",
+    "close": "Fermer",
+    "colon": " : ",
+    "quoteOpen": "« ",
+    "quoteClose": " »",
+    "table": "tableau"
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact – {name}",
+      "description": "Une question sur {name} ? Posez-la sur LinkedIn à Florent Liaigre, qui développe l'outil et le partage gratuitement. Ce site n'a ni formulaire ni adresse e-mail."
+    },
+    "title": "Contact",
+    "lead": "Je m'appelle Florent. Je développe {name} et je le partage gratuitement. Une question sur l'outil ? Écrivez-moi sur LinkedIn, je vous réponds volontiers.",
+    "direct": "Ou écrivez à cette adresse :",
+    "or": "Rien n'est envoyé depuis cette page : vous copiez votre message et vous me l'envoyez sur LinkedIn.",
+    "name": "Votre nom",
+    "org": "Votre organisation",
+    "role": "Votre fonction",
+    "roles": [
+      "Reporting RSE ou de durabilité",
+      "Finance ou contrôle de gestion",
+      "Informatique",
+      "Audit",
+      "Autre"
+    ],
+    "message": "Votre message",
+    "messageHelp": "Par exemple : vos référentiels, votre outil actuel, vos questions.",
+    "submit": "Préparer mon message",
+    "subject": "Question sur {name}",
+    "required": "Saisissez votre nom.",
+    "after": "Votre message est prêt. Copiez-le et collez-le dans un message LinkedIn.",
+    "sites": "Sites ou entités",
+    "optional": "facultatif",
+    "copy": "Copier l'adresse",
+    "copied": "Adresse copiée.",
+    "copyMessage": "Copier le message",
+    "messageCopied": "Message copié.",
+    "linkedin": "M'écrire sur LinkedIn",
+    "copyAndOpen": "Copier et ouvrir LinkedIn",
+    "requiredMessage": "Écrivez votre message.",
+    "requiredNote": "Tous les champs sont obligatoires, sauf ceux marqués « facultatif ».",
+    "newTab": "(s'ouvre dans un nouvel onglet)",
+    "requiredMark": "obligatoire"
+  },
+  "legal": {
+    "meta": {
+      "title": "Mentions légales – {name}",
+      "description": "Mentions légales du site de {name} : éditeur, hébergeur, licence du logiciel et polices utilisées par le site."
+    },
+    "title": "Mentions légales",
+    "publisher": "Éditeur",
+    "company": "Éditeur",
+    "address": "Adresse",
+    "registration": "Immatriculation",
+    "director": "Directeur de la publication",
+    "contact": "Contact",
+    "host": "Hébergeur",
+    "ip": "Contenus",
+    "ipText": "Les écrans de ce site sont des copies ou des captures de l'outil, avec des données inventées. Les noms des organisations et des personnes sont inventés.",
+    "fonts": "Polices",
+    "fontsText": "Source Sans 3 et Source Serif 4, sous licence SIL Open Font License 1.1. Les polices sont servies par ce site.",
+    "licence": "Licence du logiciel",
+    "licenceText": "{name} est un logiciel libre, publié sous la licence GNU Affero General Public License, version 3 ou ultérieure (AGPL-3.0-or-later). Son code source est sur GitHub.",
+    "licenceLink": "Code source de {name}"
+  },
+  "privacy": {
+    "meta": {
+      "title": "Confidentialité – {name}",
+      "description": "La confidentialité sur le site de {name} : aucun cookie, aucun traceur, et rien de ce que vous saisissez n'est envoyé."
+    },
+    "title": "Confidentialité",
+    "lead": "Ce site n'utilise ni cookie ni traceur.",
+    "items": [
+      {
+        "title": "Ni cookie ni traceur",
+        "text": "Ce site ne compte pas ses visiteurs et ne charge rien depuis d'autres sites, pas même les polices."
+      },
+      {
+        "title": "Hébergement",
+        "text": "Ce site est hébergé sur GitHub Pages. Comme tout hébergeur, GitHub reçoit des données techniques quand vous ouvrez une page, par exemple votre adresse IP, et les garde dans ses propres journaux de sécurité. Je n'ai pas accès à ces journaux."
+      },
+      {
+        "title": "Apparence",
+        "text": "Si vous choisissez l'apparence claire ou sombre, votre navigateur garde ce choix sur votre appareil. Il n'est envoyé nulle part."
+      },
+      {
+        "title": "L'essai",
+        "text": "Ce que vous saisissez dans l'essai, et le nom des fichiers que vous ajoutez, restent dans la page. Rien n'est envoyé ni gardé : tout disparaît quand vous fermez ou rechargez la page. Les fichiers eux-mêmes ne sont jamais lus."
+      },
+      {
+        "title": "Me contacter",
+        "text": "Ce site n'a ni formulaire ni adresse e-mail. Si vous m'écrivez sur LinkedIn, je n'utilise vos coordonnées que pour vous répondre."
+      },
+      {
+        "title": "Nouvelles versions",
+        "text": "Pour être prévenu des nouvelles versions, suivez le dépôt sur GitHub ou abonnez-vous au flux RSS. Ni l'un ni l'autre ne me donne votre adresse e-mail."
+      },
+      {
+        "title": "L'outil lui-même",
+        "text": "Cette page ne concerne que ce site. Ce que vous saisissez dans {name} reste sur l'hébergement que vous choisissez : votre propre serveur, ou un hébergement clé en main."
+      },
+      {
+        "title": "Vos droits",
+        "text": "Pour consulter, corriger ou supprimer ce que vous m'avez envoyé, il suffit de me le demander."
+      }
+    ]
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "text": "Cette page n'existe pas, ou elle a changé d'adresse.",
+    "links": "Ces pages peuvent vous aider :",
+    "description": "Cette page n'existe pas, ou elle a changé d'adresse. Revenez à l'accueil de {name}, obtenez l'outil, suivez la visite guidée ou lisez la documentation."
+  },
+  "tool": {
+    "frameLabel": "Reproduction de l'outil, avec des données fictives",
+    "tabs": {
+      "entry": "Saisie",
+      "dashboard": "Tableau de bord",
+      "visualisation": "Visualisation",
+      "consistency": "Cohérence"
+    },
+    "status": {
+      "validated": "Validé",
+      "draft": "Brouillon",
+      "todo": "À saisir",
+      "calculated": "Calculé",
+      "incomplete": "Incomplet",
+      "toHandle": "À traiter",
+      "justified": "Justifiée"
+    },
+    "cols": {
+      "indicator": "Indicateur",
+      "value": "Valeur",
+      "unit": "Unité",
+      "n1": "N-1",
+      "variance": "Écart N-1",
+      "status": "Statut",
+      "evidence": "Preuve",
+      "organisation": "Organisation",
+      "progress": "Avancement",
+      "rate": "Taux",
+      "check": "Contrôle",
+      "finding": "Constat",
+      "total": "Total du groupe"
+    },
+    "levels": {
+      "group": "Groupe",
+      "country": "Pays",
+      "site": "Site"
+    },
+    "types": {
+      "input": "Saisi",
+      "calculated": "Calculé"
+    },
+    "campaign": "Reporting de durabilité · 2026",
+    "campaignStatus": "Saisie ouverte",
+    "group": "Halden Group",
+    "demoTag": "démo",
+    "tabsLabel": "Pages de l'outil",
+    "seedComment": "Contrat d'électricité renouvelable depuis mars 2026.",
+    "orgs": {
+      "fr": "France",
+      "es": "Espagne",
+      "lyon": "Siège",
+      "nantes": "Site de production",
+      "valencia": "Bureau commercial",
+      "bilbao": "Centre de services"
+    },
+    "people": {
+      "contributor": "Maya Okafor",
+      "other": "Luis Ortega",
+      "validator": "Anne Keller"
+    },
+    "kpis": {
+      "elec": {
+        "name": "Électricité achetée consommée",
+        "unit": "kWh",
+        "theme": "B3 – Énergie et émissions de gaz à effet de serre"
+      },
+      "ren": {
+        "name": "Électricité achetée d'origine renouvelable",
+        "unit": "kWh",
+        "theme": "B3 – Énergie et émissions de gaz à effet de serre"
+      },
+      "share": {
+        "name": "Part d'électricité renouvelable",
+        "unit": "%",
+        "theme": "Énergie renouvelable"
+      },
+      "head": {
+        "name": "Effectif total en fin de période",
+        "unit": "salariés",
+        "theme": "B1 – Base de préparation"
+      }
+    },
+    "role": {
+      "label": "Voir en tant que",
+      "contributor": "Contributeur",
+      "validator": "Validateur",
+      "auditor": "Auditeur",
+      "contributorText": "Contributrice du siège : elle saisit les KPI, joint les preuves et valide.",
+      "validatorText": "Validatrice France : elle vérifie le siège et le site de production, et peut repasser une valeur validée en brouillon.",
+      "auditorText": "Auditeur : il lit tous les sites, avec les preuves et l'historique. Il ne peut rien modifier."
+    },
+    "reset": "Recommencer",
+    "banner": {
+      "progress": "{org} : {todo} à saisir · {drafts} à valider · fin de saisie le 15 janvier 2027",
+      "done": "Tout est fait : {n} valeurs validées sur {total}.",
+      "continue": "Saisir la valeur suivante",
+      "validatedPct": "{pct} % validé",
+      "auditor": "Accès en lecture seule. Vous lisez les valeurs, les preuves et l'historique. Vous ne pouvez rien modifier.",
+      "continueDraft": "Ouvrir le brouillon suivant"
+    },
+    "panel": {
+      "close": "Fermer",
+      "value": "Valeur",
+      "comment": "Commentaire",
+      "commentPlaceholder": "Contexte, source, explication d'un écart…",
+      "commentRule": "Commentaire obligatoire au-delà de 20 % d'écart avec N-1.",
+      "evidence": "Preuves",
+      "evidenceRequired": "obligatoire",
+      "choose": "Choisir un fichier",
+      "formats": "PDF, JPG ou PNG, 5 Mo maximum.",
+      "stays": "Dans cet essai, le fichier reste sur votre appareil. Seul son nom est affiché.",
+      "noEvidence": "Aucune preuve.",
+      "remove": "Supprimer la preuve « {file} »",
+      "save": "Enregistrer le brouillon",
+      "validate": "Valider",
+      "validateHelp": "Valider confirme que votre saisie est complète. Un validateur ou un administrateur peut encore la repasser en brouillon.",
+      "history": "Historique",
+      "enter": "Saisir",
+      "by": "par {person}",
+      "toCheck": "À vérifier",
+      "blocks": "Bloque la validation",
+      "needEvidenceHint": "Ajoutez une preuve ci-dessous, puis validez.",
+      "sample": "Utiliser un fichier d'exemple",
+      "sampleName": "facture-exemple.pdf",
+      "validatedNote": "Cette valeur est validée. Un validateur ou un administrateur peut la repasser en brouillon.",
+      "reopen": "Repasser en brouillon",
+      "reopenHelp": "La saisie repasse en brouillon. Le contributeur devra la valider de nouveau.",
+      "format": "Des chiffres seulement. Une virgule pour les décimales, par exemple 1250,5."
+    },
+    "msg": {
+      "notNumber": "Cette valeur n'est pas un nombre. Saisissez un nombre.",
+      "needEvidence": "Ce KPI exige une preuve. Ajoutez un fichier pour valider.",
+      "needComment": "L'écart avec N-1 dépasse 20 %. Ajoutez un commentaire pour valider.",
+      "renRule": "L'électricité renouvelable achetée dépasse l'électricité achetée.",
+      "badFile": "Ce fichier n'est pas un fichier PDF, JPG ou PNG. Choisissez un fichier PDF, JPG ou PNG.",
+      "bigFile": "Ce fichier dépasse 5 Mo. Choisissez un fichier plus petit.",
+      "draftSaved": "Brouillon enregistré.",
+      "validated": "Valeur validée. Le total du groupe est à jour.",
+      "evidenceAdded": "Preuve ajoutée.",
+      "evidenceRemoved": "Preuve supprimée.",
+      "reset": "L'essai est revenu à son état de départ.",
+      "reopened": "La saisie est repassée en brouillon.",
+      "blocked": "Une règle bloque la validation. Corrigez l'une des deux valeurs.",
+      "readAs": "Cette valeur est lue comme {read}. Pour saisir {guess}, saisissez {digits}.",
+      "validatedTotal": "Valeur validée. Total du groupe : {total}."
+    },
+    "history": {
+      "imported": "Valeur importée depuis un fichier Excel",
+      "entered": "Valeur saisie : {value}",
+      "validated": "Saisie validée",
+      "evidence": "Preuve ajoutée : {file}",
+      "evidenceRemoved": "Preuve supprimée : {file}",
+      "comment": "Commentaire modifié",
+      "reopened": "Saisie repassée en brouillon"
+    },
+    "dash": {
+      "title": "Taux de remplissage",
+      "validatedOf": "{n} validées sur {total}",
+      "legendValidated": "validé",
+      "legendDraft": "brouillon",
+      "legendTodo": "à saisir",
+      "consolidation": "Consolidation",
+      "provisional": "provisoire",
+      "provisionalHelp": "Provisoire : au moins une valeur est encore en brouillon.",
+      "incompleteHelp": "Incomplet : il manque au moins une valeur.",
+      "sitesOf": "{n} sites sur {total}",
+      "scopeNote": "Dans l'outil, un contributeur ne voit que ses propres organisations. Cet essai montre tout le groupe.",
+      "yourValue": "Votre valeur dans le total du groupe",
+      "draftsOf": "{n} validées et {d} brouillons sur {total}"
+    },
+    "cons": {
+      "title": "Cohérence des données",
+      "lead": "Les valeurs à vérifier. Corrigez la saisie, ou justifiez-la si la valeur est juste.",
+      "none": "Aucune alerte. Saisissez une valeur éloignée de N-1 dans Saisie pour voir un contrôle.",
+      "varianceN1": "Écart avec N-1",
+      "rule": "Règle entre KPI",
+      "finding": "{value}, contre {n1} en 2025 : {pct}.",
+      "since": "Depuis le {date}"
+    },
+    "viz": {
+      "sub": "{org} · 2026 · {unit}",
+      "vs": "par rapport à 2025",
+      "showData": "Afficher les données",
+      "byOrg": "Par organisation",
+      "trendAlt": "Évolution de 2022 à 2026 : de {from} à {to}"
+    },
+    "todo": {
+      "title": "À traiter",
+      "late": "organisation en retard",
+      "lateText": "Le taux de remplissage de ses propres KPI est sous le rythme attendu.",
+      "seeReminders": "Voir et relancer",
+      "noSpoc": "cases sans SPOC",
+      "noSpocText": "Personne n'est chargé de ces cases, et personne ne reçoit de relance.",
+      "assign": "Attribuer"
+    },
+    "reminder": {
+      "label": "E-mail de relance",
+      "subject": "Reporting de durabilité 2026 : il vous reste 1 valeur à saisir",
+      "body": "Bonjour Maya, la saisie se termine le 15 janvier 2027. Il vous reste 1 valeur à saisir pour le siège.",
+      "button": "Ouvrir ma saisie"
+    },
+    "evidenceMock": {
+      "file": "factures-electricite-2026.pdf",
+      "validatedBy": "par Maya Okafor",
+      "validatedOn": "le 12/01/2027 à 09:41",
+      "auditor": "Auditeur · lecture seule",
+      "h1": "12/01/2027 09:41 · Maya Okafor · Saisie validée",
+      "h2": "12/01/2027 09:38 · Maya Okafor · Preuve ajoutée",
+      "h3": "08/01/2027 16:12 · Maya Okafor · Valeur saisie : 412 300 kWh"
+    },
+    "libraryMock": [
+      {
+        "name": "Norme volontaire VS – module de base",
+        "text": "Les informations B1 à B11 de la norme volontaire européenne, de la base de préparation à la corruption.",
+        "examples": [
+          "Électricité achetée consommée",
+          "Émissions directes (scope 1)",
+          "Effectif total en fin de période"
+        ]
+      },
+      {
+        "name": "Norme volontaire VS – module complet",
+        "text": "Les informations C1 à C9, à ajouter au module de base : stratégie, cibles et risques climatiques, effectifs, droits de l'homme.",
+        "examples": [
+          "Cibles de réduction des émissions de gaz à effet de serre",
+          "Départs de salariés en CDI",
+          "Femmes membres de l'organe de gouvernance"
+        ]
+      },
+      {
+        "name": "Transparence des rémunérations – écarts entre femmes et hommes",
+        "text": "Une déclaration par employeur, selon la directive européenne 2023/970 : écarts moyens et médians, part variable, quartiles, écarts par catégorie.",
+        "examples": [
+          "Écart de rémunération moyen (horaire)",
+          "Part des femmes dans le quartile 1 (le plus bas)",
+          "Évaluation conjointe des rémunérations requise"
+        ]
+      },
+      {
+        "name": "ESRS E1 – Changement climatique",
+        "text": "Un des onze modèles des ESRS révisées : plan de transition, cibles, énergie et émissions de gaz à effet de serre.",
+        "examples": [
+          "Consommation totale d'énergie (MWh)",
+          "Émissions brutes de GES du scope 1",
+          "Statut du plan de transition"
+        ]
+      }
+    ],
+    "libraryInstall": "Modèle",
+    "phone": {
+      "title": "Saisie",
+      "langs": "Langues de l'interface"
+    },
+    "glossaryTitle": "Les mots de l'outil",
+    "glossary": [
+      {
+        "term": "N-1",
+        "text": "la même période, un an plus tôt"
+      },
+      {
+        "term": "À traiter",
+        "text": "les valeurs à vérifier"
+      },
+      {
+        "term": "Bloque la validation",
+        "text": "corrigez cette valeur avant de valider"
+      },
+      {
+        "term": "Calculé",
+        "text": "l'outil calcule cette valeur à partir d'autres valeurs"
+      },
+      {
+        "term": "SPOC",
+        "text": "la personne chargée d'une valeur"
+      }
+    ]
+  },
+  "installer": {
+    "frameLabel": "Reproduction de l'outil : installer un référentiel depuis la bibliothèque",
+    "title": "Installer depuis la bibliothèque",
+    "stepsAria": "Étapes de l'installation",
+    "steps": [
+      "Modèle",
+      "KPI",
+      "Installer"
+    ],
+    "stepOf": "Étape {n} sur 3 :",
+    "stepDone": "Étape {n} sur 3, terminée :",
+    "intro": "Choisissez un modèle, puis cochez les KPI que vous voulez à l'écran suivant. L'outil installe leurs définitions, unités et formules, et les rattache à votre arbre.",
+    "choose": "Choisir",
+    "chooseAria": "Choisir « {framework} »",
+    "allSelected": "Tous les KPI sont cochés. Décochez ceux dont vous n'avez pas besoin. Un KPI qui sert au calcul d'un KPI coché est ajouté quand même.",
+    "selected": "KPI cochés sur {total}",
+    "search": "Rechercher un KPI",
+    "searchPlaceholder": "Rechercher (nom ou code)",
+    "selectAll": "Tout cocher",
+    "deselectAll": "Tout décocher",
+    "noResult": "Aucun KPI ne correspond à la recherche.",
+    "colIndicator": "Indicateur",
+    "colType": "Type",
+    "colUnit": "Unité",
+    "colState": "Dans votre outil",
+    "new": "nouveau",
+    "calculation": "Calcul :",
+    "definition": "Définition",
+    "addedAnyway": "Sera ajouté quand même : utilisé par {list}",
+    "collapse": "Replier",
+    "expand": "Déplier",
+    "continue": "Continuer ›",
+    "cancel": "Annuler",
+    "selectOne": "Cochez au moins un KPI",
+    "summary": "Résumé",
+    "sentenceInstalled": "{n} KPI vont être installés dans le référentiel « {framework} », rangés en {themes} thèmes.",
+    "sentenceAdded": "{n} KPI ajoutés quand même, parce qu'un KPI coché les utilise :",
+    "usedBy": "(utilisé par {list})",
+    "sentenceLevels": "Rattachement à votre arbre : les KPI saisis au niveau Site (le plus bas), les paramètres hérités, comme les facteurs d'émission, au niveau Groupe (le plus haut, une seule valeur reprise en dessous), les KPI calculés au niveau de leurs sources.",
+    "levelsChange": "Vous pouvez changer le niveau de chaque KPI dans sa fiche, ou de plusieurs à la fois dans le contenu du référentiel.",
+    "frameworkName": "Nom du référentiel",
+    "frequency": "Fréquence de collecte",
+    "frequencies": [
+      "Annuelle",
+      "Semestrielle",
+      "Trimestrielle",
+      "Mensuelle"
+    ],
+    "install": "Installer",
+    "back": "‹ Revenir aux KPI",
+    "done": "« {framework} » est installé : {n} KPI, rattachés à votre arbre.",
+    "trialNote": "Ceci est une reproduction, avec les vrais modèles. Rien n'est enregistré.",
+    "again": "Installer un autre modèle",
+    "loading": "Chargement des KPI de « {framework} »…",
+    "loadFailed": "Les KPI de « {framework} » n'ont pas pu être chargés. Vérifiez votre connexion, puis choisissez à nouveau le modèle.",
+    "noScript": "Les KPI d'un modèle s'ouvrent ici quand JavaScript est activé. Sans JavaScript, lisez les listes complètes dans",
+    "libraryLink": "Modèles de la bibliothèque",
+    "types": {
+      "Input": "Saisi",
+      "Calculated": "Calculé",
+      "Emission factor": "Facteur d'émission"
+    }
+  },
+  "docsUi": {
+    "meta": {
+      "title": "Documentation IT – {name}",
+      "description": "Installer, faire tourner et sécuriser {name} : prérequis, Docker, hébergement clé en main, sauvegardes, mises à jour, e-mails et supervision. Pour l'équipe informatique."
+    },
+    "title": "Documentation IT",
+    "lead": "Installer, faire tourner et mettre à jour {name} sur votre propre serveur avec Docker, ou chez un hébergeur clé en main. Ces pages s'adressent à votre équipe informatique.",
+    "menu": "Documentation IT",
+    "onThisPage": "Sur cette page",
+    "source": "Tiré de la documentation de l'outil : {source}.",
+    "groups": {
+      "Get started": "Démarrer",
+      "Run": "Exploiter"
+    },
+    "previous": "Précédent",
+    "next": "Suivant",
+    "more": "Aussi pour l'IT",
+    "metaTitle": "{page} – {name}",
+    "pages": "Pages de la documentation"
+  },
+  "guidesUi": {
+    "meta": {
+      "title": "Guides – {name}",
+      "description": "Un guide court pour chaque rôle de {name} : administrateur, contributeur, validateur, lecteur et auditeur."
+    },
+    "title": "Guides",
+    "lead": "Un guide court pour chaque rôle. Les guides complets s'ouvrent dans l'outil par l'icône d'aide, dans la langue de l'interface.",
+    "all": "Guides",
+    "metaTitle": "Guide {role} – {name}"
+  },
+  "frameworksUi": {
+    "meta": {
+      "title": "Modèles de la bibliothèque – {name}",
+      "description": "Les quatorze modèles fournis avec {name} : la norme volontaire VS, la transparence des rémunérations et les ESRS révisées, avec leurs KPI, unités, formules et documents sources."
+    },
+    "title": "Modèles de la bibliothèque",
+    "lead": "{name} est fourni avec quatorze modèles : la norme volontaire européenne de reporting de durabilité (VS), en deux modèles, le module de base et le module complet ; la transparence des rémunérations, pour la directive européenne 2023/970 ; et les ESRS révisées de la CSRD, en onze modèles, un par norme. Ce sont des modèles de collecte construits à partir du texte des normes. Installez les KPI dont vous avez besoin, puis ajustez tout dans l'outil : KPI, définitions, unités, formules et thèmes. Pour les ESRS, installez l'ESRS 2 et les modèles de vos sujets importants. Un KPI que plusieurs modèles ont en commun se saisit une seule fois.",
+    "see": "Voir les KPI",
+    "code": "Code",
+    "kpi": "KPI",
+    "unit": "Unité",
+    "type": "Type",
+    "formula": "Formule",
+    "definition": "Définition",
+    "rules": "Règles de cohérence",
+    "optional": "facultatif",
+    "metaTitle": "Modèle {framework} – {name}",
+    "metaDescription": "Les KPI du modèle {framework} de {name}, avec leurs unités, leurs formules et leurs définitions.",
+    "install": "Il s'installe en quelques clics. L'outil met en place les définitions, les unités et les formules, et rattache chaque KPI à votre arbre des organisations.",
+    "tryInstall": "Essayer l'installation",
+    "all": "Modèles de la bibliothèque",
+    "sources": "Documents sources",
+    "sourcesLead": "Les documents sur lesquels ce modèle repose, avec la date de chaque document et le jour de sa lecture.",
+    "sourceDate": "date du document :",
+    "sourceRead": "lu le",
+    "types": {
+      "Input": "Saisi",
+      "Calculated": "Calculé",
+      "Emission factor": "Facteur d'émission"
+    },
+    "skipTable": "Passer le tableau",
+    "scrollHint": "Faites défiler le tableau sur le côté pour voir toutes les colonnes.",
+    "choices": "Choix",
+    "columns": "Colonnes"
+  },
+  "whatsNew": {
+    "meta": {
+      "title": "Nouveautés – {name}",
+      "description": "Ce qui change dans chaque version de {name}, avec les notes pour l'IT et pour la sécurité. Disponible aussi en flux RSS."
+    },
+    "title": "Nouveautés",
+    "lead": "Ce qui change dans chaque version de {name}, la plus récente en premier.",
+    "rss": "Flux RSS",
+    "releases": "Versions sur GitHub",
+    "get": "Obtenir {name}",
+    "version": "Version {version}",
+    "untranslated": "Les notes de cette version ne sont pas encore traduites : elles sont en anglais.",
+    "updateTitle": "Comment mettre à jour",
+    "updateText": "Votre équipe informatique lance `./update.sh` dans le dossier de l'outil. Le script sauvegarde d'abord les données, puis installe la nouvelle version. Voir [Mettre à jour l'outil](/docs/update-the-tool/)."
+  },
+  "ogImageAlt": "{name} : collectez les KPI de tous vos sites, avec les preuves jointes"
+}

@@ -1,0 +1,190 @@
+{
+  "meta": {
+    "title": "Guided tour – {name}",
+    "description": "Real screens of {name} for each of its five roles: administrator, contributor, validator, reader, and auditor, with a made-up demo company."
+  },
+  "title": "Guided tour",
+  "lead": "Real screens of {name}, with one short tour for each role. The company is Exemplia, a made-up packaging manufacturer with sites in France, Spain, and Germany.",
+  "note": "Exemplia is the demo company provided with {name}. The demo loads in the language of the installation, here English. The tool is available in seven languages.",
+  "rolesTitle": "Choose a role",
+  "stepLabel": "Step {n} of {total}",
+  "nextRole": "Next role: {role}",
+  "backToRoles": "Back to the list of roles",
+  "roles": [
+    {
+      "id": "administrator",
+      "role": "Administrator",
+      "short": "Sets up the tool and runs the campaigns",
+      "who": "Alice runs the reporting of the group. She opens the campaigns, reviews the alerts, installs the frameworks, and sets up the tool.",
+      "steps": [
+        {
+          "img": "administrator-1-campaigns",
+          "title": "Open a campaign for each period",
+          "text": "Alice opens one campaign for each framework and reporting year, with its data entry dates and its variance threshold. {name} keeps the closed years next to the open one, as they were published.",
+          "alt": "Administration page, tab Campaigns. Two frameworks, “Voluntary Standard VS (formerly VSME) – Basic Module” and “Comprehensive Module”, each with three campaigns: reporting year 2026, status “Open for data entry”, and reporting years 2025 and 2024, status “Closed”. Each row gives the data entry dates, a variance threshold of 20%, the number of entries or imports, and a Manage link. A “New campaign” button is above each table."
+        },
+        {
+          "img": "administrator-2-consistency",
+          "title": "Review the explanation of an alert",
+          "text": "Alice reads the explanation that a contributor gave for a value 36% higher than last year, then accepts or rejects it. {name} flagged the value itself, and shows it next to the two years before.",
+          "alt": "Consistency page, filtered on the status Justified, with the panel of an alert open: check “Variance with N-1”, KPI “Water withdrawn”, Villefranche plant. Finding: 43,420 m³, compared with 31,840 m³ in 2025: +36%. History of the cell: 2026, 43,420 m³; 2025, 31,840 m³; 2024, 32,832 m³. Explanation by Camille Contributrice (demo account): “New corrugator line started in April 2026: more process water. Meter readings attached to the entry.” Under “Administrator's decision”, a field for a reason and the buttons “Accept the justification” and “Reject”."
+        },
+        {
+          "img": "administrator-3-library",
+          "title": "Install a framework from the library",
+          "text": "Alice chooses one of the templates of the library, then selects the KPIs that she wants. {name} installs their definitions, units, and formulas, and attaches them to the organisation tree.",
+          "alt": "Administration page, “Install from the library”, first of three steps: Template, KPIs, Install. A grid of templates, four per row, of which eight show here. First row: “Voluntary Standard VS (formerly VSME) – Basic Module”, 123 KPIs in 18 themes, installed; “Voluntary Standard VS (formerly VSME) – Comprehensive Module”, 65 KPIs in 9 themes, installed; “Pay transparency – gender pay gap reporting”, 45 KPIs in 8 themes, with a Choose button; “ESRS 2 – General disclosures”, 101 KPIs in 17 themes, installed. Second row: “ESRS E1 – Climate change”, 152 KPIs; “ESRS E2 – Pollution”, 30 KPIs; “ESRS E3 – Water”, 21 KPIs; “ESRS E4 – Biodiversity and ecosystems”, 27 KPIs; all four installed. Each card gives its version, a line “Source documents”, and a link “The template in Excel”."
+        },
+        {
+          "img": "administrator-4-identity",
+          "title": "Give the tool your name and colours",
+          "text": "Alice enters the name of the organisation, a logo, and a colour palette. {name} shows a preview in light and dark appearance before she saves, and the change applies to every page.",
+          "alt": "Settings, Identity. Under “Your organisation”: organisation name Exemplia, tool name {name}, subtitle, initials EX, a contact for sign-in problems, and a logo, with a preview of the header. Under Colours: the palettes Ocean, Indigo, Forest (selected), Slate, Terracotta, Plum, Graphite, and Custom, then the main, accent, background, and text colours, with a preview in light appearance and in dark appearance. A button “Save the identity”."
+        },
+        {
+          "img": "administrator-5-certificate",
+          "title": "Print the closing certificate of a year",
+          "text": "Alice opens the closing certificate of a closed campaign. {name} puts the campaign, its closing, its scope by level, and its completion rate on one page, and she prints it or saves it as a PDF file.",
+          "alt": "Closing certificate of the campaign “Voluntary Standard VS (formerly VSME) – Basic Module · 2025”, with a link back to the campaign and a Print button. Section Campaign: name Reporting year 2025, framework, period 01 Jan 2025 to 31 Dec 2025, 123 KPIs in the scope, and the other campaign on the same period. Section Closing: a note that the history of this installation does not keep who closed the campaign, and that it has not been reopened. Section Scope: a table by level, Group 1, Countries 3, Subsidiaries 5, Sites 11, total 20, in the tree and open in the period. Section Completion: 100.0%, 438 of 438 expected cells validated."
+        }
+      ]
+    },
+    {
+      "id": "contributor",
+      "role": "Contributor",
+      "short": "Enters the values and attaches the evidence",
+      "who": "Camille enters the figures of three sites. She validates each entry to confirm that it is complete.",
+      "steps": [
+        {
+          "img": "contributor-1-for-me",
+          "title": "See everything that is assigned to you",
+          "text": "Camille opens “Everything assigned to me”: one list for all her organisations. {name} counts what is validated, in draft, and still to fill in, and gives the date when data entry ends.",
+          "alt": "Data entry page for “Voluntary Standard VS (formerly VSME) – Basic Module · 2026”, view “Everything assigned to me”. A line gives the date when data entry ends. A progress bar and counters: 200 in total, 78 validated, 51 draft, 71 to fill in, 2 consistency alerts. Below, the KPIs of Exemplia Group, each with its value for 2026, its unit, the N-1 value, the variance, and its status: To fill in, Draft, or Validated."
+        },
+        {
+          "img": "contributor-2-enter",
+          "title": "Enter a value",
+          "text": "Camille opens a KPI of the Roanne plant and types the electricity that the site bought in 2026. {name} shows last year's figure next to the field, calculates the variance, and saves the entry as a draft.",
+          "alt": "Data entry panel for the KPI “Purchased electricity consumed”, site Roanne plant. Status: Draft, with the message “Draft saved”. Value for 2026: 2641000 kWh. N-1, 2025: 2,673,216 kWh, variance −1.2%. Comment: “Supplier invoices, January to October 2026.” Buttons “Save the draft” and “Validate and next”. Under Evidence: “No evidence”. Under “History by reporting year”: 2025, 2,673,216 kWh, and 2024, 2,730,000 kWh."
+        },
+        {
+          "img": "contributor-3-evidence",
+          "title": "Attach the evidence",
+          "text": "Camille adds the supplier's invoices as a PDF file. {name} keeps the file with the value, with her name and the date.",
+          "alt": "The same panel, with the message “Evidence added”. Under Evidence, the file electricity-invoices-2026.pdf is listed with its size, the name Camille Contributrice (demo account), and the date, next to a button to delete it and an area to add another file: PDF, JPG or PNG, 5 MB maximum."
+        },
+        {
+          "img": "contributor-4-validate",
+          "title": "Validate the entry",
+          "text": "Camille validates to confirm that her entry is complete. {name} records who validated and when, and she can still put the value back to draft.",
+          "alt": "The same panel after validation. Status: Validated, by Camille Contributrice (demo account), with the date and the time. The value, the comment, and the evidence file are still there. Buttons “Save the change” and “Validate”, then “Back to draft” and “Clear the value”. In the table behind the panel, the row of the KPI now shows 2,641,000."
+        }
+      ]
+    },
+    {
+      "id": "validator",
+      "role": "Validator",
+      "short": "Reviews the values of a scope",
+      "who": "Victor reviews the values of the sites in France. He follows their progress and reminds the people who are late.",
+      "steps": [
+        {
+          "img": "validator-1-review",
+          "title": "Review a validated value",
+          "text": "Victor opens a value in his scope and checks it against last year's figure, the comment, and the evidence. {name} shows who validated it and when, and Victor can put it back to draft.",
+          "alt": "The value “Purchased electricity consumed” of Roanne plant, seen by the validator. Status: Validated, by Camille Contributrice (demo account), with the date and the time. Value for 2026: 2641000 kWh. N-1, 2025: 2,673,216 kWh, variance −1.2%. The comment, the evidence file electricity-invoices-2026.pdf, and the history by reporting year are below. Buttons “Save the change”, “Validate”, “Back to draft”, and “Clear the value”."
+        },
+        {
+          "img": "validator-2-dashboard",
+          "title": "Follow the progress of your scope",
+          "text": "Victor opens the dashboard of the campaign. {name} compares the completion rate with the expected pace, counts what is left, and lists the organisations that are late.",
+          "alt": "Dashboard for “Voluntary Standard VS (formerly VSME) – Basic Module · 2026”, tab Progress. 18 points behind: 50% validated, 68% expected by today. Four figures: the days left, 60 to fill in, 38 drafts to validate, and 3 late organisations. A “To be handled” list with two items: 3 late organisations, with a link “See and send reminders”, and “Emails not set up yet”. A table gives the progress of Exemplia Group and of France: 97 validated out of 195, 38 drafts, 60 to fill in, rate 49.7%."
+        },
+        {
+          "img": "validator-3-reminders",
+          "title": "Remind the people who are late",
+          "text": "Victor checks who still has values to enter or to validate. {name} prepares one message for each person, with everything that is left to do. In this demo, emails are not set up, so he copies the message into his own email app.",
+          "alt": "Reminders page. A notice says that emails are not set up yet and that nothing is sent from this page. A choice “Send reminders for”: all open frameworks, or only one. Under “To remind”, one person: Camille Contributrice (demo account), for Mâcon warehouse, Roanne plant, and Villefranche plant, with 62 KPIs to fill in and 38 drafts. Automatic reminders: off. Below, “Write to Camille Contributrice”, with her example address, the subject, and the message, which lists the KPIs left for each site."
+        }
+      ]
+    },
+    {
+      "id": "reader",
+      "role": "Reader",
+      "short": "Reads the results, read-only",
+      "who": "Louise follows the results of the group. Her account is read-only: she can't change any value.",
+      "steps": [
+        {
+          "img": "reader-1-visualisation",
+          "title": "Read the totals and the charts",
+          "text": "Louise opens a shared view with the key figures of the group. {name} calculates the totals at every level of the organisation tree and compares them with the year before.",
+          "alt": "Visualisation page, view “Executive committee”, for Exemplia Group in 2025. Four figures: total energy consumption 44,937.8 MWh (−3.8% against 2024), direct emissions 5,519.9 tCO2e (−21.8%), energy indirect emissions 2,476.5 tCO2e (−12.3%), and total headcount 888 employees (+2.7%). Below, two bar charts: completion rate by organisation, and total energy consumption by country."
+        },
+        {
+          "img": "reader-2-dashboard",
+          "title": "See how far the campaign is",
+          "text": "Louise opens the dashboard of the campaign in progress. {name} gives the completion rate of the group and of each organisation, with what is validated, in draft, and still to fill in.",
+          "alt": "Dashboard for “Voluntary Standard VS (formerly VSME) – Basic Module · 2026”, tab Progress, seen by the reader. 42.2% validated: 185 validated out of 438. Three figures: the days left, 169 to fill in, and 84 drafts to validate. A table gives the progress of each organisation: Exemplia Group 42.2%, France 50.0%, Spain 34.2%, Germany 33.1%."
+        },
+        {
+          "img": "reader-3-consolidation",
+          "title": "See where a total comes from",
+          "text": "Louise expands an organisation to see the figures that it adds up, here for a closed year. {name} adds up the values at every level, and she can export the table to Excel.",
+          "alt": "Dashboard for the reporting year 2025, tab Consolidation, with the energy KPIs in columns and the organisations in rows. Total energy consumption: Exemplia Group 44,937.8 MWh, France 23,696.0, Spain 9,714.7, Germany 11,527.1. The next columns give purchased electricity, purchased renewable electricity, self-generated electricity, energy from fuels, and natural gas. Options: Include drafts, Compare with N-1, Hide empty KPIs, Show codes. Buttons “Expand all”, “Collapse all”, and “Export to Excel”."
+        }
+      ]
+    },
+    {
+      "id": "auditor",
+      "role": "Auditor",
+      "short": "Checks everything, read-only",
+      "who": "Arthur checks the figures. His account reads everything and can't change anything.",
+      "steps": [
+        {
+          "img": "auditor-1-history",
+          "title": "See who did what, and when",
+          "text": "Arthur filters the history by reporting year, organisation, or person. {name} records every entry, validation, and evidence file, with the value before and after. Above the list, he finds the closing certificate of each closed campaign.",
+          "alt": "History of changes page, filtered on the organisation Roanne plant, with a search field, the filters Log, Type, Reporting year, Organisation, and Person, a link “Sign-in history”, and an Export button. Above the list, four links “Closing certificates”, one for each closed campaign of the two frameworks. The most recent lines: Camille Contributrice (demo account) changed “Purchased electricity consumed”, Roanne plant, 2026, status draft to validated; she added the evidence electricity-invoices-2026.pdf; she entered the value 2,641,000 with her comment. Older lines follow, each with its date and time."
+        },
+        {
+          "img": "auditor-2-evidence",
+          "title": "Open a value and its evidence",
+          "text": "Arthur opens any value and finds its evidence, who validated it, and its history by reporting year. {name} gives him no button to save or to validate: he can't change anything.",
+          "alt": "The value “Purchased electricity consumed” of Roanne plant, seen by the auditor. Status: Validated, by Camille Contributrice (demo account), with the date and the time. The value, 2641000 kWh, and the comment are greyed out, with no button. Under Evidence: electricity-invoices-2026.pdf. Under “History by reporting year”: 2025, 2,673,216 kWh, and 2024, 2,730,000 kWh."
+        },
+        {
+          "img": "auditor-3-consistency",
+          "title": "Read how an alert was handled",
+          "text": "Arthur opens an alert and reads the finding, the explanation, and the administrator's decision. {name} keeps them together, with the names and the dates.",
+          "alt": "Consistency page, filtered on the status Accepted, with the panel of the alert “Water withdrawn”, Villefranche plant, open. Status: Accepted. Finding: 43,420 m³, compared with 31,840 m³ in 2025: +36%. History of the cell for 2026, 2025, and 2024. Explanation by Camille Contributrice (demo account): “New corrugator line started in April 2026: more process water. Meter readings attached to the entry.” Under it, her name, then “decision: Alice Admin” (demo account), each with a date. The panel has a button to open the entry, and no field to change the explanation or the decision."
+        },
+        {
+          "img": "auditor-4-audit-file",
+          "title": "Get the audit file",
+          "text": "Arthur chooses the layout “Audit file” in a new export. {name} puts one row per KPI and organisation in the file, with the value, the status, who entered and validated it, the comment, and the evidence, plus the History and Evidence sheets. It is read only.",
+          "alt": "New export page, section “Which file?”, with the period 2026 selected above it. Four layouts: Database, Readable table, Review report, and Audit file, which is selected: “For an audit: one row per KPI and organisation with the value, status, who entered and validated it, overridden value, comment, evidence, consistency alerts and their justifications, plus the History and Evidence sheets. Read only. For administrators and auditors.” Under Format, Excel (.xlsx) is selected, next to CSV. A summary of the export, then the buttons Download and Save this export."
+        }
+      ]
+    }
+  ],
+  "loop": {
+    "dir": "loop",
+    "title": "The real screens, with the demo company",
+    "steps": [
+      "Open a KPI that is still to fill in",
+      "Last year's figure is next to the field",
+      "Enter the value: the variance appears",
+      "Attach the evidence",
+      "Validate"
+    ],
+    "alt": "Five real screens of {name} in a row, for the KPI “Purchased electricity consumed” of the site Roanne plant. First, the data entry table, where the KPI is still to fill in. Then its panel opens, with last year's figure: 2,673,216 kWh. The value 2641000 is entered with a comment: the variance is −1.2% and the status is Draft. The file electricity-invoices-2026.pdf appears under Evidence. Last, the status is Validated, by Camille Contributrice (demo account).",
+    "playLabel": "the animation",
+    "paused": "The animation is paused.",
+    "playing": "The animation is playing."
+  },
+  "next": {
+    "title": "Your turn",
+    "text": "You can try data entry in your browser, with nothing to install. Or get {name} and load the same demo company on your computer.",
+    "try": "Try it in your browser",
+    "get": "Get {name}"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "source": "CHANGELOG.md",
+  "entries": [
+    {
+      "version": "1.0.0",
+      "date": "2026-11-23",
+      "sections": [
+        {
+          "title": "",
+          "items": [
+            "First public version of Probant, a tool to collect indicators (KPIs) and to support audits. You configure it for any",
+            "department: sustainability, purchasing, human resources, quality, and others."
+          ]
+        },
+        {
+          "title": "Highlights",
+          "items": [
+            "**Collect and track the data**",
+            "Define your indicators once, in a catalogue. Arrange them in one or more frameworks, each with its own theme tree.",
+            "Set the levels of your organisation (for example group, country, subsidiary, site), the units, the answer formats, and the reporting periods (year, half-year, quarter, month).",
+            "Choose the reference currency of each space: the amounts of the library templates use it (for example $ instead of €). The tool converts no values.",
+            "Answer formats: number, percentage, yes or no, list of choices, written text (Markdown), and table.",
+            "Calculated KPIs use formulas. Totals, ratios, and averages update when the data changes.",
+            "Contributors enter values and attach evidence (PDF, JPG, or PNG). They validate their entry. Validators and administrators track the completion rate and reopen a value when needed.",
+            "Consistency checks, alerts, and rules between KPIs help you find a wrong figure before the year closes.",
+            "Email reminders go to the people who still have values to enter. You write the template of the reminder.",
+            "Close a reporting year, and reopen it when you must correct a figure. You choose whether to keep the figures of the time or to recalculate.",
+            "**Read and share**",
+            "Visualisation with views, charts, and tables. Each person keeps personal views, and administrators share views with everyone.",
+            "Import values and structure from Excel or CSV. Export tables, and files to fill in, to Excel.",
+            "An import reads a number written as text in the language of the file: in a CSV file, the column separator tells it (\";\" with a decimal comma, \",\" with a decimal point); otherwise the header of the value column does (in English, \"1,234\" is 1234). Excel numbers are read as they are. The preview says how it read the numbers, flags a value such as \"1,234\", and rejects a text that is not a number in that language. The \"Migrate a former system\" wizard reads such numbers in the language of your screen.",
+            "A figure imported for a calculated KPI of an open period becomes an overridden value only after you confirm it, and only if you have the right to override that value; the totals and formulas that use it update at once.",
+            "When a period closes, a figure imported as is for a calculated KPI becomes its official figure, and the open periods that cite it (for example with `[ID@N-1]`) update at once. The figures of the closed period do not change.",
+            "An audit file for administrators and auditors: one Excel file with, for each KPI and organisation, the value, who entered and validated it, the evidence, the alerts and their justifications, and the history of the changes. It only reads data.",
+            "A closing certificate for each closed campaign, to print or to save as PDF, with a fingerprint of the figures. It only reads data. An auditor limited to some organisations gets a partial certificate, clearly marked, on those organisations only.",
+            "A short guided tour at the first sign-in, a few hints for each role. It never blocks the screen.",
+            "Five roles: administrator, validator, contributor, reader, and auditor. The reader and the auditor never write anything.",
+            "A history of every change, and a history of sign-ins.",
+            "**Ready-made templates**",
+            "A library of templates. This version includes the European Voluntary Standard (VS) in two modules: Basic (123 KPIs) and Comprehensive (65 KPIs), and a template for pay transparency (directive (EU) 2023/970, 45 KPIs).",
+            "The revised European Sustainability Reporting Standards (ESRS, Delegated Regulation (EU) 2026/1563) as eleven templates, one for each standard (ESRS 2, E1 to E5, S1 to S4, G1): install ESRS 2 and the templates of your material topics. A KPI that two templates share is entered once. They are built from the text of the regulation. Their names (KPIs, themes, columns, list options, consistency rules) are available in Spanish, German, Italian, Dutch and Portuguese as well as English and French, and install in the language of the installation; the descriptions and instructions of all eleven templates are translated too (a description is shown in a language only when it is entirely translated). Native-speaker review is still to be done.",
+            "Each template lists the documents it is based on: title, publisher, version, date of the document, and the day it was read. They show on the card of the template, before you install it, and on the page of the installed framework.",
+            "Export the values of a reporting year into the official workbook of EFRAG for the Voluntary Standard.",
+            "A Setup wizard builds a first framework in a few steps.",
+            "**For several teams and several languages**",
+            "Spaces: several departments share one installation, and each space is separate from the others.",
+            "The interface is available in seven languages: English, French, Spanish, German, Italian, Dutch, and Portuguese. A guide for each role is in the tool (Help icon), in the same seven languages. The German, Italian, Dutch, and Portuguese texts still need a review by native speakers.",
+            "The demo (`load_demo`) follows the language of the installation and exists in the seven languages (`--language` chooses one). It also installs the eleven ESRS templates, without any value and in no campaign, so that you can see them in the library and in the settings.",
+            "Each way to get the tool starts empty or with the demo. The all-in-one version asks at its first start: the demo, or an empty tool with the setup wizard. On a server or with managed hosting, the installation is empty, and the guide says how to load the demo for an evaluation.",
+            "Accessibility follows WCAG 2.1 AA. The pages also work on a phone.",
+            "**Optional connections (off by default)**",
+            "Assistants (MCP): an AI assistant that you already use can read and act in the tool with the rights of the person who connects it. Each person creates and revokes personal tokens in My account.",
+            "AI assistant: an administrator can add the key of the organisation to get help explaining an alert, matching KPIs, and translating. Nothing is sent without this step. The names of organisations are never sent."
+          ]
+        },
+        {
+          "title": "For IT",
+          "items": [
+            "Install with Docker (`./install.sh`, then `./update.sh` for each update), or host on Clever Cloud. The guides are `docs/installation.md` and `docs/managed_hosting.md`.",
+            "The database is SQLite or PostgreSQL. SQLite is enough for a small installation. Use PostgreSQL for more than about 20 people who work at the same time.",
+            "Evidence files and data are in one data folder. Back up this folder outside the server.",
+            "The tool makes automatic backups, and one before each update. The update applies the database migrations at start. You can restore a backup from the tool or with `manage.py restore`.",
+            "Monitor `/sante/`. The Settings › Health page shows the state of the installation.",
+            "With PostgreSQL, the tool updates the planner statistics (`ANALYZE`) after a large load in one step: restore, library template, configuration file, data takeover.",
+            "Email reminders need an SMTP account.",
+            "The accounts are created and managed in the tool. There is no single sign-on.",
+            "Settings that IT may change (for example the size limit of evidence files, 5 MB by default) are in `docs/installation.md`.",
+            "Licence: AGPL-3.0-or-later (version 3 or any later version)."
+          ]
+        },
+        {
+          "title": "Security",
+          "items": [
+            "Backups are signed with the secret of the installation. The tool refuses a backup that is not signed or that someone changed. IT can still restore a trusted archive with `restore --unsigned`.",
+            "Files and folders that the tool creates are private to the account that runs it (`0600` and `0700`). In the Docker image, the program code is read-only for the tool.",
+            "A content security policy applies to every page: no script and no style without a nonce, and no event handler in an attribute.",
+            "Twenty failed sign-ins on one account, from any address, block it for 15 minutes. Changing the password asks for the old password, with a limit on the number of tries.",
+            "Tokens of assistants are never in a backup. A restore or a change of password revokes them.",
+            "To report a vulnerability, use GitHub's private vulnerability reporting. See `SECURITY.md`: the report is confirmed within 7 days, and you get an answer about the problem within 30 days."
+          ]
+        }
+      ]
+    }
+  ]
+}

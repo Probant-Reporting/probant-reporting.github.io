@@ -1,0 +1,142 @@
+---
+// Gabarit commun à toutes les pages : en-tête, pied de page, couleurs, polices, référencement.
+import "../styles/site.css";
+import "../styles/tool.css";
+import { cssTokens } from "../lib/tokens.mjs";
+import { pagesDe, nom } from "../lib/pages";
+import { languesDe } from "../lib/routes";
+import { config, site, defaultLang, chemin, fichier, absolu, themes, themeSlugs, cheminTheme, homeTheme, fluxRss, locale } from "../lib/content";
+import Logo from "../components/Logo.astro";
+import Icon from "../components/Icon.astro";
+
+const { lang, title, description, page = "", home = false, noindex = false, jsonld = null } = Astro.props;
+const t = site(lang);
+const racine = chemin("", lang);
+const ici = chemin(page, lang);
+const slugs = themeSlugs(lang);
+const ancre = (id: string) => (home ? `#${id}` : `${racine}#${id}`);
+// les autres langues qui ont cette page (une page peut manquer dans une langue) : src/lib/routes.ts
+const autres = languesDe(page, lang).slice(1);
+// liens du menu : les thématiques s'il y en a plusieurs, sinon les sections de la page
+const liens = slugs.length > 1
+  ? slugs.map((s) => ({ href: cheminTheme(s, lang), texte: themes(lang)[s].navLabel, courant: page === (s === homeTheme(lang) ? "" : s) }))
+  : [["tour", t.nav.tour], ["frameworks", t.nav.frameworks], ["guides", t.nav.guides], ["docs", t.nav.docs]].map(([id, texte]) =>
+      id.startsWith("#") ? { href: ancre(id.slice(1)), texte, courant: false } : { href: chemin(id, lang), texte, courant: page === id || page.startsWith(id + "/") });
+// pied de page : toutes les pages, en quatre colonnes
+const titreDe = (k: string, s: string) => { const p = pagesDe(k, lang).find((x) => x.slug === s); return p ? nom(p.fm.title) : s; };
+const colonnes = [
+  [t.footer.product, [["", t.footer.home], ["get", titreDe("pages", "get")], ["tour", t.footer.tour], ["frameworks", t.nav.frameworks], ["spreadsheets", titreDe("pages", "spreadsheets")], ["limits", t.footer.limits]]],
+  [t.footer.help, [["guides", t.nav.guides], ["docs", t.docsUi.title], ["glossary", titreDe("pages", "glossary")], ["contact", t.footer.contact]]],
+  [t.footer.trust, [["security", titreDe("pages", "security")], ["whats-new", t.footer.whatsNew], ["accessibility", titreDe("pages", "accessibility")], ["about", titreDe("pages", "about")]]],
+  [t.footer.legalTitle, [["legal", t.footer.legal], ["privacy", t.footer.privacy]]],
+].map(([titre, liens]: any) => ({ titre, liens: liens.filter(([p]: any) => p === "" || ["limits", "contact", "legal", "privacy", "frameworks", "guides", "docs", "tour", "whats-new"].includes(p) || pagesDe("pages", lang).some((x) => x.slug === p)) }));
+const police = (f: string) => fichier(`fonts/${f}.woff2`);
+const latin = "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD";
+const etendu = "U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF";
+const face = (famille: string, nom: string, graisse: number) =>
+  `@font-face{font-family:"${famille}";font-style:normal;font-weight:${graisse};font-display:swap;src:url("${police(`${nom}-latin-${graisse}-normal`)}") format("woff2");unicode-range:${latin}}` +
+  `@font-face{font-family:"${famille}";font-style:normal;font-weight:${graisse};font-display:swap;src:url("${police(`${nom}-latin-ext-${graisse}-normal`)}") format("woff2");unicode-range:${etendu}}`;
+const polices = face("Source Sans 3", "source-sans-3", 400) + face("Source Sans 3", "source-sans-3", 600) + face("Source Sans 3", "source-sans-3", 700) + face("Source Serif 4", "source-serif-4", 600);
+---
+<!doctype html>
+<html lang={lang} class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={absolu(ici)} />
+    {autres.length > 0 && [lang, ...autres].map((l) => <link rel="alternate" hreflang={l} href={absolu(chemin(page, l))} />)}
+    {autres.length > 0 && <link rel="alternate" hreflang="x-default" href={absolu(chemin(page, defaultLang))} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={config.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={absolu(ici)} />
+    <meta property="og:image" content={absolu(fichier("og.png"))} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.ogImageAlt} />
+    <meta property="og:locale" content={locale(lang)} />
+    {autres.map((l) => <meta property="og:locale:alternate" content={locale(l)} />)}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="alternate" type="application/rss+xml" title={t.whatsNew.meta.title} href={absolu(fluxRss(lang))} />
+    <link rel="icon" href={fichier("favicon-48.png")} type="image/png" sizes="48x48" />
+    <link rel="icon" href={fichier("favicon.svg")} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={fichier("apple-touch-icon.png")} />
+    <meta name="theme-color" content="#F8F7F3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121418" media="(prefers-color-scheme: dark)" />
+    <link rel="preload" href={police("source-serif-4-latin-600-normal")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={police("source-sans-3-latin-400-normal")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={police("source-sans-3-latin-600-normal")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={police("source-sans-3-latin-700-normal")} as="font" type="font/woff2" crossorigin />
+    <style is:inline set:html={cssTokens + polices}></style>
+    <script is:inline>
+      // apparence : le choix de la personne (gardé sur son appareil), sinon celle du système
+      (function () { var d = document.documentElement; d.classList.replace("no-js", "js"); try { var c = localStorage.getItem("theme"); if (c === "dark" || c === "light") d.dataset.theme = c; } catch (e) {} })();
+    </script>
+    {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+  </head>
+  <body>
+    <a class="skip" href="#main">{t.skip}</a>
+    <header class="top">
+      <div class="wrap">
+        <Logo href={racine} />
+        <nav class="main-nav" aria-label={t.nav.label}>
+          <ul>
+            {liens.map((l) => <li><a href={l.href} aria-current={l.courant ? "page" : undefined}>{l.texte}</a></li>)}
+          </ul>
+        </nav>
+        <div class="tools">
+          {autres.length > 0 && (
+            <details class="lang-menu">
+              <summary><Icon name="globe" /><span class="sr">{t.nav.language}{t.common.colon}</span>{t.langName}</summary>
+              <ul>
+                {[lang, ...autres].map((l) => <li><a href={chemin(page, l)} lang={l} hreflang={l} aria-current={l === lang ? "true" : undefined}>{site(l).langName}</a></li>)}
+              </ul>
+            </details>
+          )}
+          <button type="button" class="icon-btn theme" data-theme-toggle data-to-dark={t.nav.theme.toDark} data-to-light={t.nav.theme.toLight} aria-label={t.nav.theme.toDark}>
+            <Icon name="moon" class="ico sun" /><Icon name="sun" class="ico moon" />
+          </button>
+          <a class="btn small" href={chemin("get", lang)} aria-current={page === "get" ? "page" : undefined}>{t.nav.get}</a>
+          <nav class="menu-mobile-nav" aria-label={t.nav.label}>
+          <details class="menu-mobile">
+            <summary><Icon name="menu" /><span class="sr">{t.nav.menu}</span></summary>
+            <ul>
+              {liens.map((l) => <li><a href={l.href} aria-current={l.courant ? "page" : undefined}>{l.texte}</a></li>)}
+              {/* sur un petit écran, le choix de la langue est ici : l'en-tête garde la place du bouton principal */}
+              {autres.map((l) => <li class="lang-item"><a href={chemin(page, l)} lang={l} hreflang={l}><Icon name="globe" />{site(l).langName}</a></li>)}
+              <li class="theme-item"><button type="button" data-theme-toggle data-texte data-to-dark={t.nav.theme.toDark} data-to-light={t.nav.theme.toLight}>{t.nav.theme.toDark}</button></li>
+            </ul>
+          </details>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer>
+      <div class="wrap">
+        <div class="row">
+          <Logo href={racine} />
+          <p>{t.footer.line}</p>
+        </div>
+        {autres.length > 0 && (
+          <nav class="pied-langues" aria-label={t.nav.language}>
+            <Icon name="globe" />
+            <ul>{[lang, ...autres].map((l) => <li><a href={chemin(page, l)} lang={l} hreflang={l} aria-current={l === lang ? "true" : undefined}>{site(l).langName}</a></li>)}</ul>
+          </nav>
+        )}
+        <nav class="pied-colonnes" aria-label={t.footer.product}>
+          {colonnes.map((c, i) => <div><p class="pied-titre">{c.titre}</p><ul>{c.liens.map(([p, texte]: any) => <li><a href={chemin(p, lang)}>{texte}</a></li>)}{i === 0 && <li><a href={config.repo} rel="noopener">{t.footer.source}</a></li>}</ul></div>)}
+        </nav>
+      </div>
+    </footer>
+    <script>
+      import "../scripts/ui.js";
+    </script>
+  </body>
+</html>

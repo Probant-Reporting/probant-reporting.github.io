@@ -1,0 +1,27 @@
+---
+// Page introuvable. L'hébergeur sert ce seul fichier pour toute adresse inconnue, quelle que soit la langue : la page
+// propose donc chaque langue du site, l'une après l'autre, avec les mêmes liens (la langue par défaut d'abord).
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { site, langs, defaultLang, chemin, config } from "../lib/content";
+const t = site(defaultLang);
+---
+<Base lang={defaultLang} title={`${t.notFound.title} – ${config.name}`} description={t.notFound.description} page="404" noindex>
+  <div class="page"><div class="wrap">
+    {langs.map((l, i) => { const x = site(l); return (
+      <section class="bloc-404" lang={l === defaultLang ? undefined : l} aria-labelledby={`introuvable-${l}`}>
+        {i === 0 ? <h1 id={`introuvable-${l}`}>{x.notFound.title}</h1> : <h2 id={`introuvable-${l}`}>{x.notFound.title}</h2>}
+        <p class="lead">{x.notFound.text}</p>
+        <p class="lien-limites"><a href={chemin("", l)} hreflang={l}>{x.common.back}<Icon name="arrow" /></a></p>
+        <p>{x.notFound.links}</p>
+        <ul class="liens-404">
+          <li><a href={chemin("get", l)}>{x.nav.get}</a></li>
+          <li><a href={chemin("tour", l)}>{x.footer.tour}</a></li>
+          <li><a href={chemin("whats-new", l)}>{x.footer.whatsNew}</a></li>
+          <li><a href={chemin("docs", l)}>{x.docsUi.title}</a></li>
+          <li><a href={chemin("contact", l)}>{x.footer.contact}</a></li>
+        </ul>
+      </section>
+    ); })}
+  </div></div>
+</Base>
