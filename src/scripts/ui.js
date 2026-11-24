@@ -74,7 +74,27 @@ for (const zone of document.querySelectorAll("[data-boucle]")) {
 // Les messages : onglets à lecture automatique (7 s), pause au survol, au focus et par le bouton.
 // Clavier : flèches gauche et droite, Début, Fin (onglets horizontaux). Un clic ou une flèche arrête la lecture :
 // le bouton devient « Play » et l'arrêt est annoncé aux lecteurs d'écran.
-for (const zone of document.querySelectorAll("[data-onglets-auto]")) {
+const ongletsPossibles = matchMedia("(min-width: 760px)").matches;
+if (!ongletsPossibles) {
+  for (const zone of document.querySelectorAll("[data-onglets-auto]")) {
+    [...zone.querySelectorAll("[role=tabpanel]")].forEach((panneau, i) => {
+      const titre = panneau.querySelector("h3");
+      if (!titre) return;
+      const repli = document.createElement("details");
+      repli.className = "repli-message";
+      repli.open = i === 0;
+      const resume = document.createElement("summary");
+      resume.append(titre);
+      repli.append(resume);
+      while (panneau.firstChild) repli.append(panneau.firstChild);
+      panneau.removeAttribute("role");
+      panneau.removeAttribute("tabindex");
+      panneau.append(repli);
+    });
+    zone.classList.add("replis");
+  }
+}
+for (const zone of ongletsPossibles ? document.querySelectorAll("[data-onglets-auto]") : []) {
   const liste = zone.querySelector("[role=tablist]"), onglets = [...liste.querySelectorAll("[role=tab]")];
   const panneaux = onglets.map((o) => document.getElementById(o.getAttribute("aria-controls")));
   const pause = zone.querySelector("[data-pause]"), libelle = pause.querySelector("[data-pause-libelle]"), etat = zone.querySelector("[data-oa-etat]");
@@ -116,4 +136,18 @@ for (const zone of document.querySelectorAll("[data-onglets-auto]")) {
   const ouvrirAncre = () => { const j = panneaux.findIndex((p) => "#" + p.id === location.hash); if (j >= 0) { arreter(); montrer(j); requestAnimationFrame(() => zone.scrollIntoView({ block: "start" })); } };
   addEventListener("hashchange", ouvrirAncre);
   majPause(); montrer(0); ouvrirAncre(); requestAnimationFrame(tic);
+}
+
+// une ancre (#installer-sur-un-serveur, #try-it-on-your-computer…) ouvre la partie repliée qui la contient
+{
+  const ouvrirAncreRepli = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    const cible = document.getElementById(id);
+    if (!cible) return;
+    for (let n = cible; n; n = n.parentElement) if (n.tagName === "DETAILS") n.open = true;
+    requestAnimationFrame(() => cible.scrollIntoView({ block: "start" }));
+  };
+  addEventListener("hashchange", ouvrirAncreRepli);
+  ouvrirAncreRepli();
 }

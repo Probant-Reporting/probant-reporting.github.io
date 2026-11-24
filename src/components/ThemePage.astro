@@ -9,7 +9,11 @@ import FrameworkInstaller from "./FrameworkInstaller.astro";
 import { site, chemin } from "../lib/content";
 const { lang, theme: c, page = "" } = Astro.props;
 const t = site(lang);
-const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
+// Les sections entre le haut de page et la clôture alternent fond teinté et fond de page. L'alternance se calcule
+// ici, dans l'ordre d'affichage : une section facultative absente (la norme VS, les assistants IA) ne met donc
+// jamais deux fonds identiques côte à côte.
+let rang = 0;
+const bande = () => (rang++ % 2 === 0 ? "band" : undefined);
 ---
 {/* Haut de page : l'essai de l'outil, directement. L'ancre #try reste valable. */}
 <section class="hero" aria-labelledby="titre">
@@ -22,17 +26,12 @@ const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
       <h2 class="sr">{c.try.title}</h2>
       <p class="essai-consigne" data-js-seul>{c.try.lead}</p>
       <Sandbox lang={lang} />
-      <p class="lien-limites lien-visite"><a href={chemin("tour", lang)}>{c.try.tour}<Icon name="arrow" /></a></p>
-      <div class="glossary">
-        <h2>{t.tool.glossaryTitle}{t.common.colon}</h2>
-        <dl>{t.tool.glossary.map((g: any) => <div><dt>{g.term}</dt><dd>{g.text}</dd></div>)}</dl>
-      </div>
     </div>
   </div>
 </section>
 
 {/* Les messages : onglets à lecture automatique avec JavaScript ; sans JavaScript, tout s'affiche à la suite */}
-<section class="band" id="features" aria-labelledby="features-t">
+<section class={bande()} id="features" aria-labelledby="features-t">
   <div class="wrap">
     <div class="head"><h2 id="features-t">{c.featuresHead.title}</h2>{c.featuresHead.lead && <p>{c.featuresHead.lead}</p>}</div>
     <div class="onglets-auto" data-onglets-auto>
@@ -57,7 +56,7 @@ const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
             <div class="f-visual">
               {f.visual === "hosting"
                 ? <dl class="specs">{c.specs.map((s: any) => <div><dt>{s.term}</dt><span class="dots" aria-hidden="true"></span><dd>{s.value}</dd></div>)}</dl>
-                : <figure><Mock kind={f.visual} lang={lang} /><figcaption class="caption">{t.tool.frameLabel}.</figcaption></figure>}
+                : <figure><Mock kind={f.visual} lang={lang} /></figure>}
             </div>
           </div>
         ))}
@@ -68,7 +67,7 @@ const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
 
 {/* Norme volontaire VS : les deux modèles de la bibliothèque et l'export vers le classeur officiel de l'EFRAG */}
 {c.vs && (
-<section id="vs" aria-labelledby="vs-t">
+<section class={bande()} id="vs" aria-labelledby="vs-t">
   <div class="wrap duo">
     <div>
       <h2 id="vs-t">{c.vs.title}</h2>
@@ -94,9 +93,9 @@ const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
 )}
 
 {/* Référentiels : l'assistant d'installation de l'outil, avec les vrais modèles de la bibliothèque */}
-<section class="band" id="frameworks" aria-labelledby="frameworks-t">
+<section class={bande()} id="frameworks" aria-labelledby="frameworks-t">
   <div class="wrap">
-    <div class="head"><h2 id="frameworks-t">{c.frameworks.title}</h2><p>{c.frameworks.lead}</p></div>
+    <div class="head"><h2 id="frameworks-t">{c.frameworks.title}</h2></div>
     <FrameworkInstaller lang={lang} />
     <div class="propre-ref">
       <h3>{c.frameworks.ownTitle}</h3>
@@ -105,7 +104,7 @@ const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
   </div>
 </section>
 
-<section id="roles" aria-labelledby="roles-t">
+<section class={bande()} id="roles" aria-labelledby="roles-t">
   <div class="wrap">
     <div class="head"><h2 id="roles-t">{c.roles.title}</h2></div>
     <div class="matrice-defile" tabindex="0" role="region" aria-label={c.roles.tableLabel}>
@@ -122,12 +121,23 @@ const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
         </tbody>
       </table>
     </div>
+    {/* sur téléphone, le tableau devient une carte par rôle : un tableau de neuf colonnes ne se lit pas sur un écran étroit */}
+    <ul class="roles-cartes" data-variante>
+      {c.roles.items.map((r: any) => (
+        <li>
+          <p class="rc-nom">{r.role}</p>
+          <p class="rc-qui">{r.who}</p>
+          <ul class="rc-taches">{r.jobs.map((j: number, i: number) => (j ? <li>{c.roles.columns[i]}</li> : null))}</ul>
+          <p class="rc-etat">{r.readOnly ? <span class="m-etat"><Icon name="eye" />{c.roles.readOnly}</span> : <span class="m-etat"><Icon name="pencil" />{c.roles.changesLabel}</span>}</p>
+        </li>
+      ))}
+    </ul>
   </div>
 </section>
 
 {/* Assistants IA : le serveur MCP de l'outil (éteint par défaut, droits de la personne) */}
 {c.assistant && (
-<section class="band" id="assistant" aria-labelledby="assistant-t">
+<section class={bande()} id="assistant" aria-labelledby="assistant-t">
   <div class="wrap duo">
     <div>
       <h2 id="assistant-t">{c.assistant.title}</h2>
@@ -138,7 +148,7 @@ const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
 </section>
 )}
 
-<section id="free" aria-labelledby="free-t">
+<section class={bande()} id="free" aria-labelledby="free-t">
   <div class="wrap prix">
     <p class="prix-montant" aria-hidden="true">{c.free.price}</p>
     <div class="prix-texte">
@@ -151,19 +161,18 @@ const limites = chemin([page, "limits"].filter(Boolean).join("/"), lang);
   </div>
 </section>
 
-<section class="band" id="faq" aria-labelledby="faq-t">
+<section class={bande()} id="faq" aria-labelledby="faq-t">
   <div class="wrap">
     <div class="head"><h2 id="faq-t">{c.faq.title}</h2></div>
     <div class="faq tool">
       {c.faq.items.map((q: any) => <details class="repli"><summary>{q.q}</summary><p>{q.a}</p></details>)}
     </div>
-    <p class="lien-limites"><a href={limites}>{c.limits.link}<Icon name="arrow" /></a></p>
   </div>
 </section>
 
 {/* Obtenir l'outil : les trois chemins de la page « Get », et la visite guidée. Jamais de vrais écrans sur l'accueil
     (décision de Florent) : ils sont dans la visite guidée. */}
-<section id="get" aria-labelledby="get-t">
+<section class={bande()} id="get" aria-labelledby="get-t">
   <div class="wrap">
     <div class="head"><h2 id="get-t">{c.get.title}</h2><p>{c.get.lead}</p></div>
     <ul class="cartes-liens obtenir">

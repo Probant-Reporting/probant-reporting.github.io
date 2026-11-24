@@ -152,7 +152,7 @@ function demarrer(racine) {
     const preuves = x.f.length ? `<ul class="preuves">${x.f.map((n, i) => `<li>${ico("file")}<span>${esc(n)}</span>${fige ? "" : `<button type="button" class="icone" data-retirer="${i}" aria-label="${esc(txt(T.panel.remove, { file: n }))}">${ico("trash")}</button>`}</li>`).join("")}</ul>` : `<p class="discret" style="margin-top:8px">${esc(T.panel.noEvidence)}</p>`;
     const manque = KPIS[k].preuve && !x.f.length;
     const exemple = `<button type="button" class="b secondaire compact" data-exemple>${esc(T.panel.sample)}</button>`;
-    const depot = fige ? "" : `<label class="zone-depot"><input type="file" accept=".pdf,.jpg,.jpeg,.png" data-fichier aria-describedby="sb-formats"><strong>${esc(T.panel.choose)}</strong></label><p class="aide-champ" id="sb-formats">${esc(T.panel.formats)} ${esc(T.panel.stays)}</p>${manque ? "" : `<p style="margin-top:8px">${exemple}</p>`}`;
+    const depot = fige ? "" : `<p><button type="button" class="b secondaire" data-exemple aria-describedby="sb-formats">${esc(T.panel.choose)}</button></p><p class="aide-champ" id="sb-formats">${esc(T.panel.stays)}</p>`;
     const alerte = `<p class="a-verifier bloque" id="sb-erreur" data-erreur role="alert" hidden></p>`;
     const actions = lu ? "" : valide
       ? (etat.role === "validator"
@@ -219,9 +219,9 @@ function demarrer(racine) {
     const p = racine.querySelector("[data-erreur]"), i = racine.querySelector(champ);
     racine.querySelector(`[data-emplacement="${champ === "#sb-valeur" ? "valeur" : "actions"}"]`)?.appendChild(p);
     p.hidden = false; p.textContent = m;
-    if (champ === "[data-fichier]") racine.querySelectorAll(".aide-preuve > span, .aide-preuve > svg").forEach((e) => (e.hidden = true)); // le message d'erreur dit déjà la même chose
+    if (champ === "[data-exemple]") racine.querySelectorAll(".aide-preuve > span, .aide-preuve > svg").forEach((e) => (e.hidden = true)); // le message d'erreur dit déjà la même chose
     if (i) {
-      if (champ !== "[data-fichier]") i.setAttribute("aria-invalid", "true");
+      if (champ !== "[data-exemple]") i.setAttribute("aria-invalid", "true");
       i.setAttribute("aria-describedby", `${i.getAttribute("aria-describedby") || ""} sb-erreur`.trim());
       i.focus();
     }
@@ -256,8 +256,8 @@ function demarrer(racine) {
     else if (c("[data-rouvrir]")) { const x = cel(etat.site, etat.ouvert); x.s = "draft"; x.h.unshift({ t: maintenant(), qui: moi(), texte: T.history.reopened }); afficher("#sb-valeur"); dire(T.msg.reopened); }
     else if (c("[data-enregistrer]")) { if (prendreSaisie()) { afficher("#sb-valeur"); dire(T.msg.draftSaved); } }
     else if (c("[data-valider]")) valider();
-    else if (c("[data-exemple]")) ajouterPreuve(T.panel.sampleName);
-    else if ((b = c("[data-retirer]"))) { const x = cel(etat.site, etat.ouvert); const [n] = x.f.splice(+b.dataset.retirer, 1); x.h.unshift({ t: maintenant(), qui: moi(), texte: txt(T.history.evidenceRemoved, { file: n }) }); garderSaisie(() => afficher("[data-fichier]")); dire(T.msg.evidenceRemoved); }
+    else if (c("[data-exemple]")) { const x = cel(etat.site, etat.ouvert); const noms = T.panel.sampleNames || [T.panel.sampleName]; ajouterPreuve(noms[x.f.length % noms.length]); }
+    else if ((b = c("[data-retirer]"))) { const x = cel(etat.site, etat.ouvert); const [n] = x.f.splice(+b.dataset.retirer, 1); x.h.unshift({ t: maintenant(), qui: moi(), texte: txt(T.history.evidenceRemoved, { file: n }) }); garderSaisie(() => afficher("[data-exemple]")); dire(T.msg.evidenceRemoved); }
   });
   // garde ce qui est tapé (valeur, commentaire) quand le panneau est redessiné sans enregistrer
   function garderSaisie(f) { const v = racine.querySelector("#sb-valeur")?.value, c = racine.querySelector("#sb-commentaire")?.value; f(); const i = racine.querySelector("#sb-valeur"), t = racine.querySelector("#sb-commentaire"); if (i && v != null && !i.readOnly) { i.value = v; t.value = c; majEcart(); } }
@@ -273,7 +273,7 @@ function demarrer(racine) {
     const refuser = (m, champ) => { afficher(); erreur(m, champ); };
     if (x.v == null) return refuser(T.msg.notNumber);
     if (alertes(s, k).some((a) => a.bloque)) return refuser(T.msg.blocked);
-    if (KPIS[k].preuve && !x.f.length) return refuser(T.msg.needEvidence, "[data-fichier]");
+    if (KPIS[k].preuve && !x.f.length) return refuser(T.msg.needEvidence, "[data-exemple]");
     if (alertes(s, k).some((a) => a.type === "n1" && !a.justifiee)) return refuser(T.msg.needComment, "#sb-commentaire");
     x.s = "validated"; x.h.unshift({ t: maintenant(), qui: moi(), texte: T.history.validated, valide: true });
     etat.ouvert = null; etat.suivi = k; etat.eclat = true; afficher(`[data-ouvrir="${k}"]`); etat.eclat = false;
@@ -291,12 +291,6 @@ function demarrer(racine) {
   racine.addEventListener("change", (ev) => {
     const t = ev.target;
     if (t.matches("[data-site]")) { etat.site = t.value; afficher("[data-site]"); }
-    else if (t.matches("[data-fichier]")) {
-      const f = t.files[0]; if (!f) return;
-      if (!/\.(pdf|jpe?g|png)$/i.test(f.name)) return erreur(T.msg.badFile, "[data-fichier]");
-      if (f.size > 5 * 1024 * 1024) return erreur(T.msg.bigFile, "[data-fichier]");
-      ajouterPreuve(f.name); // le fichier n'est ni lu ni envoyé : seul son nom est affiché
-    }
   });
   racine.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape" && etat.ouvert) { ev.preventDefault(); fermer(); return; }

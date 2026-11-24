@@ -24,7 +24,7 @@ for (const accueil of accueils) {
   await p.fill("#sb-valeur", "412300");
   await p.click("[data-valider]");
   await p.locator("#try").screenshot({ path: nom("try-refus") });
-  await p.setInputFiles("[data-fichier]", { name: "invoices-2026.pdf", mimeType: "application/pdf", buffer: Buffer.from("x") });
+  await p.click("[data-exemple]");
   await p.click("[data-valider]");
   await p.locator("#try").screenshot({ path: nom("try-valide") });
   await p.click('[data-onglet="dashboard"]');

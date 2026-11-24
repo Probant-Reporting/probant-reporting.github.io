@@ -9,7 +9,7 @@ group: "Product"
 |---|---|
 | Arbre des organisations | Vos organisations, rangées par niveaux. Vous choisissez les niveaux et leurs noms |
 | À traiter | La liste de ce qui demande votre attention : écarts, valeurs inattendues, règles entre KPI |
-| Auditeur | Un rôle en lecture seule : il lit les valeurs, les preuves et l'historique, et ne modifie rien |
+| Auditeur | Un rôle en lecture seule : il lit les valeurs, les preuves et l'historique. Il ne modifie rien |
 | Brouillon | Une valeur saisie mais pas encore validée |
 | Campagne | La collecte des KPI d'un référentiel pour une période, par exemple 2026. Ses statuts : en préparation, saisie ouverte, revue, clôturée |
 | Catalogue | La liste unique de tous les KPI de l'installation. Plusieurs référentiels la partagent |
@@ -26,5 +26,5 @@ group: "Product"
 | Serveur MCP | La connexion qui permet à un assistant IA de travailler dans {name} avec les droits de la personne qui le connecte. Éteint par défaut |
 | Taux de remplissage | La part des valeurs attendues qui sont validées |
 | Transparence des rémunérations | La directive européenne 2023/970 demande aux employeurs de déclarer leurs écarts de rémunération entre femmes et hommes. {name} fournit un modèle pour cela, saisi par chaque employeur |
-| Validateur | La personne qui relit les valeurs de ses organisations, et peut repasser une saisie en brouillon |
+| Validateur | La personne qui relit les valeurs de ses organisations. Elle peut repasser une saisie en brouillon |
 | Validé | Le contributeur a confirmé que sa saisie est complète |

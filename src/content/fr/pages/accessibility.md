@@ -1,6 +1,6 @@
 ---
 title: "Déclaration d'accessibilité"
-description: "{name} et ce site sont conçus selon WCAG 2.1 AA. Ce qui est en place, comment c'est vérifié, les limites connues, et comment signaler un problème."
+description: "{name} et ce site sont conçus selon WCAG 2.1 AA. Ce qui est en place, comment c'est vérifié, les limites connues et comment signaler un problème."
 order: 6
 group: "Trust"
 ---

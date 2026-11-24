@@ -43,8 +43,7 @@ function metaDe(): any {
 const plus = metaDe();
 const t = site(lang);
 const theme = kind === "theme" ? themes(lang)[slug] : null;
-const lim = kind === "limits" ? themes(lang)[slug].limits : null;
-const meta = theme ? theme.meta : lim ? lim.meta : plus ? plus : t[kind].meta;
+const meta = theme ? theme.meta : plus ? plus : t[kind].meta;
 const home = kind === "theme";
 const jsonld = theme && {
   "@context": "https://schema.org", "@type": "SoftwareApplication", name: config.name, description: theme.meta.description,
@@ -69,14 +68,6 @@ const p = config.publisher;
   {kind === "tour" && <Tour lang={lang} />}
   {kind === "whats-new" && <WhatsNew lang={lang} />}
 
-  {lim && (
-    <div class="page page-limites"><div class="wrap">
-      <h1>{titre(lim.title)}</h1>
-      <p class="lead">{lim.lead}</p>
-      <ul class="limits">{lim.items.map((l: any) => <li><h2>{l.title}</h2><p>{l.text}</p></li>)}</ul>
-      <p class="lien-limites"><a href={chemin(page.replace(/\/?limits$/, ""), lang)}>{t.common.back}<Icon name="arrow" /></a></p>
-    </div></div>
-  )}
 
   {kind === "contact" && (
     <div class="page"><div class="wrap">

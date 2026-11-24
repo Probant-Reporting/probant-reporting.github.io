@@ -11,7 +11,7 @@
     "language": "Language",
     "menu": "Menu",
     "frameworks": "Library templates",
-    "guides": "Guides",
+    "guides": "Guides and IT documentation",
     "docs": "IT documentation",
     "tour": "Tour",
     "get": "Get {name}"
@@ -22,7 +22,6 @@
     "privacy": "Privacy",
     "contact": "Contact",
     "fictitious": "All the data shown on this site is fictitious.",
-    "limits": "What {name} does not do",
     "product": "Product",
     "help": "Help",
     "trust": "Trust",
@@ -121,7 +120,7 @@
       },
       {
         "title": "Hosting",
-        "text": "This site is hosted on GitHub Pages. Like any web host, GitHub receives technical data when you open a page, such as your IP address, and keeps it for its own security logs. I don't have access to these logs."
+        "text": "This site is hosted on GitHub Pages. Like any web host, GitHub receives technical data when you open a page, such as your IP address. It keeps that data in its own security logs. I don't have access to them."
       },
       {
         "title": "Appearance",
@@ -129,11 +128,11 @@
       },
       {
         "title": "The trial",
-        "text": "What you type in the trial, and the names of the files you add, stay in the page. Nothing is sent or kept: it's gone when you close or reload the page. The files themselves are never read."
+        "text": "What you type in the trial stays in the page, along with the names of the files you add. Nothing is sent or kept: it's gone when you close or reload the page. The files themselves are never read."
       },
       {
         "title": "Contacting me",
-        "text": "There's no form on this site, and no email address to write to. If you message me on LinkedIn, I only use your details to answer you."
+        "text": "There's no form on this site and no email address to write to. If you message me on LinkedIn, I only use your details to answer you."
       },
       {
         "title": "New versions",
@@ -156,7 +155,6 @@
     "description": "This page does not exist, or it has moved. Go back to the home page of {name}, get the tool, take the guided tour, or read the documentation."
   },
   "tool": {
-    "frameLabel": "Reproduction of the tool, with fictitious data",
     "tabs": {
       "entry": "Data entry",
       "dashboard": "Dashboard",
@@ -263,9 +261,8 @@
       "commentRule": "Comment required beyond 20% variance vs N-1.",
       "evidence": "Evidence",
       "evidenceRequired": "required",
-      "choose": "Choose a file",
-      "formats": "PDF, JPG or PNG, 5 MB maximum.",
-      "stays": "In this trial, the file stays on your device. Only its name is shown.",
+      "choose": "Attach an evidence file",
+      "stays": "This trial attaches a made-up file. Nothing is uploaded and nothing leaves your browser.",
       "noEvidence": "No evidence.",
       "remove": "Delete the evidence “{file}”",
       "save": "Save the draft",
@@ -277,20 +274,23 @@
       "toCheck": "To check",
       "blocks": "Blocks validation",
       "needEvidenceHint": "Add evidence below, then validate.",
-      "sample": "Use a sample file",
-      "sampleName": "sample-invoice.pdf",
+      "sample": "Attach an evidence file",
+      "sampleName": "electricity-invoices-2026.pdf",
       "validatedNote": "This value is validated. A validator or an administrator can put it back to draft.",
       "reopen": "Back to draft",
       "reopenHelp": "The entry goes back to draft. The contributor must validate it again.",
-      "format": "Digits only. Use a point for decimals, for example 1250.5."
+      "format": "Digits only. Use a point for decimals, for example 1250.5.",
+      "sampleNames": [
+        "electricity-invoices-2026.pdf",
+        "meter-readings-2026.pdf",
+        "supplier-statement-2026.pdf"
+      ]
     },
     "msg": {
       "notNumber": "This value is not a number. Enter a number.",
       "needEvidence": "This KPI requires evidence. Add a file to validate.",
       "needComment": "The variance vs N-1 is more than 20%. Add a comment to validate.",
       "renRule": "Purchased renewable electricity is higher than purchased electricity.",
-      "badFile": "This file is not a PDF, JPG, or PNG file. Select a PDF, JPG, or PNG file.",
-      "bigFile": "This file is larger than 5 MB. Select a smaller file.",
       "draftSaved": "Draft saved.",
       "validated": "Value validated. The group total is up to date.",
       "evidenceAdded": "Evidence added.",
@@ -408,29 +408,7 @@
       "title": "Data entry",
       "langs": "Interface languages"
     },
-    "glossaryTitle": "Terms used in the tool",
-    "glossary": [
-      {
-        "term": "N-1",
-        "text": "the same period, one year before"
-      },
-      {
-        "term": "To be handled",
-        "text": "the values to check"
-      },
-      {
-        "term": "Blocks validation",
-        "text": "correct this value before you validate"
-      },
-      {
-        "term": "Calculated",
-        "text": "the tool calculates this value from other values"
-      },
-      {
-        "term": "SPOC",
-        "text": "the person in charge of a value"
-      }
-    ]
+    "frameLabel": "Reproduction of the tool, with fictitious data"
   },
   "installer": {
     "frameLabel": "Reproduction of the tool: install a framework from the library",
@@ -443,10 +421,9 @@
     ],
     "stepOf": "Step {n} of 3:",
     "stepDone": "Step {n} of 3, done:",
-    "intro": "Choose a template, then select the KPIs that you want on the next screen. The tool installs their definitions, units, and formulas, and attaches them to your tree.",
     "choose": "Choose",
     "chooseAria": "Choose “{framework}”",
-    "allSelected": "All KPIs are selected. Deselect the ones that you do not need. A KPI used to calculate a selected KPI is added anyway.",
+    "allSelected": "Every KPI is ticked. Untick the ones you don't need. A KPI used to calculate a ticked KPI is added anyway.",
     "selected": "selected out of {total}",
     "search": "Search for a KPI",
     "searchPlaceholder": "Search (name or code)",
@@ -493,15 +470,16 @@
       "Input": "Entered",
       "Calculated": "Calculated",
       "Emission factor": "Emission factor"
-    }
+    },
+    "description": "Description"
   },
   "docsUi": {
     "meta": {
       "title": "IT documentation – {name}",
-      "description": "Install, run, and secure {name}: prerequisites, Docker, managed hosting, backups, updates, emails, and monitoring. For IT teams."
+      "description": "Install, run and secure {name}: prerequisites, Docker, managed hosting, backups, updates, emails and monitoring. For IT teams."
     },
     "title": "IT documentation",
-    "lead": "Install, run, and update {name} on your own server with Docker, or with a managed hosting provider. These pages are for your IT team.",
+    "lead": "Install, run and update {name} on your own server with Docker, or with a managed hosting provider. These pages are for your IT team.",
     "menu": "IT documentation",
     "onThisPage": "On this page",
     "source": "From the tool's documentation: {source}.",
@@ -517,21 +495,21 @@
   },
   "guidesUi": {
     "meta": {
-      "title": "Guides – {name}",
-      "description": "A short guide for each role in {name}: administrator, contributor, validator, reader, and auditor."
+      "title": "Guides and IT documentation – {name}",
+      "description": "A short guide for each role in {name} — administrator, contributor, validator, reader and auditor — and the IT documentation: install, run, back up and update the tool."
     },
-    "title": "Guides",
-    "lead": "A short guide for each role. The same guides open in the tool from the help icon, in the language of the interface.",
+    "title": "Guides and IT documentation",
     "all": "Guides",
-    "metaTitle": "{role} guide – {name}"
+    "metaTitle": "{role} guide – {name}",
+    "rolesTitle": "One guide for each role"
   },
   "frameworksUi": {
     "meta": {
       "title": "Library templates – {name}",
-      "description": "The fourteen templates provided with {name}: the voluntary standard VS, pay transparency, and the revised ESRS, with their KPIs, units, formulas, and source documents."
+      "description": "The fourteen templates provided with {name}: the voluntary standard VS, pay transparency and the revised ESRS, with their KPIs, units, formulas and source documents."
     },
     "title": "Library templates",
-    "lead": "{name} comes with fourteen templates: the European voluntary standard for sustainability reporting (VS), as a Basic and a Comprehensive template; pay transparency, for the EU directive 2023/970; and the revised ESRS of the CSRD, as eleven templates, one for each standard. They are collection templates built from the text of the standards. Install the KPIs you need, then adjust anything in the tool: KPIs, definitions, units, formulas, and themes. For the ESRS, install ESRS 2 and the templates of your material topics. A KPI that several templates share is entered once.",
+    "lead": "{name} comes with pre-created templates to help you with regulations. Install the KPIs you need, then adjust anything in the tool: KPIs, definitions, units, formulas, themes. Templates from the library are set up to share KPIs between them, so you only have to enter them once.",
     "see": "See the KPIs",
     "code": "Code",
     "kpi": "KPI",
@@ -542,9 +520,7 @@
     "rules": "Consistency rules",
     "optional": "optional",
     "metaTitle": "{framework} template – {name}",
-    "metaDescription": "The KPIs in the {framework} template of {name}, with their units, formulas, and definitions.",
-    "install": "Install it in a few clicks. The tool sets up the definitions, units, and formulas, and attaches each KPI to your organisation tree.",
-    "tryInstall": "Try the installation",
+    "metaDescription": "The KPIs in the {framework} template of {name}, with their units, formulas and definitions.",
     "all": "Library templates",
     "sources": "Source documents",
     "sourcesLead": "The documents this template is based on, with the date of each document and the day it was read.",
@@ -575,5 +551,5 @@
     "updateTitle": "How to update",
     "updateText": "Your IT team runs `./update.sh` in the tool's folder. The script backs up the data first, then installs the new version. See [Update the tool](/docs/update-the-tool/)."
   },
-  "ogImageAlt": "{name}: collect KPIs from all your sites, with the evidence attached"
+  "ogImageAlt": "{name}: an open source reporting solution"
 }

@@ -34,7 +34,7 @@ for (const [lang, L] of Object.entries(LANGUES)) {
   ok(await p.evaluate(() => document.activeElement.dataset.ouvrir === "elec"), "Escape closes the panel, focus back on the row");
   ok(lisse(await p.locator("tr.ligne").first().innerText()).includes(L.brouillon), "closing saves the entry as a draft, shown in the number format of the language");
   await p.keyboard.press("Enter"); await p.fill("#sb-valeur", "900000");
-  await p.setInputFiles("[data-fichier]", { name: "a.pdf", mimeType: "application/pdf", buffer: Buffer.from("x") });
+  await p.click("[data-exemple]");
   await p.click("[data-valider]");
   ok((await p.locator("[data-erreur]").innerText()).includes(L.commentaire), "variance beyond 20% without comment: validation refused");
   ok(await p.evaluate(() => document.activeElement.id === "sb-commentaire"), "focus goes to the comment");
@@ -54,7 +54,7 @@ for (const [lang, L] of Object.entries(LANGUES)) {
   await Promise.all([p.waitForURL((u) => u.pathname.startsWith(L.autreAccueil + "docs/"), { timeout: 10000 }).catch(() => {}), p.keyboard.press("Enter")]);
   ok(new URL(p.url()).pathname === `${L.autreAccueil}docs/install-the-tool/` && (await p.evaluate(() => document.documentElement.lang)) === L.autre, "language menu: leads to the same page in the other language");
   await p.goto(base + L.accueil + "glossary/");
-  ok((await p.locator(`footer a[hreflang="${L.autre}"]`).getAttribute("href")) === `${L.autreAccueil}glossary/`, "footer: link to the same page in the other language");
+  ok((await p.locator(`header a[hreflang="${L.autre}"]`).first().getAttribute("href")) === `${L.autreAccueil}glossary/`, "header: link to the same page in the other language");
   // jamais de vrais écrans sur l'accueil : l'animation de l'outil est dans la visite guidée
   await p.goto(base + L.accueil);
   ok((await p.locator("[data-boucle], .boucle-cadre").count()) === 0, "home page: no real screens of the tool (the animation is in the guided tour)");
@@ -89,7 +89,7 @@ for (const [lang, L] of Object.entries(LANGUES)) {
   await calme.close();
   const ctx = await b.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
   p = await ctx.newPage(); await p.goto(base + L.accueil);
-  const invisibles = await p.evaluate(() => [...document.querySelectorAll("main h1, main h2, main h3, main p, main li")].filter((e) => getComputedStyle(e).opacity === "0" || (e.offsetParent === null && !e.closest("details:not([open])") && !e.classList.contains("toast") && !e.closest("[data-js-seul]"))).length);
+  const invisibles = await p.evaluate(() => [...document.querySelectorAll("main h1, main h2, main h3, main p, main li")].filter((e) => getComputedStyle(e).opacity === "0" || (e.offsetParent === null && !e.closest("details:not([open])") && !e.classList.contains("toast") && !e.closest("[data-js-seul]") && !e.closest("[data-variante]"))).length);
   ok(invisibles === 0, "without JavaScript: every text is visible");
   ok(await p.locator("#sandbox table").isVisible(), "without JavaScript: the trial shows its starting table");
   await p.locator(".lang-menu summary").click();

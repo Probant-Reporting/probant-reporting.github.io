@@ -39,6 +39,26 @@ function rehypeTableaux() {
   }); };
 }
 
+// Pages dont l'en-tête porte « replis: true » : chaque partie (titre de niveau 2 et ce qui suit) se replie et se
+// déplie, pour que les méthodes se lisent une par une (demande de Florent du 23/11/2026).
+function rehypeReplis() {
+  return (arbre, fichier) => {
+    const fm = fichier?.data?.astro?.frontmatter;
+    if (!fm?.replis) return;
+    const enfants = arbre.children, sortie = [];
+    let courant = null;
+    for (const n of enfants) {
+      if (n.type === "element" && n.tagName === "h2") {
+        courant = { type: "element", tagName: "details", properties: { className: ["repli", "repli-section"], open: sortie.filter((x) => x.tagName === "details").length === 0 },
+          children: [{ type: "element", tagName: "summary", properties: {}, children: [n] }] };
+        sortie.push(courant);
+      } else if (courant) courant.children.push(n);
+      else sortie.push(n);
+    }
+    arbre.children = sortie;
+  };
+}
+
 export default defineConfig({
   site: config.url,
   base: config.base,
@@ -46,5 +66,5 @@ export default defineConfig({
   build: { inlineStylesheets: "always", assets: "assets" },
   compressHTML: true,
   devToolbar: { enabled: false },
-  markdown: { remarkPlugins: [remarkProbant], rehypePlugins: [rehypeTypo, rehypeTableaux], syntaxHighlight: false },
+  markdown: { remarkPlugins: [remarkProbant], rehypePlugins: [rehypeTypo, rehypeTableaux, rehypeReplis], syntaxHighlight: false },
 });

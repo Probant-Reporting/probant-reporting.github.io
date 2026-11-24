@@ -11,7 +11,7 @@
     "language": "Langue",
     "menu": "Menu",
     "frameworks": "Modèles de la bibliothèque",
-    "guides": "Guides",
+    "guides": "Guides et documentation IT",
     "docs": "Documentation IT",
     "tour": "Visite",
     "get": "Obtenir {name}"
@@ -22,7 +22,6 @@
     "privacy": "Confidentialité",
     "contact": "Contact",
     "fictitious": "Toutes les données affichées sur ce site sont fictives.",
-    "limits": "Ce que {name} ne fait pas",
     "product": "Produit",
     "help": "Aide",
     "trust": "Confiance",
@@ -121,7 +120,7 @@
       },
       {
         "title": "Hébergement",
-        "text": "Ce site est hébergé sur GitHub Pages. Comme tout hébergeur, GitHub reçoit des données techniques quand vous ouvrez une page, par exemple votre adresse IP, et les garde dans ses propres journaux de sécurité. Je n'ai pas accès à ces journaux."
+        "text": "Ce site est hébergé sur GitHub Pages. Comme tout hébergeur, GitHub reçoit des données techniques quand vous ouvrez une page, par exemple votre adresse IP. Il les garde dans ses propres journaux de sécurité. Je n'y ai pas accès."
       },
       {
         "title": "Apparence",
@@ -129,7 +128,7 @@
       },
       {
         "title": "L'essai",
-        "text": "Ce que vous saisissez dans l'essai, et le nom des fichiers que vous ajoutez, restent dans la page. Rien n'est envoyé ni gardé : tout disparaît quand vous fermez ou rechargez la page. Les fichiers eux-mêmes ne sont jamais lus."
+        "text": "Ce que vous saisissez dans l'essai reste dans la page, ainsi que le nom des fichiers que vous ajoutez. Rien n'est envoyé ni gardé : tout disparaît quand vous fermez ou rechargez la page. Les fichiers eux-mêmes ne sont jamais lus."
       },
       {
         "title": "Me contacter",
@@ -156,7 +155,6 @@
     "description": "Cette page n'existe pas, ou elle a changé d'adresse. Revenez à l'accueil de {name}, obtenez l'outil, suivez la visite guidée ou lisez la documentation."
   },
   "tool": {
-    "frameLabel": "Reproduction de l'outil, avec des données fictives",
     "tabs": {
       "entry": "Saisie",
       "dashboard": "Tableau de bord",
@@ -263,9 +261,8 @@
       "commentRule": "Commentaire obligatoire au-delà de 20 % d'écart avec N-1.",
       "evidence": "Preuves",
       "evidenceRequired": "obligatoire",
-      "choose": "Choisir un fichier",
-      "formats": "PDF, JPG ou PNG, 5 Mo maximum.",
-      "stays": "Dans cet essai, le fichier reste sur votre appareil. Seul son nom est affiché.",
+      "choose": "Joindre une preuve",
+      "stays": "Cet essai joint un fichier inventé. Rien n'est envoyé et rien ne sort de votre navigateur.",
       "noEvidence": "Aucune preuve.",
       "remove": "Supprimer la preuve « {file} »",
       "save": "Enregistrer le brouillon",
@@ -277,20 +274,23 @@
       "toCheck": "À vérifier",
       "blocks": "Bloque la validation",
       "needEvidenceHint": "Ajoutez une preuve ci-dessous, puis validez.",
-      "sample": "Utiliser un fichier d'exemple",
-      "sampleName": "facture-exemple.pdf",
+      "sample": "Joindre une preuve",
+      "sampleName": "factures-electricite-2026.pdf",
       "validatedNote": "Cette valeur est validée. Un validateur ou un administrateur peut la repasser en brouillon.",
       "reopen": "Repasser en brouillon",
       "reopenHelp": "La saisie repasse en brouillon. Le contributeur devra la valider de nouveau.",
-      "format": "Des chiffres seulement. Une virgule pour les décimales, par exemple 1250,5."
+      "format": "Des chiffres seulement. Une virgule pour les décimales, par exemple 1250,5.",
+      "sampleNames": [
+        "factures-electricite-2026.pdf",
+        "releves-compteur-2026.pdf",
+        "attestation-fournisseur-2026.pdf"
+      ]
     },
     "msg": {
       "notNumber": "Cette valeur n'est pas un nombre. Saisissez un nombre.",
       "needEvidence": "Ce KPI exige une preuve. Ajoutez un fichier pour valider.",
       "needComment": "L'écart avec N-1 dépasse 20 %. Ajoutez un commentaire pour valider.",
       "renRule": "L'électricité renouvelable achetée dépasse l'électricité achetée.",
-      "badFile": "Ce fichier n'est pas un fichier PDF, JPG ou PNG. Choisissez un fichier PDF, JPG ou PNG.",
-      "bigFile": "Ce fichier dépasse 5 Mo. Choisissez un fichier plus petit.",
       "draftSaved": "Brouillon enregistré.",
       "validated": "Valeur validée. Le total du groupe est à jour.",
       "evidenceAdded": "Preuve ajoutée.",
@@ -408,29 +408,7 @@
       "title": "Saisie",
       "langs": "Langues de l'interface"
     },
-    "glossaryTitle": "Les mots de l'outil",
-    "glossary": [
-      {
-        "term": "N-1",
-        "text": "la même période, un an plus tôt"
-      },
-      {
-        "term": "À traiter",
-        "text": "les valeurs à vérifier"
-      },
-      {
-        "term": "Bloque la validation",
-        "text": "corrigez cette valeur avant de valider"
-      },
-      {
-        "term": "Calculé",
-        "text": "l'outil calcule cette valeur à partir d'autres valeurs"
-      },
-      {
-        "term": "SPOC",
-        "text": "la personne chargée d'une valeur"
-      }
-    ]
+    "frameLabel": "Reproduction de l'outil, avec des données fictives"
   },
   "installer": {
     "frameLabel": "Reproduction de l'outil : installer un référentiel depuis la bibliothèque",
@@ -443,7 +421,6 @@
     ],
     "stepOf": "Étape {n} sur 3 :",
     "stepDone": "Étape {n} sur 3, terminée :",
-    "intro": "Choisissez un modèle, puis cochez les KPI que vous voulez à l'écran suivant. L'outil installe leurs définitions, unités et formules, et les rattache à votre arbre.",
     "choose": "Choisir",
     "chooseAria": "Choisir « {framework} »",
     "allSelected": "Tous les KPI sont cochés. Décochez ceux dont vous n'avez pas besoin. Un KPI qui sert au calcul d'un KPI coché est ajouté quand même.",
@@ -493,7 +470,8 @@
       "Input": "Saisi",
       "Calculated": "Calculé",
       "Emission factor": "Facteur d'émission"
-    }
+    },
+    "description": "Description"
   },
   "docsUi": {
     "meta": {
@@ -517,13 +495,13 @@
   },
   "guidesUi": {
     "meta": {
-      "title": "Guides – {name}",
-      "description": "Un guide court pour chaque rôle de {name} : administrateur, contributeur, validateur, lecteur et auditeur."
+      "title": "Guides et documentation IT – {name}",
+      "description": "Un guide court pour chaque rôle de {name} — administrateur, contributeur, validateur, lecteur et auditeur — et la documentation IT : installer, faire tourner, sauvegarder et mettre à jour l'outil."
     },
-    "title": "Guides",
-    "lead": "Un guide court pour chaque rôle. Les guides complets s'ouvrent dans l'outil par l'icône d'aide, dans la langue de l'interface.",
+    "title": "Guides et documentation IT",
     "all": "Guides",
-    "metaTitle": "Guide {role} – {name}"
+    "metaTitle": "Guide {role} – {name}",
+    "rolesTitle": "Un guide par rôle"
   },
   "frameworksUi": {
     "meta": {
@@ -531,7 +509,7 @@
       "description": "Les quatorze modèles fournis avec {name} : la norme volontaire VS, la transparence des rémunérations et les ESRS révisées, avec leurs KPI, unités, formules et documents sources."
     },
     "title": "Modèles de la bibliothèque",
-    "lead": "{name} est fourni avec quatorze modèles : la norme volontaire européenne de reporting de durabilité (VS), en deux modèles, le module de base et le module complet ; la transparence des rémunérations, pour la directive européenne 2023/970 ; et les ESRS révisées de la CSRD, en onze modèles, un par norme. Ce sont des modèles de collecte construits à partir du texte des normes. Installez les KPI dont vous avez besoin, puis ajustez tout dans l'outil : KPI, définitions, unités, formules et thèmes. Pour les ESRS, installez l'ESRS 2 et les modèles de vos sujets importants. Un KPI que plusieurs modèles ont en commun se saisit une seule fois.",
+    "lead": "{name} est fourni avec des modèles prêts à l'emploi pour vous aider face aux réglementations. Installez les KPI dont vous avez besoin, puis ajustez tout dans l'outil : KPI, définitions, unités, formules, thèmes. Les modèles de la bibliothèque partagent leurs KPI, donc un KPI commun ne se saisit qu'une fois.",
     "see": "Voir les KPI",
     "code": "Code",
     "kpi": "KPI",
@@ -543,8 +521,6 @@
     "optional": "facultatif",
     "metaTitle": "Modèle {framework} – {name}",
     "metaDescription": "Les KPI du modèle {framework} de {name}, avec leurs unités, leurs formules et leurs définitions.",
-    "install": "Il s'installe en quelques clics. L'outil met en place les définitions, les unités et les formules, et rattache chaque KPI à votre arbre des organisations.",
-    "tryInstall": "Essayer l'installation",
     "all": "Modèles de la bibliothèque",
     "sources": "Documents sources",
     "sourcesLead": "Les documents sur lesquels ce modèle repose, avec la date de chaque document et le jour de sa lecture.",
@@ -575,5 +551,5 @@
     "updateTitle": "Comment mettre à jour",
     "updateText": "Votre équipe informatique lance `./update.sh` dans le dossier de l'outil. Le script sauvegarde d'abord les données, puis installe la nouvelle version. Voir [Mettre à jour l'outil](/docs/update-the-tool/)."
   },
-  "ogImageAlt": "{name} : collectez les KPI de tous vos sites, avec les preuves jointes"
+  "ogImageAlt": "{name} : une solution de reporting open source"
 }

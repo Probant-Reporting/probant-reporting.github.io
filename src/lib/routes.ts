@@ -9,8 +9,6 @@ export function pagesDuSite(lang: string): Route[] {
   for (const slug of themeSlugs(lang)) {
     const page = slug === homeTheme(lang) ? "" : slug;
     pages.push({ page, kind: "theme", slug });
-    // la page « ce que l'outil ne fait pas » de la thématique
-    pages.push({ page: [page, "limits"].filter(Boolean).join("/"), kind: "limits", slug });
   }
   for (const x of pagesDe("pages", lang)) pages.push({ page: x.slug, kind: "prose", slug: x.slug });
   pages.push({ page: "tour", kind: "tour" }, { page: "whats-new", kind: "whats-new" });

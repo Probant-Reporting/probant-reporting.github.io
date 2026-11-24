@@ -316,6 +316,8 @@
 /* champs */
 .tool input[type=text], .tool input[type=search], .tool input[type=email] { font: inherit; padding: 7px 10px; border: 1px solid var(--contour); border-radius: var(--coin); background: var(--surface); color: var(--texte); }
 .tool input[type=text]:focus, .tool input[type=search]:focus, .tool input[type=email]:focus { outline: 2px solid var(--principale-texte); outline-offset: 1px; border-color: var(--principale-texte); }
+.tool .champ-valeur input[type=text] { border: 0; border-radius: 0; background: none; padding: 8px 0; }
+.tool .champ-valeur input[type=text]:focus { outline: 0; border: 0; }
 .tool input[type=checkbox], .tool input[type=radio] { accent-color: var(--principale); }
 .tool select:not([multiple]) { appearance: none; -webkit-appearance: none; padding-right: 34px; background-repeat: no-repeat; background-position: right 10px center; background-size: 16px 16px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A828A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }

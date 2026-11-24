@@ -1,13 +1,30 @@
 ---
-import { chemin, site } from "../lib/content";
+// Une seule page pour les guides par rôle et la documentation de l'équipe informatique (décision du 23/11/2026).
+import { chemin, site, donnees } from "../lib/content";
 import { pagesDe, nom } from "../lib/pages";
 const { lang } = Astro.props;
 const g = site(lang).guidesUi;
+const t = site(lang).docsUi;
+const docs = pagesDe("docs", lang).filter((d) => d.slug !== "index");
+const groupes = [...new Set(docs.map((x) => x.fm.group))];
+const descriptions = donnees(lang, "doc_descriptions").descriptions;
 ---
 <div class="page large"><div class="wrap">
   <h1>{g.title}</h1>
-  {g.lead && <p class="lead">{nom(g.lead)}</p>}
-  <ul class="cartes-liens">
-    {pagesDe("guides", lang).map((x) => <li><a href={chemin(`guides/${x.slug}`, lang)}><b>{nom(x.fm.title)}</b><span class="qui">{nom(x.fm.who)}</span><span>{nom(x.fm.summary || x.fm.description)}</span></a></li>)}
-  </ul>
+  <section aria-labelledby="g-roles">
+    <h2 id="g-roles">{g.rolesTitle}</h2>
+    <ul class="cartes-liens">
+      {pagesDe("guides", lang).map((x) => <li><a href={chemin(`guides/${x.slug}`, lang)}><b>{nom(x.fm.title)}</b><span class="qui">{nom(x.fm.who)}</span><span>{nom(x.fm.summary || x.fm.description)}</span></a></li>)}
+    </ul>
+  </section>
+  <section class="docs-bloc" aria-labelledby="g-it">
+    <h2 id="g-it">{t.title}</h2>
+    <p class="lead">{nom(t.lead)}</p>
+    {groupes.map((gr) => (
+      <section class="docs-bloc" aria-labelledby={`g-${gr.replace(/\W+/g, "-")}`}>
+        <h3 id={`g-${gr.replace(/\W+/g, "-")}`}>{t.groups[gr] || gr}</h3>
+        <ul class="cartes-liens">{docs.filter((x) => x.fm.group === gr).map((x) => <li><a href={chemin(`docs/${x.slug}`, lang)}><b>{nom(x.fm.title)}</b>{descriptions[x.slug] && <span class="desc">{nom(descriptions[x.slug])}</span>}</a></li>)}</ul>
+      </section>
+    ))}
+  </section>
 </div></div>

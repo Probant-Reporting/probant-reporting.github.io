@@ -1,5 +1,7 @@
 ---
-// Une page de contenu ou un guide, écrit en Markdown (src/content/<langue>/pages/*.md ou guides/*.md).
+// Une page de contenu (src/content/<langue>/pages/*.md) ou un guide par rôle (guides/*.md).
+// Un guide prend la même mise en page que la documentation IT : titre sur toute la largeur, liste des guides à
+// gauche, article au milieu, sommaire à droite (décision du 24/11/2026, pour que la page occupe la largeur).
 import { chemin, site } from "../lib/content";
 import { pagesDe, nom, titre } from "../lib/pages";
 import Icon from "./Icon.astro";
@@ -7,14 +9,30 @@ const { lang, kind, slug } = Astro.props;
 const p = pagesDe(kind, lang).find((x) => x.slug === slug)!;
 const { Content } = p;
 const g = site(lang).guidesUi;
+const t = site(lang).docsUi;
+const guides = pagesDe("guides", lang);
+const toc = (p.headings || []).filter((h: any) => h.depth === 2);
 ---
-<div class="page"><div class="wrap prose">
-  {kind === "guides" && <p class="fil"><a href={chemin("guides", lang)}>{g.title}</a></p>}
-  <h1>{titre(p.fm.title)}</h1>
-  {p.fm.who && <p class="lead">{nom(p.fm.who)}</p>}
-  {kind === "pages" && p.fm.description && <p class="lead">{nom(p.fm.description)}</p>}
-  <Content />
-  {kind === "guides" && (
-    <nav class="autres-guides" aria-label={g.all}><p>{g.all}</p><ul>{pagesDe("guides", lang).map((x) => <li><a href={chemin(`guides/${x.slug}`, lang)} aria-current={x.slug === slug ? "page" : undefined}>{nom(x.fm.title)}</a></li>)}</ul></nav>
-  )}
-</div></div>
+{kind === "guides" ? (
+  <div class="docs wrap">
+    <header class="docs-titre">
+      <p class="fil"><a href={chemin("guides", lang)}>{g.title}</a></p>
+      <h1>{titre(p.fm.title)}</h1>
+      {p.fm.who && <p class="lead">{nom(p.fm.who)}</p>}
+    </header>
+    {["etroit", "large"].map((forme) => {
+      const liste = <ul>{guides.map((x) => <li><a href={chemin(`guides/${x.slug}`, lang)} aria-current={x.slug === slug ? "page" : undefined}>{nom(x.fm.title)}</a></li>)}</ul>;
+      return <nav class={`docs-menu docs-menu-${forme}`} aria-label={g.all}>{forme === "etroit" ? <details><summary>{g.all}</summary>{liste}</details> : <><p class="docs-groupe">{g.rolesTitle}</p>{liste}</>}</nav>;
+    })}
+    <article class="docs-article prose"><Content /></article>
+    {toc.length > 1 && (
+      <nav class="docs-toc" aria-label={t.onThisPage}><p>{t.onThisPage}</p><ul>{toc.map((h: any) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ul></nav>
+    )}
+  </div>
+) : (
+  <div class="page"><div class="wrap prose">
+    <h1>{titre(p.fm.title)}</h1>
+    {p.fm.lead !== false && p.fm.description && <p class="lead">{nom(p.fm.description)}</p>}
+    <Content />
+  </div></div>
+)}

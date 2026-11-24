@@ -21,16 +21,16 @@ const couleurs = ["#2A78D6", "#0A6E6C", "#9D5516", "#5B4FB3"];
         {T.steps.map((s: string, i: number) => <li class={i === 0 ? "actuelle" : ""} aria-current={i === 0 ? "step" : undefined}><span class="num" aria-hidden="true">{i + 1}</span><span class="texte"><span class="visually-hidden">{T.stepOf.replace("{n}", String(i + 1))} </span>{s}</span></li>)}
       </ol></nav>
     </div>
-    <p class="intro-page">{T.intro}</p>
     <ul class="grille-modeles">
       {modeles.map((t: any, i: number) => (
         <li class="carte carte-modele" style={`--c-ref:${couleurs[i % 4]}`}>
           <h4><span class="pastille-ref grande" aria-hidden="true"></span> {t.name}</h4>
-          <p class="description-modele">{t.text}</p>
+          <details class="repli repli-modele"><summary>{T.description}</summary><p class="description-modele">{t.text}</p></details>
           <div class="actions-carte-modele"><button type="button" class="bouton" data-modele={t.id} aria-label={T.chooseAria.replace("{framework}", t.name)} data-js-seul hidden>{T.choose}</button></div>
         </li>
       ))}
     </ul>
+    <p class="plus-modeles" data-variante><a href={data.urlBibliotheque}>{T.libraryLink}</a></p>
     <noscript><p class="discret">{T.noScript} <a href={data.urlBibliotheque}>{T.libraryLink}</a></p></noscript>
   </div>
 </div>
