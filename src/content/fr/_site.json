@@ -14,7 +14,8 @@
     "guides": "Guides et documentation IT",
     "docs": "Documentation IT",
     "tour": "Visite",
-    "get": "Obtenir {name}"
+    "get": "Obtenir {name}",
+    "videos": "Vidéos"
   },
   "footer": {
     "line": "{name} est un logiciel libre et gratuit de collecte de KPI et d'accompagnement des audits. Tous les chiffres de ce site sont inventés.",

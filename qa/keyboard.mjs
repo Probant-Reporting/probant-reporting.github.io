@@ -81,6 +81,27 @@ for (const [lang, L] of Object.entries(LANGUES)) {
   ok(new URL(p.url()).hash === "#auditor" && (await p.evaluate(arrive)), "guided tour: Enter on a role goes to its section, below the header, and the address has its anchor");
   ok((await p.locator(".visite-etape").count()) >= 15 && (await p.locator(".visite-zoom").evaluateAll((as) => as.every((a) => a.getAttribute("href") === a.querySelector("img").getAttribute("src") && a.querySelector("img").alt.length > 60))), "guided tour: every capture has a text alternative and opens in full size");
   await p.close();
+
+  // les films : rien ne démarre tout seul, chacun a son image d'attente, son nom accessible et sa transcription
+  p = await b.newPage({ viewport: { width: 1280, height: 900 } });
+  await p.goto(base + L.accueil + "videos/");
+  const films = await p.locator("video").evaluateAll((vs) => vs.map((v) => ({
+    auto: v.hasAttribute("autoplay") || v.hasAttribute("loop"),
+    controles: v.hasAttribute("controls"),
+    attente: (v.getAttribute("poster") || "").endsWith(".webp"),
+    nomme: !!document.getElementById(v.getAttribute("aria-labelledby") || "")?.textContent.trim(),
+    source: (v.querySelector("source")?.getAttribute("src") || "").endsWith(".mp4"),
+  })));
+  ok(films.length === 7 && films.every((f) => !f.auto && f.controles && f.attente && f.nomme && f.source),
+    "videos: seven films, none starts on its own, each has controls, a poster and a name");
+  const etapes = await p.locator("video").evaluateAll((vs) => vs.map((v) => {
+    const d = document.getElementById(v.getAttribute("aria-describedby") || "");
+    return { lie: !!d, pas: d ? d.querySelectorAll("li").length : 0, cache: d ? getComputedStyle(d).position === "absolute" : false };
+  }));
+  ok(etapes.length === 7 && etapes.every((e) => e.lie && e.pas >= 4 && e.cache) && etapes.reduce((n, e) => n + e.pas, 0) >= 30,
+    "videos: a silent film carries its steps in the page, tied to it and never shown");
+  await p.close();
+
   // avec « réduire les animations » : l'image fixe seule, rien d'autre n'est chargé, et le bouton propose la lecture
   const calme = await b.newContext({ reducedMotion: "reduce", viewport: { width: 1280, height: 900 } });
   p = await calme.newPage(); await p.goto(base + L.accueil + "tour/");

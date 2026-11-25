@@ -682,9 +682,26 @@ p, li { text-wrap: pretty; }
   .rc-etat { margin-top: 10px; }
 }
 
-/* sur téléphone, une capture d'écran d'ordinateur se lit en la faisant défiler sur le côté */
+/* sur téléphone, la capture tient dans la colonne : elle s'ouvre en grand d'une touche, où l'on peut zoomer
+   (elle débordait du cadre quand on la gardait à 900 px pour la lire sur place) */
 @media (max-width: 760px) {
-  .visite-zoom { overflow: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; max-height: 60vh; }
-  .visite-zoom .visite-image { width: 900px; max-width: none; }
-  .visite-zoom-texte { position: sticky; left: 0; }
+  .visite-zoom .visite-image { width: 100%; max-width: 100%; }
 }
+
+/* ------------------------------------------------------------------ les films de l'outil (page « Videos ») */
+.films-note { margin-top: 12px; max-width: 41rem; color: var(--ink-soft); }
+.films-sommaire { margin-top: clamp(24px, 4vw, 40px); }
+.films-sommaire ul { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin: 0; padding: 0; list-style: none; }
+.films-sommaire a { display: grid; gap: 2px; align-content: start; height: 100%; padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: var(--r); background: var(--card); color: var(--ink); text-decoration: none; }
+.films-sommaire a:hover { border-color: var(--ink); }
+.films-sommaire a:hover b { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.films-sommaire b { font-family: var(--serif); font-weight: 600; font-size: 1.1rem; line-height: 1.25; }
+.films-sommaire span { color: var(--ink-soft); font-size: .95rem; }
+.film { margin-top: clamp(48px, 7vw, 88px); padding-top: 28px; border-top: 1px solid var(--line-strong); scroll-margin-top: 84px; }
+.film > h2 { margin-top: 0; font-family: var(--serif); font-weight: 600; font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.1rem); line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; max-width: 26ch; }
+.film-duree { display: flex; align-items: center; gap: 8px; min-height: 24px; margin-top: 10px; font-size: .95rem; color: var(--ink-soft); }
+.film-duree svg { width: 17px; height: 17px; flex: none; }
+/* la vidéo garde ses proportions (écran 1280 × 800 + bandeau de légendes 140) et ne déborde jamais */
+.film-video { display: block; width: 100%; height: auto; aspect-ratio: 1280 / 940; margin-top: 20px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--paper-2); }
+.film-plein { display: none; }
+@media (max-width: 760px) { .film-plein { display: block; margin-top: 10px; color: var(--ink-soft); font-size: .95rem; } }

@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "{name} in videos – see the tool at work",
+    "description": "Seven short films recorded straight from {name}, with the demo company: data entry, consistency checks, consolidation, charts, Excel, templates and the audit."
+  },
+  "title": "See {name} at work",
+  "lead": "Seven short films, recorded straight from the tool with the demo company. They have no sound, and they are in English.",
+  "note": "Nothing is staged: these are real screens, with made-up data.",
+  "durationLabel": "{n} seconds",
+  "stepsLabel": "What happens in this film",
+  "clips": [
+    {
+      "slug": "data-entry",
+      "title": "Enter a value, attach the evidence, validate",
+      "seconds": 44,
+      "steps": [
+        "A contributor signs in. They see only what is assigned to them.",
+        "The bar at the top shows what is validated, drafted, still to fill in.",
+        "They search for the indicator they have to fill in.",
+        "One click opens it: the definition, the unit, last year’s figure.",
+        "They enter this year’s figure, taken from the invoice.",
+        "They attach the invoice. The evidence stays with the figure.",
+        "They validate.",
+        "The figure is counted, with its evidence attached to it."
+      ]
+    },
+    {
+      "slug": "consistency",
+      "title": "Unusual values show up before the audit",
+      "seconds": 31,
+      "steps": [
+        "The tool compares every value with last year, and with your own rules.",
+        "Anything worth a look lands in one list.",
+        "One click: the alert says what the problem is, in one sentence.",
+        "The person who entered it explains why — or corrects the figure.",
+        "The explanation stays with the value, for the auditor."
+      ]
+    },
+    {
+      "slug": "consolidation",
+      "title": "Totals climb every level of your organisation",
+      "seconds": 20,
+      "steps": [
+        "Each figure is entered once, by the site that knows it.",
+        "Consolidation adds them up along your own levels.",
+        "Open a total to see where it comes from.",
+        "Site by site — and what is still missing."
+      ]
+    },
+    {
+      "slug": "visualisation",
+      "title": "Charts you put together yourself, without asking IT",
+      "seconds": 21,
+      "steps": [
+        "A view is a page of charts you put together yourself.",
+        "Totals, trends, completion — on the organisations you choose.",
+        "Narrow it down to one country, one plant, one year.",
+        "Everyone keeps their own views. Nothing to ask IT for."
+      ]
+    },
+    {
+      "slug": "import-export",
+      "title": "Fill it in Excel, import it back",
+      "seconds": 40,
+      "steps": [
+        "Not everyone works in the tool. Some people work in Excel.",
+        "Download the file to fill in: your KPIs, your organisations, last year’s figures.",
+        "It comes back filled in. You hand it to the tool.",
+        "Nothing is written yet: the tool checks every line first.",
+        "You see what will be created, changed or rejected.",
+        "Then you import. The values land as drafts, ready to validate."
+      ]
+    },
+    {
+      "slug": "templates",
+      "title": "Install a whole framework from the library",
+      "seconds": 48,
+      "steps": [
+        "The library comes with the tool.",
+        "The Voluntary Standard, pay transparency, and the eleven revised ESRS.",
+        "Look at a template before you install it.",
+        "Its KPIs, their units, their formulas: all written out.",
+        "Install it. It becomes your framework: change whatever you like."
+      ]
+    },
+    {
+      "slug": "audit",
+      "title": "The auditor reads everything, changes nothing",
+      "seconds": 31,
+      "steps": [
+        "The auditor signs in with a read-only account.",
+        "They open any value they want to check.",
+        "Who entered it, who validated it, and when.",
+        "The evidence is attached to the figure itself.",
+        "And the history keeps every change, with its author."
+      ]
+    }
+  ],
+  "fullscreenHint": "On a phone, tap the full-screen button to read the screen."
+}

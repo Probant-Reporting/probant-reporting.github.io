@@ -14,7 +14,8 @@
     "guides": "Guides and IT documentation",
     "docs": "IT documentation",
     "tour": "Tour",
-    "get": "Get {name}"
+    "get": "Get {name}",
+    "videos": "Videos"
   },
   "footer": {
     "line": "{name} is free software for KPI collection and audit support. All figures on this site are made up.",

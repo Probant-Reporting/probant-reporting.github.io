@@ -12,6 +12,7 @@ export function pagesDuSite(lang: string): Route[] {
   }
   for (const x of pagesDe("pages", lang)) pages.push({ page: x.slug, kind: "prose", slug: x.slug });
   pages.push({ page: "tour", kind: "tour" }, { page: "whats-new", kind: "whats-new" });
+  pages.push({ page: "videos", kind: "videos" });
   pages.push({ page: "guides", kind: "guides-index" });
   for (const g of pagesDe("guides", lang)) pages.push({ page: `guides/${g.slug}`, kind: "guide", slug: g.slug });
   for (const d of pagesDe("docs", lang)) pages.push(d.slug === "index" ? { page: "docs", kind: "docs-index", slug: d.slug } : { page: `docs/${d.slug}`, kind: "doc", slug: d.slug });

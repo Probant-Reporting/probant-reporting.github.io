@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "{name} en vidéo – voir l’outil en fonctionnement",
+    "description": "Sept courts films enregistrés directement dans {name}, avec l’entreprise de démonstration : saisie, contrôles de cohérence, consolidation, graphiques, Excel, modèles, audit."
+  },
+  "title": "Voir {name} en fonctionnement",
+  "lead": "Sept courts films enregistrés directement dans l’outil, avec l’entreprise de démonstration. Ils sont muets, et en anglais.",
+  "note": "Rien n’est mis en scène : ce sont de vrais écrans, avec des données inventées.",
+  "durationLabel": "{n} secondes",
+  "stepsLabel": "Ce qui se passe dans ce film",
+  "clips": [
+    {
+      "slug": "data-entry",
+      "title": "Saisir une valeur, joindre la preuve, valider",
+      "seconds": 44,
+      "steps": [
+        "Un contributeur se connecte. Il ne voit que ce qui lui est attribué.",
+        "La barre du haut dit ce qui est validé, en brouillon, encore à remplir.",
+        "Il cherche l’indicateur qu’il doit remplir.",
+        "Un clic l’ouvre : la définition, l’unité, le chiffre de l’an dernier.",
+        "Il saisit le chiffre de l’année, relevé sur la facture.",
+        "Il joint la facture. La preuve reste attachée au chiffre.",
+        "Il valide.",
+        "Le chiffre est compté, sa preuve accrochée."
+      ]
+    },
+    {
+      "slug": "consistency",
+      "title": "Les valeurs inhabituelles se signalent avant l’audit",
+      "seconds": 31,
+      "steps": [
+        "L’outil compare chaque valeur à l’an dernier, et à vos propres règles.",
+        "Tout ce qui mérite un regard arrive dans une seule liste.",
+        "Un clic : l’alerte dit le problème en une phrase.",
+        "Celui qui a saisi explique pourquoi — ou corrige le chiffre.",
+        "L’explication reste avec la valeur, pour l’auditeur."
+      ]
+    },
+    {
+      "slug": "consolidation",
+      "title": "Les totaux remontent tous les niveaux de l’organisation",
+      "seconds": 20,
+      "steps": [
+        "Chaque chiffre est saisi une fois, par le site qui le connaît.",
+        "La consolidation les additionne le long de vos propres niveaux.",
+        "Ouvrez un total pour voir d’où il vient.",
+        "Site par site — et ce qui manque encore."
+      ]
+    },
+    {
+      "slug": "visualisation",
+      "title": "Des graphiques que vous composez sans passer par l’IT",
+      "seconds": 21,
+      "steps": [
+        "Une vue est une page de graphiques que vous composez vous-même.",
+        "Totaux, tendances, remplissage — sur les organisations de votre choix.",
+        "Réduisez à un pays, une usine, une année.",
+        "Chacun garde ses vues. Rien à demander à l’IT."
+      ]
+    },
+    {
+      "slug": "import-export",
+      "title": "Remplir dans Excel, réimporter le fichier",
+      "seconds": 40,
+      "steps": [
+        "Tout le monde ne travaille pas dans l’outil. Certains travaillent dans Excel.",
+        "Téléchargez le fichier à remplir : vos KPI, vos organisations, les chiffres de l’an dernier.",
+        "Il revient rempli. Vous le donnez à l’outil.",
+        "Rien n’est encore écrit : l’outil contrôle d’abord chaque ligne.",
+        "Vous voyez ce qui sera créé, modifié ou refusé.",
+        "Puis vous importez. Les valeurs arrivent en brouillon, prêtes à valider."
+      ]
+    },
+    {
+      "slug": "templates",
+      "title": "Installer un référentiel entier depuis la bibliothèque",
+      "seconds": 48,
+      "steps": [
+        "La bibliothèque est fournie avec l’outil.",
+        "La norme volontaire, la transparence des rémunérations, les onze ESRS révisées.",
+        "Regardez un modèle avant de l’installer.",
+        "Ses KPI, leurs unités, leurs formules : tout est écrit.",
+        "Installez-le. Il devient votre référentiel : changez ce que vous voulez."
+      ]
+    },
+    {
+      "slug": "audit",
+      "title": "L’auditeur lit tout, ne change rien",
+      "seconds": 31,
+      "steps": [
+        "L’auditeur se connecte avec un compte en lecture seule.",
+        "Il ouvre la valeur qu’il veut contrôler.",
+        "Qui l’a saisie, qui l’a validée, et quand.",
+        "La preuve est attachée au chiffre lui-même.",
+        "Et l’historique garde chaque changement, avec son auteur."
+      ]
+    }
+  ],
+  "fullscreenHint": "Sur téléphone, appuyez sur le bouton plein écran pour lire l’écran."
+}
