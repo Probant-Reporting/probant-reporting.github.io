@@ -1,7 +1,8 @@
 ---
 // Une page de contenu (src/content/<langue>/pages/*.md) ou un guide par rôle (guides/*.md).
-// Un guide prend la même mise en page que la documentation IT : titre sur toute la largeur, liste des guides à
-// gauche, article au milieu, sommaire à droite (décision du 24/11/2026, pour que la page occupe la largeur).
+// Un guide prend la même mise en page que la documentation IT : titre sur toute la largeur, un seul panneau à gauche
+// (la liste des guides, et sous le guide ouvert ses parties, qui suivent la lecture : src/scripts/ui.js), l'article à
+// droite. Plus de sommaire à droite : deux panneaux de part et d'autre déroutaient (Florent, 25/11/2026).
 import { chemin, site, fichier } from "../lib/content";
 import { pagesDe, nom, titre } from "../lib/pages";
 import Icon from "./Icon.astro";
@@ -14,7 +15,7 @@ const guides = pagesDe("guides", lang);
 const toc = (p.headings || []).filter((h: any) => h.depth === 2);
 ---
 {kind === "guides" ? (
-  <div class="docs wrap">
+  <div class="docs docs-guide docs-suivi wrap">
     <header class="docs-titre">
       <p class="fil"><a href={chemin("guides", lang)}>{g.title}</a></p>
       <h1>{titre(p.fm.title)}</h1>
@@ -22,13 +23,11 @@ const toc = (p.headings || []).filter((h: any) => h.depth === 2);
       <p class="pdf-lien"><a href={fichier(`pdf/probant-guides-${lang}.pdf`)} download><Icon name="download" />{g.pdf}<span class="sr">{" "}{g.pdfGuides}</span></a></p>
     </header>
     {["etroit", "large"].map((forme) => {
-      const liste = <ul>{guides.map((x) => <li><a href={chemin(`guides/${x.slug}`, lang)} aria-current={x.slug === slug ? "page" : undefined}>{nom(x.fm.title)}</a></li>)}</ul>;
+      const liste = <ul>{guides.map((x) => <li><a href={chemin(`guides/${x.slug}`, lang)} aria-current={x.slug === slug ? "page" : undefined}>{nom(x.fm.title)}</a>
+        {x.slug === slug && toc.length > 1 && <ul class="docs-parties" aria-label={t.onThisPage}>{toc.map((h: any) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ul>}</li>)}</ul>;
       return <nav class={`docs-menu docs-menu-${forme}`} aria-label={g.all}>{forme === "etroit" ? <details><summary>{g.all}</summary>{liste}</details> : <><p class="docs-groupe">{g.rolesTitle}</p>{liste}</>}</nav>;
     })}
     <article class="docs-article prose"><Content /></article>
-    {toc.length > 1 && (
-      <nav class="docs-toc" aria-label={t.onThisPage}><p>{t.onThisPage}</p><ul>{toc.map((h: any) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ul></nav>
-    )}
   </div>
 ) : (
   <div class="page"><div class="wrap prose">

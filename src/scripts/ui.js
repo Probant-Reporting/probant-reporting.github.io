@@ -152,14 +152,14 @@ for (const zone of ongletsPossibles ? document.querySelectorAll("[data-onglets-a
   ouvrirAncreRepli();
 }
 
-// documentation IT d'un seul tenant : le menu suit la lecture. La partie dont le titre est passé sous l'en-tête est
+// documentation IT d'un seul tenant et guides par rôle : le menu suit la lecture. La partie dont le titre est passé sous l'en-tête est
 // marquée (aria-current, même style que la page en cours), et le menu fixe défile pour la garder visible.
 {
-  const parties = [...document.querySelectorAll(".docs-unique .docs-partie > h2[id]")];
-  const menus = [...document.querySelectorAll(".docs-unique .docs-menu")];
+  const parties = [...document.querySelectorAll(".docs-suivi .docs-article h2[id]")];
+  const menus = [...document.querySelectorAll(".docs-suivi .docs-menu")];
   if (parties.length && menus.length) {
     const liens = menus.map((m) => new Map([...m.querySelectorAll('a[href^="#"]')].map((a) => [decodeURIComponent(a.getAttribute("href").slice(1)), a])));
-    const fixe = document.querySelector(".docs-unique .docs-menu-large");
+    const fixe = document.querySelector(".docs-suivi .docs-menu-large");
     let courant = null, attente = false;
     const marquer = () => {
       attente = false;

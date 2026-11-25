@@ -17,7 +17,7 @@ const autres = pagesDe("pages", lang).filter((x) => ["security", "changelog"].in
 const sources = [...new Set(docs.map((d) => d.fm.source).filter(Boolean))];
 const apercu = docs.find((d) => d.slug === "index");
 ---
-<div class="docs docs-unique wrap">
+<div class="docs docs-unique docs-suivi wrap">
   <header class="docs-titre">
     <p class="fil"><a href={chemin("guides", lang)}>{site(lang).guidesUi.title}</a></p>
     <h1>{titre(t.title)}</h1>

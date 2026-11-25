@@ -742,4 +742,8 @@ p, li { text-wrap: pretty; }
 .prose details.version ul { gap: 10px; }
 .prose td:first-child { font-weight: 600; }
 .prose td:first-child code { white-space: nowrap; font-weight: 400; }
-@media (min-width: 1240px) { .docs.docs-unique { grid-template-columns: 15rem minmax(0, 1fr); grid-template-areas: "titre titre" "menu article"; } }
+@media (min-width: 1240px) { .docs.docs-suivi { grid-template-columns: 15rem minmax(0, 1fr); grid-template-areas: "titre titre" "menu article"; } }
+/* guide par rôle : les parties du guide ouvert, sous son nom dans le panneau de gauche */
+.docs-menu .docs-parties { margin: 2px 0 8px 12px; padding-left: 8px; border-left: 1px solid var(--line); gap: 0; }
+.docs-menu .docs-parties a { padding: 5px 10px; font-size: .93rem; color: var(--ink-soft); }
+.docs-menu .docs-parties a[aria-current] { color: var(--ink); }
