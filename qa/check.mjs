@@ -38,6 +38,19 @@ const pages = [];
 (function lister(d) { for (const f of readdirSync(d)) { const p = join(d, f); statSync(p).isDirectory() ? lister(p) : p.endsWith(".html") && pages.push(p); } })("dist");
 const htmlDe = {}, ancresDe = {};
 for (const p of pages) { htmlDe[p] = readFileSync(p, "utf8"); ancresDe[p] = new Set([...htmlDe[p].matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])); }
+// une page de renvoi (ancienne adresse de la documentation IT, src/components/Redirection.astro) : seule sa cible est
+// contrôlée (la page et l'ancre existent) ; elle ne compte ni comme page ni dans le plan du site
+const renvois = pages.filter((p) => /<meta http-equiv="refresh"/.test(htmlDe[p]));
+for (const p of renvois) {
+  const m = /<meta http-equiv="refresh" content="0; url=(\/[^"#]*)(?:#([^"]*))?"/.exec(htmlDe[p]);
+  const cible = m && fichierDe(m[1]);
+  if (!cible) ko(`${p}: redirect without a page`);
+  else if (m[2] && !ancresDe[cible]?.has(m[2])) ko(`${p}: redirect to a missing anchor #${m[2]}`);
+  if (!/<meta name="robots" content="noindex"/.test(htmlDe[p])) ko(`${p}: redirect page without noindex`);
+}
+pages.splice(0, pages.length, ...pages.filter((p) => !renvois.includes(p)));
+// deux éléments ne portent jamais le même id (ancres, libellés des champs)
+for (const p of pages) { const vus = new Set(), doubles = new Set(); for (const [, id] of htmlDe[p].matchAll(/\sid="([^"]+)"/g)) (vus.has(id) ? doubles : vus).add(id); if (doubles.size) ko(`${p}: id used twice (${[...doubles].slice(0, 5).join(", ")})`); }
 
 // 6. texte anglais resté dans une page française : une liste de mots anglais courants, cherchés dans le texte lu (hors
 // code, hors parties déclarées dans une autre langue par lang="…"). Un texte anglais voulu (message de l'outil cité
@@ -140,7 +153,9 @@ for (const lang of autres) {
       const traduites = JSON.parse(readFileSync(cible, "utf8")).entries || [];
       for (const v of JSON.parse(readFileSync(source, "utf8")).entries) {
         const t = traduites.find((x) => x.version === v.version);
-        if (!t) ko(`${lang}/${f}: version ${v.version} is not translated (the page shows it in "${ref}"; source hash ${empreinte(v.sections)})`);
+        // une version qui vient de paraître (npm run versions, à la mise en ligne) n'est pas encore traduite : la page
+        // l'affiche dans la langue par défaut avec une note ; la mise en ligne ne s'arrête pas pour autant
+        if (!t) attention(`${lang}/${f}: version ${v.version} is not translated yet (the page shows it in "${ref}", with a note; source hash ${empreinte(v.sections)})`);
         else if (t.sourceHash !== empreinte(v.sections)) attention(`${lang}/${f}: the "${ref}" text of version ${v.version} changed since its translation (new source hash ${empreinte(v.sections)}): read the translation again`);
       }
       continue;

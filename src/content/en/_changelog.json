@@ -2,6 +2,31 @@
   "source": "CHANGELOG.md",
   "entries": [
     {
+      "version": "1.0.1",
+      "date": "2026-11-25",
+      "sections": [
+        {
+          "title": "Highlights",
+          "items": [
+            "All-in-one version (Windows, Mac): the window shows each step of the start (loading the program, the database, the demo data, starting the tool), with a line that moves: a bar with the share done, the elapsed time, and a turning sign. A slow first start no longer looks stuck. The browser opens when the tool is ready.",
+            "All-in-one version, demo: the final message lists one demo account per role (`admin`, `validateur`, `contributeur`, `lecteur`, `auditeur`) with their shared password. Log out to try another account."
+          ]
+        },
+        {
+          "title": "For IT",
+          "items": [
+            "No migration, no new setting. Docker and Clever Cloud installations do not change."
+          ]
+        },
+        {
+          "title": "Security",
+          "items": [
+            "No change."
+          ]
+        }
+      ]
+    },
+    {
       "version": "1.0.0",
       "date": "2026-11-23",
       "sections": [

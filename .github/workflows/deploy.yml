@@ -1,10 +1,14 @@
-# Publishes the site on GitHub Pages at each push to main, and on demand (Actions > Deploy the site > Run workflow).
+# Publishes the site on GitHub Pages at each push to main, every day, and on demand (Actions > Deploy the site > Run workflow).
+# Before the build, "npm run versions" reads the release notes (CHANGELOG.md) of the public repository of the tool:
+# a new version of the tool appears on the "What's new" page and in the RSS feed by the next day at the latest.
 # To turn on once: repository > Settings > Pages > Source: "GitHub Actions".
 # The jobs run only in the repository that publishes the site: a copy or a fork builds nothing.
 name: Deploy the site
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "23 4 * * *"
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,6 +30,7 @@ jobs:
       - id: pages
         uses: actions/configure-pages@v6
       - run: npm ci
+      - run: npm run versions
       - run: npm run build
         env:
           SITE_URL: ${{ steps.pages.outputs.origin }}

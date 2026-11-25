@@ -1,0 +1,22 @@
+---
+// Une ancienne adresse de la documentation IT (/docs/<partie>/), du temps où chaque partie avait sa page : elle renvoie
+// vers l'ancre de la partie dans la page unique /docs/. Hors du plan du site, jamais indexée.
+import { site, chemin, absolu } from "../lib/content";
+import { pagesDe, nom } from "../lib/pages";
+import { ancreDoc } from "../lib/docs";
+const { lang, slug } = Astro.props;
+const d = pagesDe("docs", lang).find((x) => x.slug === slug)!;
+const cible = `${chemin("docs", lang)}#${ancreDoc(slug)}`;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content={`0; url=${cible}`} />
+    <link rel="canonical" href={absolu(cible)} />
+    <title>{nom(d.fm.title)} – {nom(site(lang).docsUi.title)}</title>
+  </head>
+  <body><p><a href={cible}>{nom(d.fm.title)} – {nom(site(lang).docsUi.title)}</a></p></body>
+</html>

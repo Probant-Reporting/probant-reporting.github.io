@@ -4,8 +4,7 @@ import Base from "../layouts/Base.astro";
 import ThemePage from "../components/ThemePage.astro";
 import Icon from "../components/Icon.astro";
 import ContactForm from "../components/ContactForm.astro";
-import DocPage from "../components/DocPage.astro";
-import DocsIndex from "../components/DocsIndex.astro";
+import DocsPage from "../components/DocsPage.astro";
 import ProsePage from "../components/ProsePage.astro";
 import GuidesIndex from "../components/GuidesIndex.astro";
 import FrameworksIndex from "../components/FrameworksIndex.astro";
@@ -29,8 +28,6 @@ const { lang, kind, slug, page } = Astro.props;
 function metaDe(): any {
   const md = (k: string) => { const p = pagesDe(k, lang).find((x) => x.slug === slug)!; return { title: `${nom(p.fm.title)} – ${config.name}`, description: nom(p.fm.description || p.fm.title) }; };
   const ui = (k: string) => ({ title: nom(site(lang)[k].meta.title), description: nom(site(lang)[k].meta.description) });
-  // documentation : la description vient de la table tenue dans le site (_doc_descriptions.json), pas de l'extrait automatique
-  if (kind === "doc") { const p = pagesDe("docs", lang).find((x) => x.slug === slug)!; return { title: nom(site(lang).docsUi.metaTitle.replace("{page}", p.fm.title)), description: nom(donnees(lang, "doc_descriptions").descriptions[slug] || p.fm.description || `${p.fm.title}${site(lang).common.colon}${site(lang).docsUi.meta.description}`) }; }
   if (kind === "guide") { const p = pagesDe("guides", lang).find((x) => x.slug === slug)!; return { ...md("guides"), title: nom(site(lang).guidesUi.metaTitle.replace("{role}", p.fm.title)) }; }
   if (kind === "prose") return md("pages");
   if (kind === "docs-index") return ui("docsUi");
@@ -60,8 +57,7 @@ const p = config.publisher;
 <Base lang={lang} title={meta.title} description={meta.description} page={page} home={home} jsonld={theme ? [jsonld, faqld] : fil || null}>
   {theme && <ThemePage lang={lang} theme={theme} page={page} />}
 
-  {kind === "doc" && <DocPage lang={lang} slug={slug} />}
-  {kind === "docs-index" && <DocsIndex lang={lang} />}
+  {kind === "docs-index" && <DocsPage lang={lang} />}
   {kind === "guide" && <ProsePage lang={lang} kind="guides" slug={slug} />}
   {kind === "prose" && <ProsePage lang={lang} kind="pages" slug={slug} />}
   {kind === "guides-index" && <GuidesIndex lang={lang} />}

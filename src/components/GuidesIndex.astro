@@ -5,6 +5,7 @@
 import Icon from "./Icon.astro";
 import { chemin, site, fichier } from "../lib/content";
 import { pagesDe, nom } from "../lib/pages";
+import { ancreDoc } from "../lib/docs";
 const { lang } = Astro.props;
 const g = site(lang).guidesUi;
 const t = site(lang).docsUi;
@@ -34,7 +35,7 @@ const descriptions = (await import("../lib/content")).donnees(lang, "doc_descrip
     <p class="pdf-lien"><a href={fichier(`pdf/probant-it-documentation-${lang}.pdf`)} download><Icon name="download" />{g.pdf}<span class="sr">{" "}{g.pdfDocs}</span></a></p>
     <ul class="guides-cartes">
       {docs.map((x) => (
-        <li><a href={chemin(`docs/${x.slug}`, lang)}>
+        <li><a href={`${chemin("docs", lang)}#${ancreDoc(x.slug)}`}>
           <b>{nom(x.fm.title)}</b>
           {descriptions[x.slug] && <span>{nom(descriptions[x.slug])}</span>}
         </a></li>

@@ -3,6 +3,31 @@
   "source": "CHANGELOG.md",
   "entries": [
     {
+      "version": "1.0.1",
+      "sourceHash": "300da676a901",
+      "sections": [
+        {
+          "title": "L'essentiel",
+          "items": [
+            "Version tout-en-un (Windows, Mac) : la fenêtre montre chaque étape du démarrage (chargement du programme, de la base de données, des données de démonstration, démarrage de l'outil), avec une ligne qui avance : une barre avec la part faite, le temps écoulé et un signe qui tourne. Un premier démarrage lent n'a plus l'air bloqué. Le navigateur s'ouvre quand l'outil est prêt.",
+            "Version tout-en-un, démo : le message final donne un compte de démonstration par rôle (`admin`, `validateur`, `contributeur`, `lecteur`, `auditeur`) et leur mot de passe commun. Déconnectez-vous pour essayer un autre compte."
+          ]
+        },
+        {
+          "title": "Pour l'IT",
+          "items": [
+            "Aucune migration, aucun nouveau réglage. Les installations Docker et Clever Cloud ne changent pas."
+          ]
+        },
+        {
+          "title": "Sécurité",
+          "items": [
+            "Aucun changement."
+          ]
+        }
+      ]
+    },
+    {
       "version": "1.0.0",
       "sourceHash": "329ebe340f58",
       "sections": [

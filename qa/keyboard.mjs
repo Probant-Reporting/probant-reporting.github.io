@@ -46,13 +46,13 @@ for (const [lang, L] of Object.entries(LANGUES)) {
   await p.click(`[data-role="auditor"]`); await p.click('[data-onglet="entry"]'); await p.click('[data-ouvrir="elec"]');
   ok((await p.locator(".panneau button").count()) === 1, "auditor: the panel has no button except Close");
   // menu des langues, au clavier : il mène à la même page dans l'autre langue, depuis l'en-tête et depuis le pied de page
-  await p.goto(base + L.accueil + "docs/install-the-tool/");
+  await p.goto(base + L.accueil + "docs/");
   await p.locator(".lang-menu summary").focus(); await p.keyboard.press("Enter");
   const lien = p.locator(`.lang-menu a[hreflang="${L.autre}"]`);
   ok(await lien.isVisible() && (await lien.getAttribute("lang")) === L.autre, "language menu: opens with Enter, the other language is named in its own language");
   await lien.focus();
   await Promise.all([p.waitForURL((u) => u.pathname.startsWith(L.autreAccueil + "docs/"), { timeout: 10000 }).catch(() => {}), p.keyboard.press("Enter")]);
-  ok(new URL(p.url()).pathname === `${L.autreAccueil}docs/install-the-tool/` && (await p.evaluate(() => document.documentElement.lang)) === L.autre, "language menu: leads to the same page in the other language");
+  ok(new URL(p.url()).pathname === `${L.autreAccueil}docs/` && (await p.evaluate(() => document.documentElement.lang)) === L.autre, "language menu: leads to the same page in the other language");
   await p.goto(base + L.accueil + "glossary/");
   ok((await p.locator(`header a[hreflang="${L.autre}"]`).first().getAttribute("href")) === `${L.autreAccueil}glossary/`, "header: link to the same page in the other language");
   // jamais de vrais écrans sur l'accueil : l'animation de l'outil est dans la visite guidée

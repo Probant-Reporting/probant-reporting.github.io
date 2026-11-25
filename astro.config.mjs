@@ -14,13 +14,32 @@ const mots = {};
 const motTableau = (lang) => (mots[lang] ??= (() => { try { return JSON.parse(readFileSync(new URL(`./src/content/${lang}/_site.json`, import.meta.url), "utf8")).common.table; } catch { return "table"; } })());
 // un fichier servi tel quel (image, archive) n'a pas de version par langue ; le flux RSS en a une
 const sansLangue = (url) => /\.[a-z0-9]+$/i.test(url.split(/[#?]/)[0]) && !/^\/rss\.xml$/.test(url);
+// La documentation IT est une seule page, /docs/ (demande de Florent du 25/11/2026) : chaque fichier de
+// src/content/<langue>/docs/ y devient une partie, d'ancre son nom. Un lien « /docs/<partie>/ » ou « /docs/<partie>/#x »
+// devient « #<partie> » ou « #x » dans la documentation, et « /docs/#<partie> » ou « /docs/#x » ailleurs.
+const estDoc = (fichier) => /[\\/]content[\\/][^\\/]+[\\/]docs[\\/]/.test(fichier?.path || fichier?.history?.[0] || "");
+function lienDoc(url, dansDoc) {
+  const m = /^\/docs\/([a-z0-9-]+)\/(?:#(.+))?$/.exec(url);
+  if (!m) return url;
+  const ancre = m[2] || m[1];
+  return dansDoc ? `#${ancre}` : `/docs/#${ancre}`;
+}
 function remarkProbant() {
   return (arbre, fichier) => {
-    const lang = langueDe(fichier), prefixe = lang === config.defaultLang ? "" : `${lang}/`;
+    const lang = langueDe(fichier), prefixe = lang === config.defaultLang ? "" : `${lang}/`, dansDoc = estDoc(fichier);
     parcourir(arbre, (n) => {
       if (typeof n.value === "string") n.value = n.value.replaceAll("{name}", config.name);
+      if (n.type === "link") n.url = lienDoc(n.url, dansDoc);
       if (n.type === "link" && n.url.startsWith("/") && !n.url.startsWith("//")) n.url = base + (sansLangue(n.url) ? "" : prefixe) + n.url.slice(1);
     });
+  };
+}
+// Dans la page unique de la documentation, le titre de chaque partie est un h2 : les titres d'un fichier descendent d'un
+// niveau (h2 → h3, h3 → h4).
+function rehypeDocs() {
+  return (arbre, fichier) => {
+    if (!estDoc(fichier)) return;
+    parcourir(arbre, (n) => { if (n.type === "element" && /^h[2-5]$/.test(n.tagName)) n.tagName = `h${Number(n.tagName[1]) + 1}`; });
   };
 }
 // Typographie française des pages françaises (src/lib/typo.mjs) : espaces insécables dans le texte, jamais dans le code.
@@ -29,8 +48,10 @@ function rehypeTypo() {
   return (arbre, fichier) => { if (langueDe(fichier) === "fr") texte(arbre, false); };
 }
 function rehypeTableaux() {
-  return (arbre, fichier) => { let n = 0, titre = ""; const mot = motTableau(langueDe(fichier)); parcourir(arbre, (noeud) => {
-    if (noeud.type === "element" && /^h[23]$/.test(noeud.tagName)) titre = (noeud.children || []).map((c) => c.value || (c.children || []).map((x) => x.value || "").join("")).join("").trim();
+  // sans titre au-dessus, un tableau est nommé d'après sa page : dans la documentation d'un seul tenant, « Tableau 1 »
+  // reviendrait dans chaque partie
+  return (arbre, fichier) => { let n = 0; const mot = motTableau(langueDe(fichier)); let titre = (fichier?.data?.astro?.frontmatter?.title || "").replaceAll("{name}", config.name); if (langueDe(fichier) === "fr") titre = typoFr(titre); parcourir(arbre, (noeud) => {
+    if (noeud.type === "element" && /^h[234]$/.test(noeud.tagName)) titre = (noeud.children || []).map((c) => c.value || (c.children || []).map((x) => x.value || "").join("")).join("").trim();
     if (noeud.properties?.className?.includes?.("tableau-defile")) return; // déjà dans son cadre
     if (noeud.type === "element" && noeud.tagName === "pre") noeud.properties = { ...noeud.properties, tabIndex: 0 }; // code qui défile : atteignable au clavier
     (noeud.children || []).forEach((c, i) => {
@@ -66,5 +87,5 @@ export default defineConfig({
   build: { inlineStylesheets: "always", assets: "assets" },
   compressHTML: true,
   devToolbar: { enabled: false },
-  markdown: { remarkPlugins: [remarkProbant], rehypePlugins: [rehypeTypo, rehypeTableaux, rehypeReplis], syntaxHighlight: false },
+  markdown: { remarkPlugins: [remarkProbant], rehypePlugins: [rehypeDocs, rehypeTypo, rehypeTableaux, rehypeReplis], syntaxHighlight: false },
 });

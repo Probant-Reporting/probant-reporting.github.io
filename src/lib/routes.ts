@@ -15,7 +15,8 @@ export function pagesDuSite(lang: string): Route[] {
   pages.push({ page: "videos", kind: "videos" });
   pages.push({ page: "guides", kind: "guides-index" });
   for (const g of pagesDe("guides", lang)) pages.push({ page: `guides/${g.slug}`, kind: "guide", slug: g.slug });
-  for (const d of pagesDe("docs", lang)) pages.push(d.slug === "index" ? { page: "docs", kind: "docs-index", slug: d.slug } : { page: `docs/${d.slug}`, kind: "doc", slug: d.slug });
+  // la documentation IT : une seule page (les anciennes adresses /docs/<partie>/ renvoient vers son ancre : src/pages/docs/[slug].astro)
+  pages.push({ page: "docs", kind: "docs-index" });
   pages.push({ page: "frameworks", kind: "frameworks-index" });
   for (const m of donnees(lang, "library").templates) pages.push({ page: `frameworks/${m.slug}`, kind: "framework", slug: m.slug });
   for (const kind of ["contact", "legal", "privacy"]) pages.push({ page: kind, kind });

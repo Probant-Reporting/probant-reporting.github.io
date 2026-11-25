@@ -1,0 +1,52 @@
+---
+// La documentation IT, d'un seul tenant (demande de Florent du 25/11/2026) : le titre sur toute la largeur, puis le menu
+// des parties à gauche (replié sur téléphone) et toutes les parties à la suite, chacune sous son titre de niveau 2 et
+// avec son ancre (#prerequisites, #install-the-tool…). Contenu : src/content/<langue>/docs/*.md (synchronisé depuis le
+// dépôt de l'outil, npm run sync) ; leurs titres descendent d'un niveau et leurs liens entre pages deviennent des
+// ancres (astro.config.mjs, rehypeDocs et lienDoc). Les anciennes adresses /docs/<partie>/ renvoient ici
+// (src/pages/docs/[slug].astro).
+import Icon from "./Icon.astro";
+import { site, chemin, fichier } from "../lib/content";
+import { pagesDe, nom, titre } from "../lib/pages";
+import { ancreDoc } from "../lib/docs";
+const { lang } = Astro.props;
+const t = site(lang).docsUi;
+const docs = pagesDe("docs", lang);
+const groupes = [...new Set(docs.filter((x) => x.slug !== "index").map((x) => x.fm.group))];
+const autres = pagesDe("pages", lang).filter((x) => ["security", "changelog"].includes(x.slug));
+const sources = [...new Set(docs.map((d) => d.fm.source).filter(Boolean))];
+const apercu = docs.find((d) => d.slug === "index");
+---
+<div class="docs docs-unique wrap">
+  <header class="docs-titre">
+    <p class="fil"><a href={chemin("guides", lang)}>{site(lang).guidesUi.title}</a></p>
+    <h1>{titre(t.title)}</h1>
+    {t.lead && <p class="lead">{nom(t.lead)}</p>}
+    <p class="pdf-lien"><a href={fichier(`pdf/probant-it-documentation-${lang}.pdf`)} download><Icon name="download" />{site(lang).guidesUi.pdf}<span class="sr">{" "}{site(lang).guidesUi.pdfDocs}</span></a></p>
+  </header>
+  {/* Le même menu deux fois, jamais ensemble : replié (details) sous 960 px, déplié et fixe au-delà. Celui qui ne sert
+      pas est en display:none, donc absent pour le clavier et les lecteurs d'écran. Aucun JavaScript. */}
+  {["etroit", "large"].map((forme) => {
+    const liste = (
+      <>
+        {apercu && <ul><li><a href={`#${ancreDoc(apercu.slug)}`}>{nom(apercu.fm.title)}</a></li></ul>}
+        {groupes.map((g) => (
+          <><p class="docs-groupe">{t.groups[g] || g}</p>
+          <ul>{docs.filter((x) => x.slug !== "index" && x.fm.group === g).map((x) => <li><a href={`#${ancreDoc(x.slug)}`}>{nom(x.fm.title)}</a></li>)}</ul></>
+        ))}
+        <p class="docs-groupe">{t.more}</p>
+        <ul>{autres.map((x) => <li><a href={chemin(x.slug, lang)}>{nom(x.fm.title)}</a></li>)}</ul>
+      </>
+    );
+    return <nav class={`docs-menu docs-menu-${forme}`} aria-label={t.menu}>{forme === "etroit" ? <details><summary>{t.pages}</summary>{liste}</details> : liste}</nav>;
+  })}
+  <article class="docs-article prose">
+    {docs.map((d) => (
+      <section class="docs-partie" aria-labelledby={ancreDoc(d.slug)}>
+        <h2 id={ancreDoc(d.slug)}>{titre(d.fm.title)}</h2>
+        <d.Content />
+      </section>
+    ))}
+    <p class="docs-source">{t.source.replace("{source}", sources.join(", "))}</p>
+  </article>
+</div>

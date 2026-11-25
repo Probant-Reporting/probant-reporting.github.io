@@ -1,0 +1,10 @@
+---
+// Anciennes adresses de la documentation IT dans les autres langues : /fr/docs/<partie>/ → /fr/docs/#<partie>.
+import Redirection from "../../../components/Redirection.astro";
+import { langs, defaultLang } from "../../../lib/content";
+import { pagesDe } from "../../../lib/pages";
+export const getStaticPaths = () => langs.filter((l) => l !== defaultLang).flatMap((lang) =>
+  pagesDe("docs", lang).filter((d) => d.slug !== "index").map((d) => ({ params: { lang, slug: d.slug } })));
+const { lang, slug } = Astro.params;
+---
+<Redirection lang={lang} slug={slug} />

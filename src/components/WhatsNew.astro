@@ -10,10 +10,12 @@ const lien = (u: string) => (u.startsWith("/") ? chemin(u.replace(/^\/|\/$/g, ""
   <h1>{w.title}</h1>
   <p class="lead">{w.lead}</p>
   <p class="suivre"><a href={fluxRss(lang)}>{w.rss}</a> · <a href={`${config.repo}/releases`} rel="noopener">{w.releases}</a> · <a href={chemin("get", lang)}>{w.get}</a></p>
-  {versions(lang).map((v) => (
-    <article class="version" id={ancre(v.version)} aria-labelledby={`${ancre(v.version)}-t`}>
-      <h2 id={`${ancre(v.version)}-t`}>{w.version.replace("{version}", v.version)}</h2>
-      <p class="version-date"><time datetime={v.date}>{dateLongue(v.date, lang)}</time></p>
+  {/* une version = une partie repliable ; la plus récente est ouverte. Une ancre (#v1-0-0) ouvre sa version
+      (src/scripts/ui.js). */}
+  {versions(lang).map((v, i) => (
+    <details class="version repli repli-section" id={ancre(v.version)} open={i === 0}>
+      <summary><span class="version-titre"><h2 id={`${ancre(v.version)}-t`}>{w.version.replace("{version}", v.version)}</h2>
+        <span class="version-date"><time datetime={v.date}>{dateLongue(v.date, lang)}</time></span></span></summary>
       {/* une version pas encore traduite s'affiche dans la langue par défaut, et la page le dit */}
       {v.lang !== lang && <p class="note">{w.untranslated}</p>}
       <div lang={v.lang !== lang ? v.lang : undefined}>
@@ -24,7 +26,7 @@ const lien = (u: string) => (u.startsWith("/") ? chemin(u.replace(/^\/|\/$/g, ""
         </>
       ))}
       </div>
-    </article>
+    </details>
   ))}
   <h2>{w.updateTitle}</h2>
   <p set:html={enLigne(w.updateText, lien)} />

@@ -590,9 +590,14 @@ p, li { text-wrap: pretty; }
 .visite-suite h2 { margin-top: 0; font-family: var(--serif); font-size: clamp(1.4rem, 1.2rem + .8vw, 1.8rem); }
 .visite-suite p { max-width: 38rem; }
 /* What's new : une version = un article */
-.version { margin-top: 36px; padding-top: 8px; border-top: 1px solid var(--line-strong); }
-.version > h2 { margin-top: 20px; }
-.version-date { margin-top: 4px; color: var(--ink-soft); font-size: .95rem; }
+.prose details.version { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line-strong); }
+.prose details.version + details.version { margin-top: 0; }
+.prose details.version[open] { padding-bottom: 16px; }
+.version-titre { display: grid; gap: 2px; }
+.version-date { display: block; color: var(--ink-soft); font-size: .95rem; }
+/* documentation IT d'un seul tenant : une partie par fichier, séparée de la précédente */
+.docs-partie + .docs-partie { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--line); }
+.docs-partie > h2 { margin-top: 0; }
 .suivre { font-size: 1rem; }
 /* Accueil : lien vers la visite sous l'essai, et les trois chemins pour obtenir l'outil */
 .lien-visite { margin-top: 16px; }
