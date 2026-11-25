@@ -151,3 +151,34 @@ for (const zone of ongletsPossibles ? document.querySelectorAll("[data-onglets-a
   addEventListener("hashchange", ouvrirAncreRepli);
   ouvrirAncreRepli();
 }
+
+// documentation IT d'un seul tenant : le menu suit la lecture. La partie dont le titre est passé sous l'en-tête est
+// marquée (aria-current, même style que la page en cours), et le menu fixe défile pour la garder visible.
+{
+  const parties = [...document.querySelectorAll(".docs-unique .docs-partie > h2[id]")];
+  const menus = [...document.querySelectorAll(".docs-unique .docs-menu")];
+  if (parties.length && menus.length) {
+    const liens = menus.map((m) => new Map([...m.querySelectorAll('a[href^="#"]')].map((a) => [decodeURIComponent(a.getAttribute("href").slice(1)), a])));
+    const fixe = document.querySelector(".docs-unique .docs-menu-large");
+    let courant = null, attente = false;
+    const marquer = () => {
+      attente = false;
+      const haut = (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0) + 24;
+      let id = parties[0].id;
+      for (const h of parties) { if (h.getBoundingClientRect().top <= haut) id = h.id; else break; }
+      // tout en bas de la page, la dernière partie (souvent courte) est celle qu'on lit
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) id = parties[parties.length - 1].id;
+      if (id === courant) return;
+      courant = id;
+      for (const l of liens) for (const [cle, a] of l) cle === id ? a.setAttribute("aria-current", "location") : a.removeAttribute("aria-current");
+      const actif = fixe && liens[menus.indexOf(fixe)].get(id);
+      if (actif && fixe.scrollHeight > fixe.clientHeight) {
+        const m = fixe.getBoundingClientRect(), r = actif.getBoundingClientRect();
+        if (r.top < m.top + 8 || r.bottom > m.bottom - 8) fixe.scrollTop += r.top - m.top - fixe.clientHeight / 3;
+      }
+    };
+    addEventListener("scroll", () => { if (!attente) { attente = true; requestAnimationFrame(marquer); } }, { passive: true });
+    addEventListener("resize", marquer);
+    marquer();
+  }
+}
