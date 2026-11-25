@@ -1,135 +1,504 @@
-// Les guides et la documentation IT en PDF, dans la mise en page du site : deux documents par langue, à joindre à un
-// courriel ou à imprimer. Demandé par Florent le 25/11/2026 (« voir en PDF les différents guides, dans le style du site »).
+// Les deux manuels en PDF, mis en page pour l'impression : le manuel d'utilisation (les cinq guides par rôle de l'outil,
+// avec leurs captures d'écran) et le manuel de l'équipe informatique (le guide d'installation et l'hébergement géré,
+// avec leurs captures). Deux documents par langue, à joindre à un courriel ou à imprimer.
+// Demandé par Florent le 25/11/2026 : « un beau PDF avec captures d'écran, qui puisse servir de manuel d'utilisation »
+// (la première version imprimait les pages du site : police trop grosse, aucune capture).
 //
-// Une seule commande, à lancer dans le dossier du site, après « npm run build » :
-//   node qa/guide-pdfs.mjs
-// Options : --dist dist (dossier construit) · --lang en,fr (langues à refaire) · --port 4466 (port libre)
+// Une seule commande, à lancer dans le dossier du site :
+//   node qa/guide-pdfs.mjs --tool <dépôt de l'outil>      (ou TOOL_REPO=<dépôt de l'outil> npm run pdf)
+// Options : --tool <dépôt de l'outil> (ou TOOL_REPO) · --shots <dossier des captures> (par défaut docs/screenshots de
+// l'outil) · --lang en,fr · --keep (garde le HTML intermédiaire, pour le regarder dans un navigateur)
 //
-// Elle sert le site construit, lit la page « Guides and IT documentation » pour savoir quelles pages entrent dans
-// quel document et dans quel ordre, met leur contenu bout à bout, retire l'en-tête, le pied et les menus, puis
-// imprime. Le style est celui du site : ses polices, ses couleurs, ses titres.
+// Les textes viennent de l'outil, comme le dit scripts/sync-tool.mjs pour la documentation : docs/guides/ (anglais),
+// docs/fr/guides/ (français), docs/installation.md et docs/managed_hosting.md (et leurs versions françaises). On ne
+// reprend pas ce que le site ne présente pas : l'assistant IA facultatif et la relecture des traductions (mêmes règles
+// que sync-tool.mjs), ni les renvois vers les autres langues, ni les liens vers des fichiers du dépôt (texte seul).
+// Le qui et le quoi de chaque rôle viennent des guides du site (src/content/<langue>/guides/*.md : who, summary).
 //
 // Ce qu'elle écrit :
-//   public/pdf/probant-guides-<langue>.pdf             les cinq guides par rôle
-//   public/pdf/probant-it-documentation-<langue>.pdf   les pages de la documentation IT
-// Les liens vers ces fichiers sont posés par src/components/GuidesIndex.astro. Aucun numéro de version et aucune
-// date : un guide publié n'en porte pas.
+//   public/pdf/probant-guides-<langue>.pdf             le manuel d'utilisation
+//   public/pdf/probant-it-documentation-<langue>.pdf   le manuel de l'équipe informatique
+// Les liens vers ces fichiers sont posés par src/components/GuidesIndex.astro, DocPage.astro et ProsePage.astro.
+// Aucun numéro de version et aucune date : un guide publié n'en porte pas.
+//
+// Mise en page : A4, Source Sans 3 en 9,5 pt pour le texte et Source Serif 4 pour les titres (les polices du site),
+// couverture, sommaire avec les numéros de page, « L'essentiel » (fonctions clés avec renvois aux pages, rôles en bref ;
+// pour l'IT : ce qu'elle fait et les opérations), chapitres à la suite, étapes numérotées, captures encadrées et
+// légendées, encadrés pour « Important », signets du PDF. Demandé ensuite : « gagner énormément de place » et « des exec
+// sum pour les fonctions clés » (Florent, 25/11/2026). Les numéros du sommaire sont lus dans une
+// première impression (destinations nommées du PDF, pypdf), puis le document est imprimé une seconde fois avec eux.
 import { createRequire } from "node:module";
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import config from "../site.config.mjs";
-import { mkdirSync, existsSync, statSync } from "node:fs";
-import { spawn } from "node:child_process";
-import { join, resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, rmSync, mkdtempSync, readdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { join, resolve, dirname, basename } from "node:path";
+import { tmpdir } from "node:os";
+import { fileURLToPath, pathToFileURL } from "node:url";
 const { chromium } = createRequire(import.meta.url)("playwright");
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const option = (n, d) => { const i = process.argv.indexOf(`--${n}`); return i > 0 ? process.argv[i + 1] : d; };
-const DIST = resolve(option("dist", join(SITE, "dist")));
-const PORT = Number(option("port", "4466")), BASE = `http://127.0.0.1:${PORT}`;
+const OUTIL = resolve(option("tool", process.env.TOOL_REPO || ""));
+const CAPTURES = resolve(option("shots", join(OUTIL, "docs", "screenshots")));
 const LANGUES = option("lang", "en,fr").split(",").map((x) => x.trim()).filter(Boolean);
+const GARDER = process.argv.includes("--keep");
 const SORTIE = join(SITE, "public", "pdf");
-if (!existsSync(join(DIST, "index.html"))) { console.error(`${DIST} : site non construit (npm run build)`); process.exit(2); }
+if (!option("tool", process.env.TOOL_REPO) || !existsSync(join(OUTIL, "docs", "guides"))) { console.error(`${OUTIL} : dépôt de l'outil introuvable (--tool ou TOOL_REPO).`); process.exit(2); }
 mkdirSync(SORTIE, { recursive: true });
+const TRAVAIL = mkdtempSync(join(tmpdir(), "probant-pdf-"));
+const PYTHON = process.env.PYTHON || "python3";
 
-// Ce qui ne doit pas se retrouver dans un document imprimé, et la mise en page des pages mises bout à bout.
-const CSS_IMPRESSION = `
-  @page { size: A4; margin: 18mm 16mm 20mm; }
-  .top, footer, .skip, .film-plein, .pdf-lien { display: none !important; }
-  html, body { background: #fff !important; }
-  main, .page, .docs { padding-block: 0 !important; }
-  .wrap, .page .wrap { max-width: none !important; padding: 0 !important; }
-  .pdf-page { break-before: page; }
-  .pdf-page:first-child { break-before: auto; }
-  .pdf-couverture { break-after: page; padding-top: 18mm; }
-  .pdf-marque { font: 600 13pt/1.2 "Source Sans 3", sans-serif; letter-spacing: .02em; }
-  .pdf-couverture h1 { margin-top: 4mm; font-size: 32pt; line-height: 1.05; }
-  .pdf-sommaire { margin-top: 14mm; padding: 0; list-style: none; border-top: 1px solid #8a8880; max-width: 130mm; }
-  .pdf-sommaire li { padding: 3.2mm 0; border-bottom: 1px solid #dad7ce; font-size: 12pt; }
-  .pdf-adresse { margin-top: 12mm; font-size: 10pt; color: #555a62; }
-  .pdf-page h1 { font-size: 21pt; margin: 0 0 4mm; }
-  .prose h2 { break-after: avoid; } .prose h3 { break-after: avoid; }
-  .prose pre, .prose table, .prose li { break-inside: avoid; }
-  .docs-menu, .docs-toc, .fil, .doc-nav, .guides-cartes, .prose .repli summary ~ * { display: revert; }
-  .docs-menu, .docs-toc { display: none !important; }
-  a { color: inherit; text-decoration: none; }
-  .prose a { text-decoration: underline; text-underline-offset: 2px; }
+// ── Textes propres aux manuels (le reste vient de l'outil et du site) ──────────────────────────────────────────
+const TEXTES = {
+  en: {
+    guides: { fichier: "probant-guides", titre: "User manual", sous: "How to use {name}, role by role, with the screens of the tool." },
+    it: { fichier: "probant-it-documentation", titre: "IT manual", sous: "Install, run, back up, and update {name}: the guide for the IT team." },
+    sommaire: "Contents", roles: "Roles at a glance", role: "Role", qui: "Who", quoi: "What you do", figure: "Figure",
+    lireRoles: "Each chapter is the guide of one role. Read the chapter of your role: it gives each task in a few steps, with the screen that you will see.",
+    demo: "The screens come from the fictitious demo of the tool. No real data is shown.",
+    chapitre: "Chapter", apercu: "At a glance", essentiel: "Key functions", voir: "See:", page: "p.",
+    essentielLead: "What {name} does, in one page. Each function sends you to the tasks that use it.",
+  },
+  fr: {
+    guides: { fichier: "probant-guides", titre: "Manuel d'utilisation", sous: "Utiliser {name}, rôle par rôle, avec les écrans de l'outil." },
+    it: { fichier: "probant-it-documentation", titre: "Manuel de l'équipe informatique", sous: "Installer, exploiter, sauvegarder et mettre à jour {name} : le guide de l'équipe informatique." },
+    sommaire: "Sommaire", roles: "Les rôles en bref", role: "Rôle", qui: "Pour qui", quoi: "Ce que vous faites", figure: "Figure",
+    lireRoles: "Chaque chapitre est le guide d'un rôle. Lisez le chapitre de votre rôle : il donne chaque tâche en quelques étapes, avec l'écran que vous verrez.",
+    demo: "Les écrans viennent de la démo fictive de l'outil. Aucune donnée réelle n'y figure.",
+    chapitre: "Chapitre", apercu: "L'essentiel", essentiel: "L'essentiel", voir: "Voir\u00a0:", page: "p.",
+    essentielLead: "Ce que fait {name}, en une page. Chaque fonction renvoie aux tâches qui s'en servent.",
+  },
+};
+// guides de l'outil, dans l'ordre du site (champ order des guides du site) ; même nom de fichier côté site
+const GUIDES_OUTIL = {
+  en: { dossier: "docs/guides", fichiers: { administrator: "administrator", validator: "validator", contributor: "contributor", reader: "reader", auditor: "auditor" } },
+  fr: { dossier: "docs/fr/guides", fichiers: { administrator: "administrateur", validator: "validateur", contributor: "contributeur", reader: "lecteur", auditor: "auditeur" } },
+};
+// documentation de l'équipe informatique, et ce que le site n'en reprend pas (mêmes règles que scripts/sync-tool.mjs)
+const DOCS_OUTIL = {
+  en: { installation: "docs/installation.md", gere: "docs/managed_hosting.md",
+    ecartees: [/^##+ AI assistant \(optional\)$/, /^##+ Have the translated texts proofread$/], lignes: [/`AI_SOCKET`/, /api\.anthropic\.com/, /AI assistant \(optional\)/] },
+  fr: { installation: "docs/fr/installation.md", gere: "docs/fr/hebergement_cle_en_main.md",
+    ecartees: [/^##+ Assistant IA \(facultatif\)$/, /^##+ Faire relire les textes traduits$/], lignes: [/`AI_SOCKET`/, /api\.anthropic\.com/, /Assistant IA \(facultatif\)/, /^> Version française du guide anglais/] },
+};
+
+// ── Markdown → HTML ─────────────────────────────────────────────────────────────────────────────────────────
+const md = await createMarkdownProcessor({ syntaxHighlight: false, smartypants: false });
+const echappe = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const nomProduit = (t) => t.replace(/\{name\}/g, config.name);
+
+function ecarter(texte, regles) {
+  const sortie = []; let saute = false, niveau = 0;
+  for (const l of texte.split("\n")) {
+    const h = l.match(/^(#{2,4}) /);
+    if (h) {
+      if (saute && h[1].length <= niveau) saute = false;
+      if (!saute && regles.ecartees.some((r) => r.test(l.trim()))) { saute = true; niveau = h[1].length; }
+    }
+    if (!saute && !regles.lignes.some((r) => r.test(l))) sortie.push(l);
+  }
+  return sortie.join("\n");
+}
+function nettoyer(texte) {
+  return texte
+    .replace(/ \(`(?:docs\/history|qa)\/[^`]+`\)/g, "") // renvois vers des fichiers de travail, non publiés
+    .replace(/^.*(?:French version|English version|Version anglaise|Version française)\s?: \[[^\]]+\]\([^)]+\)\.?\s*$/gm, (l) =>
+      l.replace(/\s*(?:French version|English version|Version anglaise|Version française)\s?: \[[^\]]+\]\([^)]+\)\.?/, "")) // renvoi vers l'autre langue
+    .replace(/(?<!!)\[([^\]]+)\]\((?!https?:)[^)]+\)/g, "$1") // liens vers des fichiers du dépôt ou des ancres : texte seul
+    .replace(/\n{3,}/g, "\n\n");
+}
+
+// Les captures sont des PNG de 2 560 px de large : on les passe en JPEG de 1 500 px au plus (300 dpi à la largeur
+// d'une figure), deux fois plus léger que le PNG embarqué tel quel. Une seule conversion par fichier.
+const allegees = new Map();
+function allegee(fichier) {
+  if (!allegees.has(fichier)) {
+    const sortie = join(TRAVAIL, `${allegees.size}-${basename(fichier, ".png")}.jpg`);
+    execFileSync(PYTHON, ["-c", `
+import sys
+from PIL import Image
+im = Image.open(sys.argv[1]).convert("RGB")
+if im.width > 1500: im = im.resize((1500, round(im.height * 1500 / im.width)), Image.LANCZOS)
+im.save(sys.argv[2], "JPEG", quality=82, optimize=True, progressive=True)
+`, fichier, sortie]);
+    allegees.set(fichier, pathToFileURL(sortie).href);
+  }
+  return allegees.get(fichier);
+}
+const capture = (lang, nom) => [join(CAPTURES, lang, nom), join(OUTIL, "docs", "screenshots", lang, nom)].find((f) => existsSync(f));
+
+let numeroFigure = 0;
+async function rendre(texte, lang, T) {
+  // une image seule sur sa ligne = une capture : figure numérotée, légendée par son texte de remplacement
+  const blocs = [];
+  const avecFigures = texte.replace(/^!\[([^\]]*)\]\(([^)]+)\)\s*$/gm, (t, alt, src) => {
+    const nom = basename(src);
+    const fichier = capture(lang, nom);
+    if (!fichier) { console.error(`Capture absente : ${lang}/${nom}`); process.exit(1); }
+    numeroFigure += 1;
+    const telephone = /phone/.test(nom);
+    blocs.push(`<figure class="capture${telephone ? " telephone" : ""}"><img src="${allegee(fichier)}" alt="${echappe(alt)}">` +
+      `<figcaption><span>${T.figure} ${numeroFigure}</span> ${echappe(alt)}</figcaption></figure>`);
+    return `\n\nFIGURE${blocs.length - 1}FIN\n\n`;
+  });
+  let html = (await md.render(avecFigures)).code;
+  html = html.replace(/<p>FIGURE(\d+)FIN<\/p>/g, (t, i) => blocs[Number(i)]);
+  // encadrés : un paragraphe cité qui commence par un mot en gras (Important, Warning, Note…)
+  html = html.replace(/<blockquote>/g, '<aside class="encadre">').replace(/<\/blockquote>/g, "</aside>");
+  return html;
+}
+
+// Un guide de l'outil : son titre, son introduction, ses sections « ## Titre {#ancre} ».
+function decouper(texte) {
+  const [tete, ...sections] = texte.split(/\n(?=## )/);
+  const titre = (tete.match(/^# (.+)$/m) || [, ""])[1].trim();
+  const intro = tete.replace(/^# .+$/m, "").trim();
+  return { titre, intro, sections: sections.map((s) => {
+    const [ligne, ...reste] = s.split("\n");
+    const m = ligne.replace(/^## /, "").match(/^(.*?)\s*(?:\{#([\w-]+)\})?\s*$/);
+    return { titre: m[1].trim(), ancre: m[2] || "", corps: reste.join("\n").trim() };
+  }) };
+}
+const slug = (t) => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/`/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+function frontmatter(texte) {
+  const fm = {}; const m = texte.match(/^---\n([\s\S]*?)\n---/);
+  if (m) for (const l of m[1].split("\n")) { const x = l.match(/^(\w+):\s*(.*)$/); if (x) { try { fm[x[1]] = JSON.parse(x[2]); } catch { fm[x[1]] = x[2]; } } }
+  return fm;
+}
+
+// Fonctions clés de « L'essentiel » : la capture qui la montre et les sections des guides qui s'en servent (identifiants
+// des sections : clé du rôle sur le site + ancre de la section dans l'outil, les mêmes dans toutes les langues).
+const FONCTIONS = {
+  campaigns: { ecran: "admin-campaigns", voir: ["administrator-campaign", "contributor-find", "validator-review"] },
+  evidence: { ecran: "audit-entry", voir: ["contributor-evidence", "auditor-evidence", "administrator-audit-file"] },
+  consolidation: { ecran: "consolidation", voir: ["reader-consolidation", "reader-visualisation"] },
+  consistency: { ecran: "consistency", voir: ["contributor-check", "validator-alerts"] },
+  library: { ecran: "setup-frameworks", voir: ["administrator-setup", "administrator-framework"] },
+  field: { ecran: "entry-phone", voir: ["contributor-enter", "contributor-phone"] },
+};
+
+// ── Les deux documents ───────────────────────────────────────────────────────────────────────────────────────
+async function manuelUtilisation(lang) {
+  const T = TEXTES[lang], G = GUIDES_OUTIL[lang];
+  const roles = readdirSync(join(SITE, "src/content", lang, "guides")).filter((f) => f.endsWith(".md"))
+    .map((f) => ({ cle: f.replace(/\.md$/, ""), fm: frontmatter(readFileSync(join(SITE, "src/content", lang, "guides", f), "utf8")) }))
+    .sort((a, b) => (a.fm.order ?? 99) - (b.fm.order ?? 99));
+  const chapitres = [];
+  for (const r of roles) {
+    const fichier = join(OUTIL, G.dossier, `${G.fichiers[r.cle]}.md`);
+    const guide = decouper(nettoyer(readFileSync(fichier, "utf8")));
+    const sections = [];
+    for (const s of guide.sections) sections.push({ id: `${r.cle}-${s.ancre || slug(s.titre)}`, titre: s.titre, html: await rendre(s.corps, lang, T) });
+    chapitres.push({ id: r.cle, titre: guide.titre, qui: nomProduit(r.fm.who || ""), resume: nomProduit(r.fm.summary || ""),
+      desc: [r.fm.who, r.fm.summary].filter(Boolean).map(nomProduit).join(" · "), intro: await rendre(guide.intro, lang, T), sections });
+  }
+  // L'essentiel : les fonctions clés, avec les textes de la page d'accueil du site (esg.json, features), une capture et
+  // les tâches du manuel qui s'en servent. Les rôles (qui, quoi) sont dans le sommaire.
+  const titres = Object.fromEntries(chapitres.flatMap((c) => c.sections.map((s) => [s.id, s.titre])));
+  const accueil = JSON.parse(readFileSync(join(SITE, "src/content", lang, "esg.json"), "utf8"));
+  const fonctions = accueil.features.filter((f) => FONCTIONS[f.id]).map((f) => {
+    const F = FONCTIONS[f.id];
+    for (const id of F.voir) if (!titres[id]) { console.error(`L'essentiel (${lang}) : section ${id} introuvable dans les guides`); process.exit(1); }
+    const fichier = capture(lang, `${F.ecran}.png`);
+    if (!fichier) { console.error(`Capture absente : ${lang}/${F.ecran}.png`); process.exit(1); }
+    return { ...f, image: allegee(fichier), telephone: /phone/.test(F.ecran), voir: F.voir.map((id) => ({ id, titre: titres[id] })) };
+  });
+  const avant = (lien) => `<section class="avant essentiel"><h2 class="titre-avant" id="essentiel">${T.essentiel}</h2><p class="chapeau">${echappe(nomProduit(T.essentielLead))}</p>` +
+    fonctions.map((f) => `<div class="fonction${f.telephone ? " telephone" : ""}"><img src="${f.image}" alt=""><div><h3>${echappe(nomProduit(f.title))}</h3>` +
+      `<p>${echappe(nomProduit(f.lead))}</p>${f.points.length ? `<ul>${f.points.map((x) => `<li>${echappe(nomProduit(x))}</li>`).join("")}</ul>` : ""}` +
+      `<p class="voir"><b>${T.voir}</b> ${f.voir.map((v) => lien(v.id, v.titre, true)).join(" · ")}</p></div></div>`).join("") +
+    `<p class="note-demo">${T.demo}</p></section>`;
+  return { T, doc: T.guides, chapitres, avant, chapeauSommaire: T.lireRoles,
+    premiers: [{ id: "essentiel", titre: T.essentiel, desc: nomProduit(T.essentielLead) }] };
+}
+
+async function manuelIT(lang) {
+  const T = TEXTES[lang], D = DOCS_OUTIL[lang];
+  const install = nettoyer(ecarter(readFileSync(join(OUTIL, D.installation), "utf8"), D));
+  const gere = nettoyer(ecarter(readFileSync(join(OUTIL, D.gere), "utf8"), D));
+  const [tete, ...sections] = install.split(/\n(?=## )/);
+  const intro = tete.replace(/^# .+$/m, "").trim();
+  const chapitres = [];
+  // une phrase par chapitre, pour le sommaire : celle de la carte de la page du site (src/content/<langue>/_doc_descriptions.json)
+  const descriptions = JSON.parse(readFileSync(join(SITE, "src/content", lang, "_doc_descriptions.json"), "utf8")).descriptions;
+  // clé de chaque chapitre : l'adresse de la page du site (titre anglais de la section de même rang, comme sync-tool.mjs)
+  const sectionsEn = ecarter(readFileSync(join(OUTIL, DOCS_OUTIL.en.installation), "utf8"), DOCS_OUTIL.en).split(/\n(?=## )/).slice(1);
+  const cles = sectionsEn.map((x) => x.split("\n")[0].replace(/^## /, "").toLowerCase().replace(/^\d+\.\s*/, "").replace(/`/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+  if (cles.length !== sections.length) { console.error(`Manuel IT (${lang}) : ${sections.length} chapitres, ${cles.length} en anglais`); process.exit(1); }
+  const chapitre = async (titre, texte, id, cle) => {
+    // les intertitres ### deviennent les sections du chapitre ; ce qui les précède est son introduction
+    const [debut, ...sous] = texte.split(/\n(?=### )/);
+    const secs = [];
+    for (const s of sous) {
+      const [ligne, ...reste] = s.split("\n"); const t = ligne.replace(/^### /, "").replace(/`/g, "").trim();
+      secs.push({ id: `${id}-${slug(t)}`, titre: t, html: await rendre(reste.join("\n").replace(/^#### /gm, "### "), lang, T) });
+    }
+    chapitres.push({ id, titre, cle, desc: nomProduit(descriptions[cle] || ""), intro: await rendre(debut, lang, T), sections: secs });
+  };
+  for (const [i, s] of sections.entries()) {
+    const [ligne, ...reste] = s.split("\n");
+    const titre = ligne.replace(/^## /, "").replace(/^\d+\.\s*/, "").replace(/`/g, "").trim();
+    await chapitre(titre, reste.join("\n").trim(), slug(titre), cles[i]);
+  }
+  const g = gere.split("\n"); const titreGere = g[0].replace(/^# /, "").trim();
+  await chapitre(titreGere, g.slice(1).join("\n").replace(/^## /gm, "### ").replace(/^### (?=#)/gm, "").trim(), "managed-hosting", "managed-hosting");
+  // L'essentiel : ce que fait l'IT (page d'accueil du site : features « it » et specs), puis l'introduction du guide
+  // d'installation (les opérations, leurs commandes et leur durée).
+  const accueil = JSON.parse(readFileSync(join(SITE, "src/content", lang, "esg.json"), "utf8"));
+  const it = accueil.features.find((f) => f.id === "it");
+  const introHtml = await rendre(intro, lang, T);
+  const avant = () => `<section class="avant intro-it"><h2 class="titre-avant" id="apercu">${T.apercu}</h2>` +
+    (it ? `<p class="chapeau">${echappe(nomProduit(it.lead))}</p>` : "") +
+    `<table class="specs"><tbody>${accueil.specs.map((x) => `<tr><th>${echappe(nomProduit(x.term))}</th><td>${echappe(nomProduit(x.value))}</td></tr>`).join("")}</tbody></table>` +
+    `<div class="contenu">${introHtml}</div></section>`;
+  return { T, doc: T.it, chapitres, avant, premiers: [{ id: "apercu", titre: T.apercu, desc: it ? nomProduit(it.lead) : "" }] };
+}
+
+// ── Page HTML ────────────────────────────────────────────────────────────────────────────────────────────────
+const police = (f) => pathToFileURL(join(SITE, "public", "fonts", f)).href;
+const CSS = `
+@font-face { font-family: "Source Sans 3"; font-weight: 400; src: url("${police("source-sans-3-latin-400-normal.woff2")}"); }
+@font-face { font-family: "Source Sans 3"; font-weight: 400; src: url("${police("source-sans-3-latin-ext-400-normal.woff2")}"); unicode-range: U+0100-024F, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Source Sans 3"; font-weight: 600; src: url("${police("source-sans-3-latin-600-normal.woff2")}"); }
+@font-face { font-family: "Source Sans 3"; font-weight: 700; src: url("${police("source-sans-3-latin-700-normal.woff2")}"); }
+@font-face { font-family: "Source Serif 4"; font-weight: 600; src: url("${police("source-serif-4-latin-600-normal.woff2")}"); }
+@font-face { font-family: "Source Serif 4"; font-weight: 600; src: url("${police("source-serif-4-latin-ext-600-normal.woff2")}"); unicode-range: U+0100-024F, U+1E00-1EFF; }
+:root { --encre: #171A1F; --doux: #555A62; --filet: #DAD7CE; --filet-fort: #8A8880; --marque: #334155; --teinte: #E9EAEC; --papier: #F8F7F3; --papier-2: #EFEDE6; }
+@page { size: A4; margin: 14mm 15mm 16mm; }
+* { box-sizing: border-box; }
+html { font-family: "Source Sans 3", Arial, sans-serif; font-size: 9.5pt; line-height: 1.42; color: var(--encre); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; }
+h1, h2, h3, h4 { font-family: "Source Serif 4", Georgia, serif; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; break-after: avoid; }
+p, li { orphans: 3; widows: 3; }
+p { margin: 0 0 2mm; }
+a { color: inherit; text-decoration: none; }
+strong { font-weight: 600; color: var(--marque); }
+code { font-family: "DejaVu Sans Mono", Consolas, monospace; font-size: 8.4pt; background: var(--papier-2); border-radius: 2px; padding: 0 1.2mm; overflow-wrap: anywhere; }
+pre { font-family: "DejaVu Sans Mono", Consolas, monospace; font-size: 7.6pt; line-height: 1.4; background: var(--papier); border: 0.3mm solid var(--filet); border-left: 1mm solid var(--marque); border-radius: 1mm; padding: 2mm 3mm; margin: 0 0 2.6mm; white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid; }
+pre code { background: none; padding: 0; font-size: inherit; }
+ul, ol { margin: 0 0 2.4mm; padding-left: 6mm; }
+li { margin: 0 0 0.8mm; }
+li > p { margin: 0; }
+/* étapes numérotées : pastilles */
+.contenu ol { list-style: none; counter-reset: etape; padding-left: 7.5mm; }
+.contenu ol > li { counter-increment: etape; position: relative; }
+.contenu ol > li::before { content: counter(etape); position: absolute; left: -7.5mm; top: 0.3mm; width: 4.6mm; height: 4.6mm; border-radius: 50%; background: var(--marque); color: #fff; font: 700 7pt/4.6mm "Source Sans 3", sans-serif; text-align: center; }
+table { width: 100%; border-collapse: collapse; margin: 0 0 3mm; font-size: 8.4pt; line-height: 1.35; break-inside: auto; }
+th, td { text-align: left; vertical-align: top; padding: 1.1mm 2mm; border-bottom: 0.3mm solid var(--filet); }
+thead th { background: var(--teinte); font-weight: 600; border-bottom: 0.4mm solid var(--filet-fort); }
+tr { break-inside: avoid; }
+td:first-child code { overflow-wrap: normal; word-break: normal; white-space: nowrap; font-size: 7.8pt; }
+.encadre { margin: 0 0 2.6mm; padding: 2mm 3mm; background: var(--papier); border-left: 1mm solid #A86F00; border-radius: 1mm; break-inside: avoid; }
+.encadre p:last-child { margin-bottom: 0; }
+.encadre strong:first-child { color: #7A4F00; }
+/* captures */
+figure.capture { margin: 2mm auto 3.6mm; width: 124mm; break-inside: avoid; }
+figure.capture img { display: block; width: 100%; border: 0.3mm solid var(--filet-fort); border-radius: 1.4mm; box-shadow: 0 1.2mm 3mm rgba(20, 24, 32, .12); }
+figure.capture.telephone { float: right; width: 40mm; margin: 0 0 3mm 6mm; }
+figure.capture.telephone img { border-radius: 2.4mm; }
+.section::after { content: ""; display: block; clear: both; }
+figure.capture figcaption { margin-top: 1.4mm; font-size: 8pt; line-height: 1.35; color: var(--doux); }
+figure.capture.telephone figcaption { text-align: left; }
+figcaption span { font-weight: 700; color: var(--encre); margin-right: 1mm; }
+/* couverture */
+.couverture { height: 265mm; display: flex; flex-direction: column; break-after: page; }
+.couverture .marque { display: flex; align-items: center; gap: 2.6mm; font: 600 17pt/1 "Source Serif 4", serif; letter-spacing: -0.01em; color: var(--encre); }
+.couverture .marque svg { width: 1.2em; height: 1.2em; flex: none; }
+.couverture h1 { margin: 78mm 0 5mm; padding-top: 6mm; border-top: 1.2mm solid var(--marque); max-width: 150mm; font-size: 38pt; line-height: 1.02; letter-spacing: -0.02em; }
+.couverture .sous { font-size: 14pt; line-height: 1.35; color: var(--doux); max-width: 135mm; }
+.couverture .adresse { margin-top: auto; padding-top: 3mm; border-top: 0.3mm solid var(--filet); display: flex; justify-content: space-between; font-size: 9.5pt; color: var(--doux); }
+/* sommaire : une ligne par chapitre */
+.sommaire { break-after: page; }
+.sommaire h2, .titre-avant { font-size: 20pt; margin: 0 0 3mm; }
+.titre-avant.petit { font-size: 14pt; margin: 6mm 0 2.4mm; }
+.chapeau { font-size: 10.5pt; color: var(--doux); margin-bottom: 5mm; max-width: 160mm; }
+.sommaire ol { list-style: none; padding: 0; margin: 0; border-top: 0.6mm solid var(--marque); }
+.sommaire li { margin: 0; border-bottom: 0.3mm solid var(--filet); break-inside: avoid; }
+.sommaire a { display: grid; grid-template-columns: 14mm 1fr 14mm; align-items: baseline; padding: 3.4mm 0; }
+.sommaire .n { font: 600 20pt/1 "Source Serif 4", serif; color: var(--marque); }
+.sommaire .tx b { display: block; font: 600 13pt/1.25 "Source Serif 4", serif; }
+.sommaire .tx small { display: block; margin-top: 1mm; font-size: 9pt; line-height: 1.35; color: var(--doux); }
+.sommaire .p { text-align: right; font: 600 13pt/1 "Source Serif 4", serif; font-variant-numeric: tabular-nums; }
+.sommaire.serre a { padding: 2.2mm 0; grid-template-columns: 11mm 1fr 12mm; }
+.sommaire.serre .n { font-size: 15pt; }
+.sommaire.serre .tx b, .sommaire.serre .p { font-size: 11.5pt; }
+.sommaire.serre .tx small { font-size: 8.4pt; margin-top: 0.6mm; }
+.avant.intro-it { break-after: page; }
+.avant table.roles td:first-child { white-space: nowrap; font-weight: 600; }
+.fonction { display: flex; gap: 5mm; align-items: flex-start; padding: 3mm 0; border-top: 0.3mm solid var(--filet); break-inside: avoid; }
+.fonction > img { flex: none; width: 52mm; border: 0.3mm solid var(--filet-fort); border-radius: 1mm; }
+.fonction.telephone > img { width: 20mm; margin: 0 16mm; border-radius: 1.6mm; }
+.fonction h3 { font-size: 11.5pt; margin: 0 0 1mm; }
+.fonction p { margin: 0 0 1mm; }
+.fonction ul { margin: 0 0 1mm; font-size: 8.6pt; color: var(--doux); }
+.fonction li { margin: 0; }
+.voir { font-size: 8.4pt; }
+.voir a { color: var(--marque); }
+table.specs { margin-bottom: 4mm; }
+table.specs th { width: 42mm; font-weight: 600; }
+.note-demo { font-size: 8.8pt; color: var(--doux); }
+.intro-it h1 { display: none; }
+/* chapitres */
+.chapitre { margin-top: 9mm; }
+.avant + .chapitre { margin-top: 0; }
+.ouverture { display: flex; gap: 5mm; align-items: flex-start; padding: 4mm 5mm; margin-bottom: 0; background: var(--marque); color: #fff; border-radius: 1.6mm 1.6mm 0 0; break-after: avoid; }
+.ouverture .grand { font: 600 40pt/0.9 "Source Serif 4", serif; color: #A9AFB8; }
+.ouverture .num { margin: 0; font: 700 8pt/1 "Source Sans 3", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #C9CDD3; }
+.ouverture h2 { font-size: 19pt; margin: 1.4mm 0 0; color: #fff; }
+.ouverture .qui { margin: 1.2mm 0 0; font-size: 9.5pt; color: #E3E6EA; }
+/* plan du chapitre : ses sections et leur page */
+.plan { list-style: none; margin: 0 0 4mm; padding: 2.6mm 5mm 2.2mm; columns: 2; column-gap: 9mm; background: var(--papier); border: 0.3mm solid var(--filet); border-top: 0; border-radius: 0 0 1.6mm 1.6mm; break-before: avoid; }
+.plan li { margin: 0; break-inside: avoid; font-size: 8.4pt; line-height: 1.5; }
+.plan a { display: flex; align-items: baseline; }
+.plan a::after { content: ""; order: 1; flex: 1 1 3mm; border-bottom: 0.3mm dotted var(--filet-fort); margin: 0 1mm; transform: translateY(-0.7mm); }
+.plan .p { order: 2; flex: none; font-variant-numeric: tabular-nums; color: var(--doux); }
+.ouverture + .contenu { margin-top: 4mm; }
+.section { margin-top: 4mm; padding-top: 3mm; border-top: 0.3mm solid var(--filet); }
+.section h3 { font: 700 8.6pt/1.3 "Source Sans 3", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--marque); margin: 3.4mm 0 1.4mm; }
+.section h4 { font: 700 9.5pt/1.3 "Source Sans 3", sans-serif; margin: 2.4mm 0 1.2mm; }
+.section h3.ts { font: 600 12.5pt/1.2 "Source Serif 4", serif; letter-spacing: -0.01em; text-transform: none; color: var(--encre); margin: 0 0 1.8mm; }
 `;
 
-async function servir() {
-  const p = spawn("python3", ["-m", "http.server", String(PORT), "--bind", "127.0.0.1"], { cwd: DIST, stdio: "ignore" });
-  p.unref();
-  for (let i = 0; i < 60; i++) {
-    try { const r = await fetch(BASE + "/index.html"); if (r.ok) return p; } catch (e) {}
-    await new Promise((r) => setTimeout(r, 500));
-  }
-  throw new Error("le site construit ne répond pas");
+// Le logo du site (src/components/Logo.astro) : une case et une coche d'auditeur qui en sort.
+const LOGO = `<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="8" width="21" height="21" rx="4" fill="none" stroke="#171A1F" stroke-width="2.5"/>` +
+  `<path d="M9 18.5l5 5L29 5.5" fill="none" stroke="#334155" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function pageHtml(lang, d, numeros) {
+  const { T, doc, chapitres, premiers } = d;
+  const num = (id) => (numeros && numeros[id] ? numeros[id] : "");
+  const lien = (id, t, court) => court ? `<a href="#${id}">${echappe(t)}${num(id) ? `, ${T.page}${"\u00a0"}${num(id)}` : ""}</a>`
+    : `<a href="#${id}"><span class="t">${echappe(t)}</span><span class="p">${num(id)}</span></a>`;
+  const avant = d.avant(lien);
+  // sommaire : une ligne par chapitre (numéro, titre, une phrase, page) ; le détail des sections ouvre chaque chapitre
+  const entree = (id, n, titre, desc) => `<li><a href="#${id}"><span class="n">${n}</span><span class="tx"><b>${echappe(titre)}</b>` +
+    (desc ? `<small>${echappe(desc)}</small>` : "") + `</span><span class="p">${num(id)}</span></a></li>`;
+  const sommaire = `<nav class="sommaire${chapitres.length > 8 ? " serre" : ""}"><h2>${T.sommaire}</h2>` +
+    (d.chapeauSommaire ? `<p class="chapeau">${echappe(d.chapeauSommaire)}</p>` : "") + `<ol>` +
+    premiers.map((x) => entree(x.id, "", x.titre, x.desc)).join("") +
+    chapitres.map((c, i) => entree(c.id, i + 1, c.titre, c.desc)).join("") + `</ol></nav>`;
+  const corps = chapitres.map((c, i) => `<article class="chapitre"><header class="ouverture"><span class="grand">${i + 1}</span><div>` +
+    `<p class="num">${T.chapitre} ${i + 1}</p><h2 id="${c.id}">${echappe(c.titre)}</h2>` +
+    (c.desc ? `<p class="qui">${echappe(c.desc)}</p>` : "") + `</div></header>` +
+    (c.sections.length > 1 ? `<ol class="plan">${c.sections.map((s) => `<li>${lien(s.id, s.titre)}</li>`).join("")}</ol>` : "") +
+    `<div class="contenu">${c.intro}</div>` +
+    c.sections.map((s) => `<section class="section contenu"><h3 class="ts" id="${s.id}">${echappe(s.titre)}</h3>${s.html}</section>`).join("") + `</article>`).join("");
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><title>${echappe(`${config.name} – ${doc.titre}`)}</title><style>${CSS}</style></head><body>` +
+    `<section class="couverture"><p class="marque">${LOGO}${echappe(config.name)}</p><h1>${echappe(doc.titre)}</h1><p class="sous">${echappe(nomProduit(doc.sous))}</p>` +
+    `<p class="adresse"><span>${echappe(config.url.replace(/^https?:\/\//, ""))}</span><span>${echappe(config.licence)}</span></p></section>` +
+    sommaire + avant + corps + `</body></html>`;
 }
 
-const prefixe = (lang) => (lang === "en" ? "" : `/${lang}`);
+// ── Impression ───────────────────────────────────────────────────────────────────────────────────────────────
+// Le pied de page porte le titre et le numéro ; la couverture n'en a pas : elle est imprimée à part, puis les deux
+// fichiers sont réunis (pypdf), signets et liens compris. La couverture ne compte pas : la page qui la suit est la
+// page 1, dans le pied, dans le sommaire et dans les numéros de page du lecteur de PDF (/PageLabels).
+const PY_NUMEROS = `
+import sys, json
+from pypdf import PdfReader
+r = PdfReader(sys.argv[1])
+d = int(sys.argv[2])
+print(json.dumps({k.lstrip("/"): r.get_destination_page_number(v) + 1 - d for k, v in r.named_destinations.items()}))
+`;
+const PY_REUNIR = `
+import sys
+from pypdf import PdfReader, PdfWriter
+from pypdf.constants import PageLabelStyle
+couverture, corps, sortie, titre, auteur = sys.argv[1:6]
+from pypdf.generic import ArrayObject, NameObject, NumberObject, NullObject, FloatObject
+lu = PdfReader(corps)
+cibles = {k.lstrip("/"): (lu.get_destination_page_number(v), v.top) for k, v in lu.named_destinations.items()}
+w = PdfWriter(clone_from=corps)
+w.insert_page(PdfReader(couverture).pages[0], 0)
+# liens internes (sommaire, plans, renvois) : la page et la hauteur écrites en clair, au lieu d'une destination nommée
+# que bien des lecteurs de PDF (navigateurs, téléphones) ne suivent pas
+for page in w.pages:
+    for ref in page.get("/Annots") or []:
+        lien = ref.get_object()
+        dest = lien.get("/Dest")
+        if lien.get("/Subtype") != "/Link" or dest is None or isinstance(dest, ArrayObject):
+            continue
+        n, haut = cibles[str(dest).lstrip("/")]
+        lien[NameObject("/Dest")] = ArrayObject([w.pages[n + 1].indirect_reference, NameObject("/XYZ"), NullObject(),
+                                                FloatObject(haut) if haut is not None else NullObject(), NullObject()])
+w.set_page_label(0, 0, prefix="")
+w.set_page_label(1, len(w.pages) - 1, style=PageLabelStyle.DECIMAL, start=1)
+w.add_metadata({"/Title": titre, "/Author": auteur, "/Creator": "", "/Producer": ""})
+w.page_mode = "/UseOutlines"
+with open(sortie, "wb") as f: w.write(f)
+`;
+const MARGES = { top: "14mm", bottom: "16mm", left: "15mm", right: "15mm" };
 
-async function documents(page, lang) {
-  await page.goto(`${BASE}${prefixe(lang)}/guides/index.html`, { waitUntil: "load" });
-  return page.evaluate(() => [...document.querySelectorAll("#main section")].map((s) => ({
-    titre: s.querySelector("h2")?.textContent.trim() || "",
-    pages: [...s.querySelectorAll(".guides-cartes a")].map((a) => ({ href: a.getAttribute("href"), titre: a.querySelector("b")?.textContent.trim() || "" })),
-  })));
+async function imprimer(nav, lang, d) {
+  const page = await nav.newPage();
+  const fichierHtml = join(TRAVAIL, `${d.doc.fichier}-${lang}.html`);
+  const pied = `<div style="width:100%;font:8pt 'Source Sans 3',Arial,sans-serif;color:#555A62;padding:0 15mm;display:flex;justify-content:space-between">` +
+    `<span>${echappe(config.name)} · ${echappe(d.doc.titre)}</span><span class="pageNumber"></span></div>`;
+  const ouvrir = async (html) => {
+    writeFileSync(fichierHtml, html);
+    await page.goto(pathToFileURL(fichierHtml).href, { waitUntil: "load" });
+    await page.evaluate(() => document.fonts.ready);
+  };
+  // le corps, sans la couverture, avec le pied de page et les signets
+  const corps = async (chemin) => {
+    await page.evaluate(() => document.querySelector(".couverture").remove());
+    await page.pdf({ path: chemin, format: "A4", printBackground: true, tagged: true, outline: true, margin: MARGES,
+      displayHeaderFooter: true, headerTemplate: "<span></span>", footerTemplate: pied });
+  };
+  const corpsPdf = join(TRAVAIL, "corps.pdf"), couvPdf = join(TRAVAIL, "couverture.pdf");
+  // 1re impression : où tombe chaque titre
+  await ouvrir(pageHtml(lang, d, null));
+  await corps(corpsPdf);
+  const numeros = JSON.parse(execFileSync(PYTHON, ["-c", PY_NUMEROS, corpsPdf, "0"]).toString());
+  const sansNumero = [...pageHtml(lang, d, null).matchAll(/<a href="#([^"]+)">/g)].map((m) => m[1]).filter((id) => !numeros[id]);
+  if (sansNumero.length) { console.error(`${d.doc.fichier}-${lang} : sommaire sans numéro de page pour ${sansNumero.slice(0, 5).join(", ")}`); process.exit(1); }
+  // 2e impression, avec les numéros (largeur réservée : rien ne bouge), puis la couverture seule
+  await ouvrir(pageHtml(lang, d, numeros));
+  await page.pdf({ path: couvPdf, format: "A4", printBackground: true, tagged: true, margin: MARGES, pageRanges: "1" });
+  await corps(corpsPdf);
+  const sortie = join(SORTIE, `${d.doc.fichier}-${lang}.pdf`);
+  execFileSync(PYTHON, ["-c", PY_REUNIR, couvPdf, corpsPdf, sortie, `${config.name} – ${d.doc.titre}`, config.name]);
+  const verif = JSON.parse(execFileSync(PYTHON, ["-c", PY_NUMEROS, sortie, "1"]).toString());
+  // chaque lien interne mène à une page écrite en clair, la bonne
+  const PY_LIENS = `
+import sys
+from pypdf import PdfReader
+r = PdfReader(sys.argv[1])
+pages = {p.indirect_reference.idnum: i for i, p in enumerate(r.pages)}
+n = mauvais = 0
+for p in r.pages:
+    for ref in p.get("/Annots") or []:
+        a = ref.get_object()
+        if a.get("/Subtype") == "/Link" and "/Dest" in a:
+            n += 1
+            d = a["/Dest"]
+            if not hasattr(d, "__len__") or isinstance(d, str) or d[0].idnum not in pages:
+                mauvais += 1
+print(n, mauvais)
+`;
+  const [liens, mauvais] = execFileSync(PYTHON, ["-c", PY_LIENS, sortie]).toString().trim().split(" ").map(Number);
+  if (!liens || mauvais) { console.error(`${sortie} : ${mauvais} lien(s) interne(s) sur ${liens} sans page en clair`); process.exit(1); }
+  const ecarts = Object.keys(numeros).filter((k) => verif[k] !== numeros[k]);
+  if (ecarts.length) { console.error(`${sortie} : numéros du sommaire faux pour ${ecarts.slice(0, 5).join(", ")}`); process.exit(1); }
+  await page.close();
+  return sortie;
 }
 
-async function imprimer(page, lang, titre, pages, fichier) {
-  // on part de la première page : ses styles sont ceux du site
-  await page.goto(new URL(pages[0].href, BASE).href, { waitUntil: "load" });
-  const corps = [];
-  for (const x of pages) {
-    const url = new URL(x.href, BASE).href;
-    const html = await page.evaluate(async (u) => {
-      const t = await (await fetch(u)).text();
-      const d = new DOMParser().parseFromString(t, "text/html");
-      const m = d.querySelector("#main");
-      for (const sel of [".docs-menu", ".docs-toc", ".fil", ".pdf-lien", "nav"]) m?.querySelectorAll(sel).forEach((e) => e.remove());
-      return m ? m.innerHTML : "";
-    }, url);
-    corps.push(html);
-  }
-  const sommaire = pages.map((x) => x.titre).filter(Boolean);
-  await page.evaluate(([titre, corps, css, sommaire, marque, adresse]) => {
-    document.querySelectorAll(".top, footer, .skip").forEach((e) => e.remove());
-    const style = document.createElement("style");
-    style.textContent = css;
-    document.head.appendChild(style);
-    const echappe = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
-    const main = document.querySelector("#main");
-    main.innerHTML = `<section class="page pdf-couverture"><div class="wrap">` +
-      `<p class="pdf-marque">${echappe(marque)}</p><h1>${echappe(titre)}</h1>` +
-      `<ol class="pdf-sommaire">${sommaire.map((t) => `<li>${echappe(t)}</li>`).join("")}</ol>` +
-      `<p class="pdf-adresse">${echappe(adresse)}</p></div></section>` +
-      corps.map((h) => `<div class="pdf-page">${h}</div>`).join("");
-  }, [titre, corps, CSS_IMPRESSION, sommaire, config.name, config.url.replace(/^https?:\/\//, "")]);
-  await page.waitForTimeout(400);
-  await page.pdf({ path: fichier, format: "A4", printBackground: true, displayHeaderFooter: true,
-    headerTemplate: "<span></span>",
-    footerTemplate: `<div style="width:100%;font:9pt 'Source Sans 3',sans-serif;color:#555a62;padding:0 16mm;display:flex;justify-content:space-between"><span>${titre}</span><span class="pageNumber"></span></div>`,
-    margin: { top: "18mm", bottom: "20mm", left: "16mm", right: "16mm" } });
-  return (statSync(fichier).size / 1024).toFixed(0) + " Ko";
-}
-
-const serveur = await servir();
-const nav = await chromium.launch({ args: ["--no-proxy-server"] });
+const nav = await chromium.launch();
 try {
   for (const lang of LANGUES) {
-    const c = await nav.newContext({ viewport: { width: 1100, height: 1400 }, colorScheme: "light" });
-    const page = await c.newPage(); page.setDefaultTimeout(30000);
-    const docs = await documents(page, lang);
-    const noms = ["guides", "it-documentation"];
-    for (const [i, d] of docs.entries()) {
-      if (!d.pages.length) continue;
-      const fichier = join(SORTIE, `probant-${noms[i] || `doc-${i}`}-${lang}.pdf`);
-      const poids = await imprimer(page, lang, d.titre, d.pages, fichier);
-      console.log(`${lang} · ${d.titre} · ${d.pages.length} pages · ${poids}`);
+    if (!TEXTES[lang]) { console.error(`Langue sans textes de manuel : ${lang}`); process.exit(2); }
+    for (const fabrique of [manuelUtilisation, manuelIT]) {
+      numeroFigure = 0;
+      const d = await fabrique(lang);
+      const sortie = await imprimer(nav, lang, d);
+      const pages = execFileSync(PYTHON, ["-c", "import sys;from pypdf import PdfReader;print(len(PdfReader(sys.argv[1]).pages))", sortie]).toString().trim();
+      console.log(`${lang} · ${d.doc.titre} · ${pages} pages · ${numeroFigure} figures · ${(statSync(sortie).size / 1024).toFixed(0)} Ko`);
     }
-    await c.close();
   }
 } finally {
   await nav.close();
-  try { serveur.kill("SIGTERM"); } catch (e) {}
+  if (GARDER) console.log(`HTML intermédiaire gardé dans ${TRAVAIL}`); else rmSync(TRAVAIL, { recursive: true, force: true });
 }
 console.log(`\nPDF écrits dans ${SORTIE}.`);
