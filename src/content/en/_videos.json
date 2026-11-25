@@ -4,8 +4,6 @@
     "description": "Seven short films recorded straight from {name}, with the demo company: data entry, consistency checks, consolidation, charts, Excel, templates and the audit."
   },
   "title": "See {name} at work",
-  "lead": "Seven short films, recorded straight from the tool with the demo company. They have no sound, and they are in English.",
-  "note": "Nothing is staged: these are real screens, with made-up data.",
   "durationLabel": "{n} seconds",
   "stepsLabel": "What happens in this film",
   "clips": [
@@ -96,5 +94,6 @@
       ]
     }
   ],
-  "fullscreenHint": "On a phone, tap the full-screen button to read the screen."
+  "fullscreenHint": "On a phone, tap the full-screen button to read the screen.",
+  "play": "Play the film"
 }

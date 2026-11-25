@@ -100,6 +100,8 @@ for (const [lang, L] of Object.entries(LANGUES)) {
   }));
   ok(etapes.length === 7 && etapes.every((e) => e.lie && e.pas >= 4 && e.cache) && etapes.reduce((n, e) => n + e.pas, 0) >= 30,
     "videos: a silent film carries its steps in the page, tied to it and never shown");
+  const lecture = await p.locator(".film-lecture").evaluateAll((bs) => bs.map((x) => ({ bouton: x.tagName === "BUTTON", nomme: (x.getAttribute("aria-label") || "").length > 2, large: x.getBoundingClientRect().width > 300 })));
+  ok(lecture.length === 7 && lecture.every((x) => x.bouton && x.nomme && x.large), "videos: a large play button covers the poster, not just the browser's own one");
   await p.close();
 
   // avec « réduire les animations » : l'image fixe seule, rien d'autre n'est chargé, et le bouton propose la lecture

@@ -4,7 +4,7 @@
 // Un film est muet : son texte doit donc exister ailleurs que dans l'image (WCAG 1.2.1, contenu vidéo seul). Les
 // légendes sont incrustées dans l'image, et la même suite d'étapes est portée par la page, lue par aria-describedby :
 // elle ne s'affiche pas (décision de Florent du 24/11, le bloc dépliant alourdissait la page).
-// Rien ne démarre tout seul : un film ne part qu'au clic, et il n'a pas de son.
+// Rien ne démarre tout seul : un film ne part qu'au clic. Le grand bouton de lecture est posé par le script.
 import Icon from "./Icon.astro";
 import { fichier, donnees } from "../lib/content";
 import { nom } from "../lib/pages";
@@ -14,26 +14,19 @@ const duree = (n: number) => v.durationLabel.replace("{n}", String(n));
 ---
 <div class="page large films"><div class="wrap">
   <h1>{nom(v.title)}</h1>
-  <p class="lead">{nom(v.lead)}</p>
-  <p class="films-note">{nom(v.note)}</p>
-
-  <nav class="films-sommaire" aria-labelledby="films-sommaire-t">
-    <h2 class="sr" id="films-sommaire-t">{nom(v.title)}</h2>
-    <ul>
-      {v.clips.map((c: any) => <li><a href={`#${c.slug}`}><b>{nom(c.title)}</b><span>{duree(c.seconds)}</span></a></li>)}
-    </ul>
-  </nav>
 
   {v.clips.map((c: any) => (
-    <section class="film" id={c.slug} aria-labelledby={`${c.slug}-t`}>
+    <section class="film" id={c.slug} aria-labelledby={`${c.slug}-t`} data-lecture={nom(v.play)}>
       <h2 id={`${c.slug}-t`}>{nom(c.title)}</h2>
       <p class="film-duree"><Icon name="clock" />{duree(c.seconds)}</p>
-      <video class="film-video" controls playsinline preload="none"
-             poster={fichier(`videos/${c.slug}.webp`)}
-             width="1280" height="940"
-             aria-labelledby={`${c.slug}-t`} aria-describedby={`${c.slug}-etapes`}>
-        <source src={fichier(`videos/${c.slug}.mp4`)} type="video/mp4" />
-      </video>
+      <div class="film-cadre">
+        <video class="film-video" controls playsinline preload="none"
+               poster={fichier(`videos/${c.slug}.webp`)}
+               width="1280" height="940"
+               aria-labelledby={`${c.slug}-t`} aria-describedby={`${c.slug}-etapes`}>
+          <source src={fichier(`videos/${c.slug}.mp4`)} type="video/mp4" />
+        </video>
+      </div>
       {/* la suite des étapes, pour qui ne voit pas le film : présente dans la page, jamais affichée */}
       <div class="sr" id={`${c.slug}-etapes`}>
         <p>{nom(v.stepsLabel)}</p>
@@ -43,3 +36,7 @@ const duree = (n: number) => v.durationLabel.replace("{n}", String(n));
     </section>
   ))}
 </div></div>
+
+<script>
+  import "../scripts/films.js";
+</script>

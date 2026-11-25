@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "check": "node qa/check.mjs",
     "og": "node qa/og.mjs",
-    "a11y": "node qa/a11y.mjs"
+    "a11y": "node qa/a11y.mjs",
+    "pdf": "node qa/guide-pdfs.mjs"
   },
   "dependencies": {
     "astro": "^5.0.0"

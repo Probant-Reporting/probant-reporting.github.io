@@ -502,7 +502,10 @@
     "title": "Guides et documentation IT",
     "all": "Guides",
     "metaTitle": "Guide {role} – {name}",
-    "rolesTitle": "Un guide par rôle"
+    "rolesTitle": "Un guide par rôle",
+    "pdf": "Télécharger en PDF",
+    "pdfGuides": "les cinq guides par rôle",
+    "pdfDocs": "toute la documentation IT"
   },
   "frameworksUi": {
     "meta": {

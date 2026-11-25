@@ -4,8 +4,6 @@
     "description": "Sept courts films enregistrés directement dans {name}, avec l’entreprise de démonstration : saisie, contrôles de cohérence, consolidation, graphiques, Excel, modèles, audit."
   },
   "title": "Voir {name} en fonctionnement",
-  "lead": "Sept courts films enregistrés directement dans l’outil, avec l’entreprise de démonstration. Ils sont muets, et en anglais.",
-  "note": "Rien n’est mis en scène : ce sont de vrais écrans, avec des données inventées.",
   "durationLabel": "{n} secondes",
   "stepsLabel": "Ce qui se passe dans ce film",
   "clips": [
@@ -96,5 +94,6 @@
       ]
     }
   ],
-  "fullscreenHint": "Sur téléphone, appuyez sur le bouton plein écran pour lire l’écran."
+  "fullscreenHint": "Sur téléphone, appuyez sur le bouton plein écran pour lire l’écran.",
+  "play": "Lire le film"
 }
