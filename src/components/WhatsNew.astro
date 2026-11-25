@@ -4,6 +4,11 @@ import { chemin, fluxRss, site, config } from "../lib/content";
 import { versions, ancre, enLigne, dateLongue } from "../lib/changelog";
 const { lang } = Astro.props;
 const w = site(lang).whatsNew;
+const groupes = (items: string[]) => {
+  const sortie: { titre: string; items: string[] }[] = [{ titre: "", items: [] }];
+  for (const i of items) { const m = /^\*\*([^*]+)\*\*$/.exec(i.trim()); if (m) sortie.push({ titre: m[1], items: [] }); else sortie[sortie.length - 1].items.push(i); }
+  return sortie.filter((g) => g.titre || g.items.length);
+};
 const lien = (u: string) => (u.startsWith("/") ? chemin(u.replace(/^\/|\/$/g, ""), lang) : u);
 ---
 <div class="page"><div class="wrap prose">
@@ -22,7 +27,13 @@ const lien = (u: string) => (u.startsWith("/") ? chemin(u.replace(/^\/|\/$/g, ""
       {v.sections.map((s) => (
         <>
           {s.title && <h3>{s.title}</h3>}
-          <ul>{s.items.map((i) => <li set:html={enLigne(i, lien)} />)}</ul>
+          {/* une ligne entièrement en gras (« **Lire et partager** ») est un intertitre, pas une puce */}
+          {groupes(s.items).map((g) => (
+            <>
+              {g.titre && <h4>{g.titre}</h4>}
+              {g.items.length > 0 && <ul>{g.items.map((i) => <li set:html={enLigne(i, lien)} />)}</ul>}
+            </>
+          ))}
         </>
       ))}
       </div>

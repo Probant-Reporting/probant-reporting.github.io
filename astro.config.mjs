@@ -24,9 +24,23 @@ function lienDoc(url, dansDoc) {
   const ancre = m[2] || m[1];
   return dansDoc ? `#${ancre}` : `/docs/#${ancre}`;
 }
+// Dans la documentation, les captures de l'outil ne sont pas reprises (npm run sync) : la phrase qui les annonçait
+// (« La saisie fonctionne aussi sur téléphone : ») finirait sur deux-points sans rien derrière. Un paragraphe qui finit
+// par « : » et que ne suit ni liste, ni code, ni tableau, ni citation finit par un point.
+function deuxPointsOrphelins(arbre) {
+  const enfants = arbre.children || [];
+  enfants.forEach((n, i) => {
+    if (n.type !== "paragraph") return;
+    const suivant = enfants[i + 1];
+    if (suivant && ["list", "code", "table", "blockquote", "html"].includes(suivant.type)) return;
+    const dernier = n.children?.[n.children.length - 1];
+    if (dernier?.type === "text" && /\s?:\s*$/.test(dernier.value)) dernier.value = dernier.value.replace(/\s?:\s*$/, ".");
+  });
+}
 function remarkProbant() {
   return (arbre, fichier) => {
     const lang = langueDe(fichier), prefixe = lang === config.defaultLang ? "" : `${lang}/`, dansDoc = estDoc(fichier);
+    if (dansDoc) deuxPointsOrphelins(arbre);
     parcourir(arbre, (n) => {
       if (typeof n.value === "string") n.value = n.value.replaceAll("{name}", config.name);
       if (n.type === "link") n.url = lienDoc(n.url, dansDoc);
