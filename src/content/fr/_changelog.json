@@ -3,6 +3,77 @@
   "source": "CHANGELOG.md",
   "entries": [
     {
+      "version": "1.1.0",
+      "sourceHash": "9430f8abf1f1",
+      "sections": [
+        {
+          "title": "L'essentiel",
+          "items": [
+            "**Pour l'équipe informatique d'une grande entreprise**",
+            "Deux documents à envoyer avant l'installation : ce qu'il faut préparer (`docs/it_request.md`, une page pour l'IT) et un dossier de sécurité avec un questionnaire de sécurité rempli (`docs/security_overview.md`). Les deux existent en français.",
+            "Installation en une commande, depuis l'image publiée, sans Git : `curl -fsSL https://github.com/Probant-Reporting/probant/raw/main/get.sh | sudo sh`. Sur Debian ou Ubuntu, la commande propose d'installer Docker.",
+            "Contrôle du serveur avant l'installation : `get.sh --check` ou `./install.sh --check` lit Docker, la mémoire, le disque, les ports, le nom de domaine, le réseau et l'horloge. Il ne change rien. Le script d'installation fait le même contrôle avant une nouvelle installation.",
+            "Chaque image est signée avec cosign, sans clé : le certificat nomme le workflow du dépôt public et l'étiquette. La liste des composants (SBOM) de l'image lui est jointe sous forme d'attestation signée. La release contient la SBOM et un rapport des failles connues.",
+            "Chaque release contient une liste signée des empreintes SHA-256 des fichiers d'installation. `get.sh`, `update.sh` et `auto-update.sh` contrôlent chaque fichier avec elle avant de le mettre en place.",
+            "Installer et mettre à jour sans accès à Internet : `./install.sh --offline` et `./update.sh --offline` utilisent le paquet hors ligne de la release. Il contient l'image de l'outil, l'image de Caddy pour HTTPS et les fichiers, avec leurs empreintes. Le paquet est signé.",
+            "Réseau d'entreprise : Caddy peut servir le certificat HTTPS de votre entreprise (`--cert`, `--key`), sans Let's Encrypt. L'outil fait confiance aux autorités de certification de votre entreprise pour ses connexions sortantes (`--ca-cert`).",
+            "Connexion avec le compte d'entreprise, par OpenID Connect (Microsoft Entra ID, Google, Okta, Keycloak et d'autres). Elle est éteinte par défaut. Un gestionnaire des espaces la règle pour toute l'installation. Voir `docs/single_sign_on.md`.",
+            "Le fournisseur d'identité prouve seulement qui est la personne. Les comptes, les rôles et les attributions restent dans l'outil, et l'outil ne crée aucun compte. Quand la connexion d'entreprise est allumée, seuls les gestionnaires des espaces gardent leur mot de passe, comme comptes de secours. Une personne qui ne peut pas se connecter avec un mot de passe ne peut pas utiliser d'assistant IA (MCP).",
+            "Un contrôle automatique met à jour une base de démonstration depuis chaque version publiée vers la nouvelle version, en une étape, avec SQLite et avec PostgreSQL. Vous pouvez mettre à jour directement depuis n'importe quelle version publiée.",
+            "**Pour une petite entreprise sans équipe informatique**",
+            "Réglez le serveur d'e-mails dans l'outil, dans **Administration › Paramètres › Hébergement**, cadre **E-mails**, puis envoyez un e-mail de test. Si l'essai échoue, le message donne la cause en clair. Les réglages `SMTP_…` du fichier `.env` marchent toujours.",
+            "Alertes par e-mail sur la santé de l'installation : une sauvegarde échouée ou en retard, un disque presque plein, une tâche de fond arrêtée, des e-mails en échec, une copie externe échouée, une mise à jour automatique. Un e-mail quand un problème apparaît, un rappel au plus une fois par jour, et un e-mail quand il est résolu.",
+            "Les alertes par e-mail sont allumées d'office sur une installation neuve. Sur une installation que vous mettez à jour, elles restent éteintes tant qu'un gestionnaire des espaces ne les allume pas dans **Administration › Paramètres › Santé**.",
+            "Nouvelles lignes de la page **Paramètres › Santé** : une sauvegarde échouée, une sauvegarde illisible, une tâche de fond arrêtée, les erreurs du contrôle des données de la nuit, les autorités de certification ajoutées par l'IT et la copie externe. La page montre aussi les mises à jour automatiques, et les données de démonstration quand des comptes de démonstration d'un serveur ont encore le mot de passe public.",
+            "Mises à jour automatiques, avec retour arrière. Après une installation en une commande, une tâche planifiée du serveur installe chaque nouvelle version la nuit, 3 jours après sa publication par défaut. Dans **Paramètres › Hébergement**, choisissez **L'installer automatiquement**, **Prévenir seulement** ou **Éteint**.",
+            "La mise à jour automatique n'installe qu'une image dont la signature est vérifiée. Elle sauvegarde d'abord chaque espace. Si la nouvelle version ne répond pas, elle revient à la version précédente. `./install.sh --auto-update on` ou `off` pose ou retire la tâche planifiée.",
+            "Copie externe des sauvegardes, réglée dans l'outil : vers un stockage compatible S3 ou vers un serveur SFTP, avec un bouton qui essaie la destination. L'outil copie chaque nouvelle sauvegarde de chaque espace et du registre commun des comptes.",
+            "Par défaut, la copie externe ne supprime rien à la destination. Le guide d'installation explique comment reconstruire un serveur depuis cette seule copie.",
+            "Un nouveau guide, « De la version tout-en-un à un serveur » (`docs/from_pc_to_server.md`), passe les données de la version tout-en-un (Windows, Mac) sur un serveur.",
+            "La version tout-en-un crée sa propre clé secrète à son premier démarrage. Après la mise à jour, chacun se reconnecte une fois. La page **Hébergement** refuse les sauvegardes faites avant. L'IT peut encore en restaurer une avec `restore --unsigned`.",
+            "**Corrections**",
+            "La restauration du registre commun des comptes sur un nouveau serveur à plusieurs espaces ne s'arrête plus sur un espace qui n'a pas encore de tables.",
+            "Une installation sans Git (par exemple avec une image publiée) affiche maintenant le commit de son image à côté du numéro de version.",
+            "La rotation des sauvegardes garde toujours les archives « before-update » de la dernière mise à jour, en plus du nombre de sauvegardes gardées. Vous pouvez revenir à la version précédente jusqu'à la mise à jour suivante.",
+            "`restore --shared` refuse une archive du registre commun faite par une version plus récente, avant de rien changer, et dit quoi restaurer à la place. Après une restauration, il liste les réglages qu'il a remis à zéro et que vous devez régler de nouveau.",
+            "`python manage.py backup` sauvegarde aussi le registre commun des comptes, une fois par jour, comme le fait la tâche de fond. Une installation sans tâches de fond (tâches planifiées d'un hébergement clé en main) sauvegarde maintenant son registre aussi."
+          ]
+        },
+        {
+          "title": "Pour l'IT",
+          "items": [
+            "Mise à jour avec `./update.sh`, depuis n'importe quelle version publiée. La mise à jour sauvegarde d'abord chaque espace, comme avant.",
+            "Nouvelles migrations de la base, appliquées au démarrage : `espaces` 0002 à 0004 et `connexion_entreprise` 0001 dans le registre commun, et `referentiel` 0023 dans chaque espace. Elles ajoutent des tables et des colonnes. Elles ne changent aucune donnée.",
+            "Rien ne change sur une installation existante tant que personne ne l'allume. Ces éléments sont éteints : la connexion d'entreprise, les alertes par e-mail, les mises à jour automatiques (pas de tâche planifiée, choix **Éteint**), la copie externe (pas de destination) et le serveur d'e-mails dans l'outil.",
+            "Nouveaux réglages du fichier `.env` : `HTTPS_CERTIFICATE` (le certificat de votre entreprise, posé par `./install.sh --cert --key`), `COMPANY_SIGN_IN` (`off` éteint la connexion d'entreprise pour toute l'installation) et `COMPANY_SIGN_IN_TIMEOUT` (5 secondes). Sans Docker, `EXTRA_CA_CERTS` donne les autorités de certification de votre entreprise.",
+            "`SMTP_HOST` garde la priorité : quand il est réglé, les réglages `SMTP_…` du fichier `.env` s'appliquent, et l'outil les montre en lecture seule. `PUBLIC_URL` donne aussi l'adresse de retour de la connexion d'entreprise et le lien des alertes par e-mail.",
+            "Un nouveau dossier `certificates/`, à côté de `.env`, contient le certificat de votre entreprise (`https/`, lu par Caddy seulement) et vos autorités de certification (`ca/`). Les sauvegardes de l'outil ne le contiennent pas. Si le dossier existe déjà (par exemple créé par Docker en root), `install.sh` et `update.sh` le gardent tel quel. Seul un certificat à y déposer demande d'y avoir le droit d'écrire. Si cet utilisateur ne peut pas y écrire, la commande dit quoi faire.",
+            "Hébergement clé en main sans workers : ajoutez `python manage.py backup --copy` aux tâches planifiées, toutes les heures, quand une copie externe des sauvegardes est réglée. Pour chaque espace supplémentaire, ajoutez aussi `SPACE=<code> python manage.py backup`.",
+            "Derrière un pare-feu strict, autorisez aussi le HTTPS sortant (TCP 443) du serveur vers `objects.githubusercontent.com` et `release-assets.githubusercontent.com` (fichiers joints aux releases), et vers `tuf-repo-cdn.sigstore.dev` (pour vérifier les signatures). Avec les mises à jour automatiques, le serveur ouvre ces connexions la nuit.",
+            "Les étiquettes du dépôt public s'écrivent en minuscules depuis cette version : `v1.1.0`. La signature d'une image nomme cette étiquette (`…/image.yml@refs/tags/v1.1.0`). L'étiquette de la version 1.0.1 est `V1.0.1`.",
+            "`get.sh` n'installe que la version 1.1.0 ou une version plus récente : les releases de la 1.0.0 et de la 1.0.1 n'ont pas de liste d'empreintes. Une installation de ces versions se met à jour avec son `./update.sh`, comme avant.",
+            "Nouveaux paquets Python dans l'image : PyJWT et cryptography (avec cffi et pycparser) pour la connexion d'entreprise, et paramiko (avec bcrypt, PyNaCl et invoke) pour la copie vers un serveur SFTP. La version tout-en-un ne les a pas. Elle n'a ni la connexion d'entreprise ni la copie externe."
+          ]
+        },
+        {
+          "title": "Sécurité",
+          "items": [
+            "Seuls les gestionnaires des espaces peuvent changer les réglages qui valent pour toute l'installation : serveur d'e-mails, alertes par e-mail, mises à jour automatiques et copie externe des sauvegardes.",
+            "Quand la connexion d'entreprise est allumée, une session ouverte avec un mot de passe suit la même règle qu'une nouvelle connexion.",
+            "Chaque échec de connexion avec un mot de passe donne le même message.",
+            "L'outil refuse les adresses des services de métadonnées des hébergeurs cloud pour les connexions réglées dans l'outil : fournisseur d'identité et copie externe.",
+            "La connexion d'entreprise utilise le flux « authorization code » avec PKCE (`S256`), un `state` à usage unique et un `nonce`. L'outil n'accepte que des jetons d'identité (ID tokens) à signature asymétrique.",
+            "Les secrets enregistrés dans l'outil (mot de passe du serveur d'e-mails, secrets de la copie externe, secret du client de la connexion d'entreprise) sont chiffrés avec une clé tirée de la clé secrète de l'installation. L'outil ne les réaffiche jamais.",
+            "Quand vous changez la destination d'un secret enregistré (serveur d'e-mails, copie externe, fournisseur d'identité), l'outil ne réutilise pas le secret enregistré : vous le saisissez de nouveau, pour qu'il ne parte jamais vers un autre serveur.",
+            "Pour enregistrer un serveur d'e-mails avec la sécurité « Aucune » et un mot de passe, vous devez confirmer que le mot de passe part sans chiffrement.",
+            "La version tout-en-un n'utilise plus une clé secrète fixe : chaque copie crée sa propre clé.",
+            "Les mises à jour automatiques tournent sur le serveur, pas dans l'outil. Le conteneur de l'outil n'a jamais accès à Docker. Il n'ouvre aucune connexion pour chercher une nouvelle version.",
+            "Chaque connexion sortante de l'outil vérifie le certificat du serveur. L'outil ne coupe jamais cette vérification."
+          ]
+        }
+      ]
+    },
+    {
       "version": "1.0.1",
       "sourceHash": "300da676a901",
       "sections": [

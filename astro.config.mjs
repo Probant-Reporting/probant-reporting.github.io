@@ -49,11 +49,19 @@ function remarkProbant() {
   };
 }
 // Dans la page unique de la documentation, le titre de chaque partie est un h2 : les titres d'un fichier descendent d'un
-// niveau (h2 → h3, h3 → h4).
+// niveau (h2 → h3, h3 → h4). Un intertitre dont l'ancre est déjà prise par une autre partie de la page reçoit l'ancre
+// que l'en-tête « ids » lui donne (titre → ancre, écrit par npm run sync) ; Astro garde un id déjà posé.
+const texteDe = (n) => (n.type === "text" ? n.value : (n.children || []).map(texteDe).join(""));
 function rehypeDocs() {
   return (arbre, fichier) => {
     if (!estDoc(fichier)) return;
-    parcourir(arbre, (n) => { if (n.type === "element" && /^h[2-5]$/.test(n.tagName)) n.tagName = `h${Number(n.tagName[1]) + 1}`; });
+    const ids = fichier?.data?.astro?.frontmatter?.ids || {};
+    parcourir(arbre, (n) => {
+      if (n.type !== "element" || !/^h[2-5]$/.test(n.tagName)) return;
+      const id = ids[texteDe(n).trim()];
+      if (id) n.properties = { ...n.properties, id };
+      n.tagName = `h${Number(n.tagName[1]) + 1}`;
+    });
   };
 }
 // Typographie française des pages françaises (src/lib/typo.mjs) : espaces insécables dans le texte, jamais dans le code.

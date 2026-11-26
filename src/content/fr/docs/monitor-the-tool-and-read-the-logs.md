@@ -1,14 +1,68 @@
 ---
 title: "Superviser l'outil et lire les journaux"
-description: "La page ne demande aucune connexion et n'expose aucune donnée sensible. Docker s'en sert aussi : docker compose ps affiche healthy."
+description: "L'outil vous prévient par e-mail : vous n'avez aucune supervision à brancher. Un gestionnaire des espaces allume les alertes dans Administration ›…"
 order: 9
 group: "Run"
 source: "docs/fr/installation.md"
 ---
 
+## Recevoir un e-mail quand quelque chose ne va pas
+
+L'outil vous prévient par e-mail : vous n'avez aucune supervision à brancher. Un gestionnaire des espaces allume les
+alertes dans **Administration › Paramètres › Santé**, encart
+**Alertes par e-mail**, et choisit les destinataires : par défaut les administrateurs de l'espace principal et les
+gestionnaires des espaces, plus d'autres adresses, par exemple la boîte de l'équipe IT. Sur une installation neuve, les
+alertes sont allumées d'office ; une installation qui existait avant les alertes par e-mail les garde éteintes après
+une mise à jour, tant que personne ne les allume. Éteintes, elles le restent. Elles ont besoin du serveur d'e-mails
+(section 7) : sans lui, l'outil n'envoie rien.
+
+Les alertes viennent des mêmes contrôles que la page **Santé** et `/sante/`. Ces contrôles envoient une alerte :
+
+| Contrôle | Alerte quand |
+|---|---|
+| Base de données | Une base ne répond pas, ou le contrôle du démarrage a trouvé une base abîmée |
+| Données de démonstration | La base est celle de la démo, et des comptes de démo ont encore le mot de passe public (jamais en mode développement ni dans la version tout-en-un). L'outil démarre quand même. La ligne disparaît quand plus aucun compte de démo actif n'a le mot de passe public. |
+| Fichiers | L'outil ne peut pas écrire dans son dossier des données |
+| Dernière sauvegarde | La sauvegarde automatique a échoué ou est en retard, la dernière sauvegarde ne se lit pas, ou le dossier des sauvegardes ne se lit pas |
+| Espace disque | Moins de 10 fois `DISK_ALERT_MB` libres (« À regarder »), ou moins de `DISK_ALERT_MB` (« En panne ») |
+| E-mails | Les relances ont échoué, ou le mot de passe enregistré du serveur d'e-mails ne se lit plus |
+| Tâches de fond | Une tâche de fond s'est arrêtée, un import ou un export est bloqué, ou le contrôle des données de la nuit est en retard ou a trouvé des erreurs |
+| Mise à jour de la base | Des migrations ne sont pas appliquées |
+| Copie externe | Une copie des sauvegardes échoue, ou est en retard (section 5) |
+| Mises à jour automatiques | Une nouvelle version est installée, ou attend (« Prévenir seulement »). Une signature est refusée. Le serveur est revenu à la version précédente, ou n'a pas pu y revenir. La minuterie ou la vérification ne fonctionne plus depuis 3 jours (section 6) |
+
+Ces états n'envoient pas d'alerte : aucune sauvegarde encore, sauvegardes automatiques éteintes, restauration qui se
+termine seule, HTTPS (il dépend de la requête).
+
+Les règles :
+
+- L'outil vérifie toutes les 15 minutes, dans les processus `check_data --schedule` et `backup --schedule`. Une seule
+  vérification à la fois pour toute l'installation, même avec plusieurs processus, espaces ou serveurs.
+- Un e-mail quand un problème apparaît. Tout ce qui change dans une même vérification part dans un seul e-mail.
+- Un rappel au plus une fois par jour tant qu'un problème dure, un seul e-mail pour tous les problèmes.
+- Un e-mail quand un problème est résolu (absent à deux vérifications de suite).
+- Chaque personne reçoit l'e-mail dans sa langue. Les autres adresses le reçoivent dans la langue de l'installation.
+  L'e-mail donne le nom de l'espace, ce qui se passe, depuis quand, quoi faire et le lien vers la page **Santé**
+  (`PUBLIC_URL`). Il ne contient jamais de données, de dossier du disque ni le détail pour l'IT.
+- Si l'e-mail ne part pas (serveur d'e-mails en panne), rien ne plante : le problème reste sur la page **Santé** et dans
+  `/sante/`, le journal donne la cause (`Email alerts not sent through …`) et l'outil réessaie à la vérification
+  suivante.
+- L'état des alertes est gardé dans le registre commun, hors de la base de chaque espace : la restauration d'un espace
+  ne renvoie pas les alertes. Après une restauration du registre commun, les alertes des problèmes qui restent repartent
+  une fois.
+- **Envoyer une alerte d'essai** envoie aux destinataires enregistrés un e-mail avec les problèmes du moment.
+
+**Limite :** quand le serveur est éteint, ou quand le registre commun ne répond pas, l'outil ne peut prévenir personne.
+Pour être prévenu aussi dans ce cas, gardez une supervision externe de `/sante/` (ci-dessous), en plus des alertes par
+e-mail.
+
+Sans tâches de fond (hébergement géré avec des tâches planifiées, voir [Hébergement géré](/docs/managed-hosting/)),
+planifiez `python manage.py check_data --alerts` toutes les 15 minutes. La version tout-en-un ne lance aucune tâche de
+fond et n'envoie aucune alerte.
+
 ## Vérifier que l'outil va bien
 
-`GET /sante/` répond avec l'un de ces codes :
+En plus des alertes par e-mail, votre supervision peut appeler `/sante/`. `GET /sante/` répond avec l'un de ces codes :
 
 - `200` avec `{"etat": "ok"}` : l'outil fonctionne.
 - `503` avec `{"etat": "erreur"}` : la base ou le stockage a un problème, la base est abîmée, une restauration a été
@@ -40,11 +94,12 @@ Ce tableau présente les champs du détail :
 | `controle_donnees` | Le dernier contrôle des données : `etat` (`ok`, `problems`, `late` sans contrôle des données depuis 48 heures, `never`), `date`, `erreurs`, `avertissements` |
 | `background_imports` | L'état des imports en arrière-plan (voir « Vérifier qu'un gros import n'est pas bloqué ») |
 | `background_exports` | L'état des gros exports en arrière-plan : `running`, `waiting`, `stuck` (même section) |
+| `external_copy` | La copie externe des sauvegardes ([Copier les sauvegardes hors du serveur](/docs/back-up-and-restore/#copier-les-sauvegardes-hors-du-serveur)) : `state` (`off`, `ok`, `failing`, `late`, `host key to confirm`, `unavailable` dans la version tout-en-un), `last_success`, `pending` (archives pas encore copiées). Une copie en échec ne cause jamais de `503` : elle est dans `avertissement`. |
 
 Un problème de données ou un contrôle en retard ne fait **jamais** répondre `503` à `/sante/`. `503` veut dire
 « l'outil ne répond pas ». Docker ou Clever Cloud redémarrent alors l'outil, et un redémarrage ne corrige ni un
 chiffre ni un planificateur arrêté. Pour surveiller le contrôle de chaque nuit, créez une alerte sur
-`controle_donnees.etat` = `late`.
+`controle_donnees.etat` = `late`. Les alertes par e-mail de l'outil le disent aussi.
 
 Les administrateurs lisent les mêmes mesures, en clair, dans **Administration › Paramètres › Santé** : une ligne par
 contrôle (version, base de données, fichiers, dernière sauvegarde, espace disque, e-mails, tâches de fond, mise à jour de

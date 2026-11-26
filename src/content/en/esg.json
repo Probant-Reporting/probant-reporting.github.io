@@ -95,8 +95,12 @@
       "id": "it",
       "visual": "hosting",
       "title": "IT only takes care of the hosting",
-      "lead": "Apart from hosting and updates, your IT team has nothing to do: everything else is set in the tool.",
-      "points": [],
+      "lead": "Your IT team hosts the tool. Everything else is set in the tool, including the emails and the copy of the backups.",
+      "points": [
+        "Installation with one command, from a signed image. A check of the server comes first.",
+        "Updates can install themselves at night, and go back if the new version doesn't respond.",
+        "A list of what to prepare and a security overview, to send to your IT team."
+      ],
       "cta": true,
       "tab": "For IT"
     }
@@ -108,11 +112,15 @@
     },
     {
       "term": "What IT does",
-      "value": "Hosting and updates, with no development work"
+      "value": "Hosting, and the updates if they are not automatic"
     },
     {
       "term": "Backups",
-      "value": "Automatic"
+      "value": "Automatic, with an optional copy outside the server"
+    },
+    {
+      "term": "Sign-in",
+      "value": "Password, or the company account (off by default)"
     },
     {
       "term": "Spaces",
@@ -237,7 +245,7 @@
     "provideLabel": "What you provide",
     "provideTitle": "You pay for your own hosting",
     "provide": [
-      "On one of your company's servers, or with a hosting service that runs it for you (Clever Cloud). Your IT team installs the updates."
+      "On one of your company's servers, or with a hosting service that runs it for you (Clever Cloud). Your IT team installs the updates, or lets the server install them at night."
     ],
     "priceNote": "for the software"
   },
@@ -282,11 +290,15 @@
       },
       {
         "q": "Can an AI assistant use {name}?",
-        "a": "Yes, if an administrator has allowed it. The feature is off by default. Each person connects their own assistant with a personal token. The assistant has the same rights as that person."
+        "a": "Yes, if an administrator has allowed it. The feature is off by default. Each person connects their own assistant with a personal token. The assistant has the same rights as that person. When company sign-in is on, a person who cannot sign in with a password cannot use an assistant."
+      },
+      {
+        "q": "Can people sign in with their company account?",
+        "a": "Yes, through OpenID Connect, for example Microsoft Entra ID, Google, Okta or Keycloak. It is off by default. A space manager turns it on. Then only the space managers keep their password, as rescue accounts. The company account only proves who the person is: the administrators still create the accounts and give the roles in the tool."
       },
       {
         "q": "What does IT need to do?",
-        "a": "Host the tool and apply the updates. There is nothing to develop."
+        "a": "Host the tool. With the installation in one command, the server can install the updates at night. There is nothing to develop. The IT documentation starts with a list of what to prepare and a security overview."
       }
     ]
   },
@@ -350,7 +362,7 @@
       {
         "anchor": "install-it-on-a-server",
         "title": "Install it on a server",
-        "text": "For your IT team: Docker, one script and a guide."
+        "text": "For your IT team: Docker, one command and a guide."
       },
       {
         "anchor": "managed-hosting",

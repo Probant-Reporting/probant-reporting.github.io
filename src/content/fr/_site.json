@@ -477,14 +477,15 @@
   "docsUi": {
     "meta": {
       "title": "Documentation IT – {name}",
-      "description": "Installer, faire tourner et sécuriser {name} : prérequis, Docker, hébergement clé en main, sauvegardes, mises à jour, e-mails et supervision. Pour l'équipe informatique."
+      "description": "Installer, faire tourner et sécuriser {name} : ce qu'il faut préparer, dossier de sécurité, Docker, hébergement clé en main, sauvegardes, mises à jour, e-mails, supervision et connexion d'entreprise. Pour l'équipe informatique."
     },
     "title": "Documentation IT",
-    "lead": "Installer, faire tourner et mettre à jour {name} sur votre propre serveur avec Docker, ou chez un hébergeur clé en main. Ces pages s'adressent à votre équipe informatique.",
+    "lead": "Préparer, installer, faire tourner et mettre à jour {name} sur votre propre serveur avec Docker, ou chez un hébergeur clé en main. Ces pages s'adressent à votre équipe informatique : elles commencent par ce qu'il faut préparer et un dossier de sécurité.",
     "menu": "Documentation IT",
     "onThisPage": "Sur cette page",
     "source": "Tiré de la documentation de l'outil : {source}.",
     "groups": {
+      "Before you install": "Avant d'installer",
       "Get started": "Démarrer",
       "Run": "Exploiter"
     },
@@ -553,7 +554,7 @@
     "version": "Version {version}",
     "untranslated": "Les notes de cette version ne sont pas encore traduites : elles sont en anglais.",
     "updateTitle": "Comment mettre à jour",
-    "updateText": "Votre équipe informatique lance `./update.sh` dans le dossier de l'outil. Le script sauvegarde d'abord les données, puis installe la nouvelle version. Voir [Mettre à jour l'outil](/docs/update-the-tool/)."
+    "updateText": "Votre équipe informatique lance `./update.sh` dans le dossier de l'outil. Ou, après une installation en une commande, le serveur installe la nouvelle version la nuit. La mise à jour sauvegarde d'abord les données. Voir [Mettre à jour l'outil](/docs/update-the-tool/)."
   },
   "ogImageAlt": "{name} : une solution de reporting open source"
 }

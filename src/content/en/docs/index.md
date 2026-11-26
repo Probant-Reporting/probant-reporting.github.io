@@ -16,9 +16,14 @@ This table shows the main operations:
 
 | Operation | Command | Duration |
 |---|---|---|
-| Install | `./install.sh` | 3 to 5 minutes |
+| Install, with one command | `curl -fsSL https://github.com/Probant-Reporting/probant/raw/main/get.sh \| sudo sh` | About 2 minutes |
+| Install, with Git | `./install.sh` (the server builds the image) | 3 to 5 minutes |
 | Update | `./update.sh` | 1 to 3 minutes |
 | Back up | Automatic every night, or `docker compose exec web python manage.py backup` | A few seconds |
 | Restore | `docker compose exec web python manage.py restore <archive>` | A few seconds |
 
 If you do not want to manage a server, see [Managed hosting (Clever Cloud)](/docs/managed-hosting/).
+To move the data of the all-in-one version from a computer to a server, see [From the all-in-one version to a server](/docs/from-pc-to-server/).
+
+Before the installation, the list of what IT prepares is in [What to prepare](/docs/it-request/), and the file for a
+security review is in [Security overview](/docs/security-overview/).

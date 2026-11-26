@@ -358,7 +358,7 @@ footer .brand { font-size: 1.25rem; }
 .prose p, .prose li { max-width: 46rem; }
 .prose ul, .prose ol { padding-left: 1.3em; display: grid; gap: 6px; }
 .prose li::marker { color: var(--ink-soft); }
-.prose a { color: var(--brand-text); text-underline-offset: 3px; }
+.prose a { color: var(--brand-text); text-underline-offset: 3px; overflow-wrap: anywhere; } /* une adresse écrite en clair (documentation de l'outil) se coupe sur un petit écran */
 .prose code { font-family: var(--mono); font-size: .88em; background: var(--paper-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere; }
 .prose pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: .92rem; line-height: 1.5; }
 .prose pre code { background: none; border: 0; padding: 0; overflow-wrap: normal; }

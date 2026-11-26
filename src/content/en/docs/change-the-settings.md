@@ -21,10 +21,10 @@ This table shows each setting, its default value, and what it does:
 | `HTTP_PORT` | `8000` | The port of the tool. To expose it only to the proxy, write `127.0.0.1:8000`. |
 | `COMPOSE_PROFILES` | Empty | `https` adds Caddy. `postgres` adds PostgreSQL. For both, write `https,postgres`. |
 | `DATABASE_URL` | Empty (SQLite) | The address of the PostgreSQL database. See section 8. |
-| `DJANGO_SECRET_KEY` | Generated | The key that encrypts the sessions and signs the backups. If it is empty, the tool creates it on first startup in `/data/.secret_key`. If you change it, the tool no longer accepts the backups made before in **Administration › Settings › Hosting**: restore them from the command line with `--unsigned`. |
+| `DJANGO_SECRET_KEY` | Generated | The key that encrypts the sessions, signs the backups, and encrypts the secrets saved in the tool (password of the email server, secrets of the external copy, client secret of company sign-in). If it is empty, the tool creates it on first startup in `/data/.secret_key`. If you change it, the tool no longer accepts the backups made before in **Administration › Settings › Hosting**: restore them from the command line with `--unsigned`. The secrets saved in the tool must then be entered again. |
 | `DJANGO_HSTS_SECONDS`, `DJANGO_HSTS_SUBDOMAINS`, `DJANGO_HSTS_PRELOAD` | 1 year, `1`, `0` | The HSTS settings. They apply when `DJANGO_HTTPS=1`. |
 | `CONTENT_SECURITY_POLICY_MODE` | `enforce` | The content security policy of the pages. `enforce` blocks what the policy does not allow. `report-only` blocks nothing: the browser only reports, in its console, what it would block. See “Security, already active” below. |
-| `SMTP_…` | Empty | Emails. See section 7. |
+| `SMTP_…` | Empty | Emails. When `SMTP_HOST` is set, these settings take priority over the email settings entered in the tool. See section 7. |
 | `DEFAULT_LANGUAGE` | `en` | The language of a new installation (interface and contents): one of the seven languages of the interface (`en`, `fr`, `es`, `de`, `it`, `nl`, `pt`). The tool reads it only when it creates the database. Afterwards, change it in **Administration › Settings › Languages**. For a French installation, set `fr` before the first start. |
 | `GUIDED_TOUR` | `on` | `off` removes the short guided tour that people see at their first sign-in. The tour only changes the display. |
 | `TIME_ZONE` | `Europe/Brussels` | The time zone of the installation, as a name from the IANA list, for example `Europe/Paris` or `America/New_York`. The times of the automatic reminders, of the automatic backup and of the nightly data check, "today", and the dates in the exports and in the log use this time zone. **Administration › Settings › Hosting** shows it next to the server time. If the name is unknown, the tool does not start and the log shows the error. |
@@ -39,6 +39,10 @@ This table shows each setting, its default value, and what it does:
 | `GUNICORN_TIMEOUT`, `GUNICORN_KEEPALIVE` | `120`, `75` | The longest time for a request, in seconds, and the time that an idle connection stays open. Keep `GUNICORN_KEEPALIVE` above the idle timeout of the proxy in front of the tool. The Caddy provided closes idle connections after 60 s. If the value is lower, a save can sometimes fail with error 502. |
 | `DJANGO_LOG_LEVEL` | `INFO` | The level of detail of the log (`INFO`, `WARNING`, `ERROR`). |
 | `IMAGE` | Empty (image built on the server) | The published image to use, for example `ghcr.io/probant-reporting/probant:latest`. |
+| `HTTPS_CERTIFICATE` | Empty (automatic certificate) | `files`: Caddy serves the certificate of your company, from `certificates/https/`, and never contacts Let's Encrypt. `./install.sh --cert --key` sets it. See “Company network” in section 2. |
+| `PUBLIC_URL` | Empty | The address of the tool, for example `https://reporting.example.com`, in the emails (reminders, email alerts) and in the redirect URI of company sign-in. Empty: the emails use the first value of `DOMAIN`, and company sign-in uses the address of the page. |
+| `COMPANY_SIGN_IN`, `COMPANY_SIGN_IN_TIMEOUT` | `on`, `5` | `off` turns company sign-in off for the whole installation, whatever the space managers set: the button disappears and everyone can use their password. The timeout is the longest wait, in seconds, for each call to the identity provider. See “Sign-in with a company account” below. |
+| `EXTRA_CA_CERTS` | `/etc/probant/ca` in the image | Without Docker only: the file or the folder of the certificate authorities of your company, for the outgoing connections. Separate several with `:`. With Docker, put the files in `certificates/ca/` (`./install.sh --ca-cert`). See “Company network” in section 2. |
 
 ## Security, already active
 
@@ -98,3 +102,15 @@ is no service, no port, no variable and nothing to install. It stays off until a
 header to the tool: Caddy (the `https` profile) and Clever Cloud do it without any setting. Assistant tokens are never in
 the backups. The log of the tool shows the refused tokens (`serveur_mcp: MCP: token refused`). Details:
 `docs/mcp.md`, section 7.
+
+## Sign-in with a company account
+
+People can sign in with their company account (single sign-on, OpenID Connect). It is off by default. A space manager sets it up in **Administration › Settings › Company sign-in**. What IT does:
+
+| Item | Value |
+|---|---|
+| Network | Allow outgoing HTTPS (TCP 443) from the server to the identity provider. Nothing comes in. |
+| Address | Set `PUBLIC_URL` in `.env`: the tool builds the redirect URI from it. |
+| Rescue | If no space manager can sign in, set `COMPANY_SIGN_IN=off` in `.env`, then run `docker compose up -d`. Everyone can use their password again. |
+
+Details: [Sign in with a company account](/docs/single-sign-on/).

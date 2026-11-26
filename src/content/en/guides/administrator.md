@@ -14,7 +14,7 @@ frameworks, and first campaign. Each step shows what contributors will see, and 
 - **Frameworks**: install a template from the library (the voluntary standard VS, pay transparency, or the ESRS), compose a framework from existing KPIs, or import a file.
 - **Organisations**: choose your levels and their names, and add your organisations.
 - For a site that opens during the year, enter its opening date in **Open since**. The site counts in the totals from that date.
-- **Accounts**: you create the accounts in the tool and give each person a role.
+- **Accounts**: you create the accounts in the tool and give each person a role. If a space manager turns on sign-in with the company account, people sign in with it, but their accounts and roles still come from here.
 
 ## Run a campaign
 
@@ -28,6 +28,10 @@ frameworks, and first campaign. Each step shows what contributors will see, and 
 ## Export
 
 Export readable tables for Excel, or CSV files, from **Import / Export**. For the voluntary standard VS, you can export the values to EFRAG's official workbook, under **Official formats**.
+
+## Check that all is well
+
+Go to **Administration › Settings › Health**. Each line shows **Good**, **To check** or **Failure**, and what to do. At the bottom of the page, a space manager turns on the **Email alerts**: the tool then sends an email when a backup fails, the disk is almost full or a background task stops. On a new installation, they are on as soon as the emails are set. On an installation that existed before them, they stay off until a space manager turns them on. When the server is off, the tool cannot warn anyone.
 
 ## Connect AI assistants
 

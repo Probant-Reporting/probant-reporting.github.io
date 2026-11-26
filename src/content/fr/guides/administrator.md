@@ -14,7 +14,7 @@ référentiels et première campagne. Chaque étape montre ce que verront les co
 - **Référentiels** : installez un modèle de la bibliothèque (la norme volontaire VS, la transparence des rémunérations ou les ESRS), composez un référentiel à partir de KPI existants, ou importez un fichier.
 - **Organisations** : choisissez vos niveaux et leurs noms, puis ajoutez vos organisations.
 - **Ouverte depuis** : pour un site qui ouvre en cours d'année, saisissez sa date d'ouverture dans ce champ. Le site compte dans les totaux à partir de cette date.
-- **Comptes** : vous créez les comptes dans l'outil et vous donnez un rôle à chaque personne.
+- **Comptes** : vous créez les comptes dans l'outil et vous donnez un rôle à chaque personne. Si un gestionnaire des espaces allume la connexion avec le compte d'entreprise, chacun se connecte avec lui, mais les comptes et les rôles viennent toujours d'ici.
 
 ## Piloter une campagne
 
@@ -28,6 +28,10 @@ référentiels et première campagne. Chaque étape montre ce que verront les co
 ## Exporter
 
 Exportez des tableaux lisibles pour Excel, ou des fichiers CSV, depuis **Import / Export**. Pour la norme volontaire VS, vous exportez les valeurs vers le classeur officiel de l'EFRAG, dans **Formats officiels**.
+
+## Vérifier que tout va bien
+
+Allez dans **Administration › Paramètres › Santé**. Chaque ligne montre **Bon**, **À regarder** ou **En panne**, et que faire. En bas de la page, un gestionnaire des espaces allume les **Alertes par e-mail** : l'outil envoie alors un e-mail quand une sauvegarde échoue, que le disque est presque plein ou qu'une tâche de fond s'arrête. Sur une installation neuve, elles sont allumées dès que les e-mails sont réglés. Sur une installation qui existait avant elles, elles restent éteintes tant qu'un gestionnaire des espaces ne les allume pas. Quand le serveur est éteint, l'outil ne peut prévenir personne.
 
 ## Connecter des assistants IA
 

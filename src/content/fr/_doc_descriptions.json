@@ -1,17 +1,21 @@
 {
   "note": "Une vraie phrase par page de la documentation, écrite pour ce site. Les pages elles-mêmes sont copiées depuis le dépôt de l'outil (npm run sync) : ce fichier, non.",
   "descriptions": {
-    "prerequisites": "Ce qu'il faut avant d'installer : un serveur Linux 64 bits avec Docker et Git, un port ouvert ou un nom de domaine pour HTTPS, et un compte SMTP si vous voulez des e-mails.",
-    "install-the-tool": "Récupérez le code et lancez le script d'installation. L'outil démarre dans un seul conteneur Docker, en HTTPS si vous donnez un nom de domaine. Comptez 3 à 5 minutes.",
+    "prerequisites": "Ce qu'il faut avant d'installer : un serveur Linux 64 bits avec Docker et curl, un port ouvert ou un nom de domaine pour HTTPS, et un compte SMTP si vous voulez des e-mails.",
+    "install-the-tool": "Contrôlez le serveur, puis installez en une commande depuis l'image publiée et signée, en 2 minutes environ. Ou installez avec Git, sans accès à Internet, ou avec les certificats de votre entreprise.",
     "managed-hosting": "Faire tourner l'outil chez un hébergeur clé en main, sans serveur à gérer : comment choisir l'hébergeur, et le déploiement sur Clever Cloud, pas à pas.",
     "set-up-the-tool-on-first-launch": "L'assistant Mise en place s'ouvre au premier lancement et compte 8 étapes. Créez le compte administrateur juste après l'installation, avant de diffuser l'adresse.",
     "change-the-settings": "Chaque réglage du fichier .env, avec sa valeur par défaut et son rôle : adresse, HTTPS, port, base de données, tailles maximales et sauvegardes. La sécurité déjà active.",
-    "back-up-and-restore": "Ce que contiennent le volume de données et une sauvegarde, comment sauvegarder l'outil, et comment restaurer une archive, pour un espace ou pour plusieurs. Que faire si une restauration s'arrête.",
-    "update-the-tool": "La mise à jour tient en un script. Il sauvegarde d'abord chaque espace, récupère la nouvelle version et redémarre l'outil. Comment revenir à la version précédente s'il le faut.",
-    "set-up-emails": "Configurer le compte SMTP qui envoie les relances. Sans SMTP, l'outil n'envoie aucun e-mail : il écrit seulement les messages dans le journal.",
+    "back-up-and-restore": "Ce que contient une sauvegarde, comment copier les sauvegardes hors du serveur (stockage compatible S3 ou SFTP), restaurer une archive, et reconstruire un serveur depuis la copie externe.",
+    "update-the-tool": "La mise à jour tient en un script, qui sauvegarde d'abord chaque espace. Après une installation en une commande, le serveur peut installer chaque version la nuit et revenir en arrière en cas d'échec.",
+    "set-up-emails": "Régler le serveur d'e-mails dans l'outil ou dans le fichier .env, puis envoyer un e-mail de test. Sans serveur d'e-mails, l'outil n'envoie aucun e-mail : il écrit seulement les messages dans le journal.",
     "use-postgresql": "SQLite est la base par défaut. Ce que les essais de charge ont mesuré, quand choisir PostgreSQL, et comment y passer avec une installation existante.",
-    "monitor-the-tool-and-read-the-logs": "Vérifier que l'outil va bien et que les données sont cohérentes, suivre un gros import, lire le journal et gérer les services.",
+    "monitor-the-tool-and-read-the-logs": "Recevoir un e-mail quand quelque chose ne va pas, vérifier que l'outil va bien et que les données sont cohérentes, suivre un gros import et lire le journal.",
     "troubleshooting": "Les problèmes courants à l'installation ou en fonctionnement, avec leur cause probable et la solution : adresse refusée, HTTPS, stockage, base de données et espace disque.",
-    "test-the-installation": "Un script reproduit une installation sur une machine vierge, puis vérifie la page de santé, l'assistant, les en-têtes de sécurité, la sauvegarde et la mise à jour."
+    "test-the-installation": "Un script reproduit une installation sur une machine vierge, puis vérifie la page de santé, l'assistant, les en-têtes de sécurité, la sauvegarde et la mise à jour.",
+    "it-request": "La liste de ce que l'IT prépare avant l'installation : hébergement, réseau, compte e-mail, sauvegardes et supervision, et qui fait quoi. Vous pouvez l'envoyer telle quelle à votre équipe informatique.",
+    "security-overview": "Comment l'outil protège les données, pour une revue de sécurité : architecture, données gardées, flux réseau, connexion, chiffrement, sauvegardes, journaux, et réponses aux questions habituelles.",
+    "from-pc-to-server": "Passer les données de la version tout-en-un (Windows, Mac) sur un serveur sans rien perdre : ce que la personne fait sur l'ordinateur, puis ce que l'IT fait sur le serveur.",
+    "single-sign-on": "Permettre à chacun de se connecter avec son compte d'entreprise, par OpenID Connect. Éteinte par défaut. Les comptes restent créés dans l'outil, et les gestionnaires des espaces gardent leur mot de passe."
   }
 }

@@ -21,10 +21,10 @@ Ce tableau présente chaque réglage, sa valeur par défaut et son rôle :
 | `HTTP_PORT` | `8000` | Le port de l'outil. Pour ne l'exposer qu'au proxy, écrivez `127.0.0.1:8000`. |
 | `COMPOSE_PROFILES` | Vide | `https` ajoute Caddy. `postgres` ajoute PostgreSQL. Pour les deux, écrivez `https,postgres`. |
 | `DATABASE_URL` | Vide (SQLite) | L'adresse de la base PostgreSQL. Voir la section 8. |
-| `DJANGO_SECRET_KEY` | Générée | La clé qui chiffre les sessions et signe les sauvegardes. Si elle est vide, l'outil la crée au premier démarrage dans `/data/.secret_key`. Si vous la changez, l'outil n'accepte plus les sauvegardes faites avant dans **Administration › Paramètres › Hébergement** : restaurez-les en ligne de commande avec `--unsigned`. |
+| `DJANGO_SECRET_KEY` | Générée | La clé qui chiffre les sessions, signe les sauvegardes et chiffre les secrets enregistrés dans l'outil (mot de passe du serveur d'e-mails, secrets de la copie externe, secret du client de la connexion d'entreprise). Si elle est vide, l'outil la crée au premier démarrage dans `/data/.secret_key`. Si vous la changez, l'outil n'accepte plus les sauvegardes faites avant dans **Administration › Paramètres › Hébergement** : restaurez-les en ligne de commande avec `--unsigned`. Les secrets enregistrés dans l'outil sont alors à saisir de nouveau. |
 | `DJANGO_HSTS_SECONDS`, `DJANGO_HSTS_SUBDOMAINS`, `DJANGO_HSTS_PRELOAD` | 1 an, `1`, `0` | Les réglages HSTS. Ils s'appliquent quand `DJANGO_HTTPS=1`. |
 | `CONTENT_SECURITY_POLICY_MODE` | `enforce` | La politique de sécurité des contenus des pages. `enforce` bloque ce que la politique ne permet pas. `report-only` ne bloque rien : le navigateur signale seulement, dans sa console, ce qu'il bloquerait. Voir « Sécurité, déjà active » plus bas. |
-| `SMTP_…` | Vide | E-mails. Voir la section 7. |
+| `SMTP_…` | Vide | E-mails. Quand `SMTP_HOST` est rempli, ces réglages passent avant les réglages des e-mails saisis dans l'outil. Voir la section 7. |
 | `DEFAULT_LANGUAGE` | `en` | La langue d'une nouvelle installation (interface et contenus) : l'une des sept langues de l'interface (`en`, `fr`, `es`, `de`, `it`, `nl`, `pt`). L'outil ne la lit qu'à la création de la base. Ensuite, changez-la dans **Administration › Paramètres › Langues**. Pour une installation en français, mettez `fr` avant le premier démarrage. |
 | `GUIDED_TOUR` | `on` | `off` retire la courte visite guidée que les personnes voient à leur première connexion. La visite ne change que l'affichage. |
 | `MAX_EVIDENCE_SIZE_MB`, `MAX_IMPORT_SIZE_MB` | `5`, `10` | La taille maximale, en Mo, d'une preuve et d'un fichier d'import. |
@@ -39,6 +39,10 @@ Ce tableau présente chaque réglage, sa valeur par défaut et son rôle :
 | `GUNICORN_TIMEOUT`, `GUNICORN_KEEPALIVE` | `120`, `75` | La durée maximale d'une requête, en secondes, et la durée pendant laquelle une connexion inutilisée reste ouverte. Gardez `GUNICORN_KEEPALIVE` au-dessus du délai du proxy placé devant l'outil. Le Caddy fourni ferme les connexions inutilisées après 60 s. Si la valeur est plus basse, un enregistrement peut de temps en temps échouer avec l'erreur 502. |
 | `DJANGO_LOG_LEVEL` | `INFO` | Le niveau de détail du journal (`INFO`, `WARNING`, `ERROR`). |
 | `IMAGE` | Vide (image construite sur le serveur) | L'image publiée à utiliser, par exemple `ghcr.io/probant-reporting/probant:latest`. |
+| `HTTPS_CERTIFICATE` | Vide (certificat automatique) | `files` : Caddy sert le certificat de votre entreprise, depuis `certificates/https/`, et ne contacte jamais Let's Encrypt. `./install.sh --cert --key` le règle. Voir « Réseau d'entreprise » en section 2. |
+| `PUBLIC_URL` | Vide | L'adresse de l'outil, par exemple `https://reporting.example.com`, dans les e-mails (relances, alertes par e-mail) et dans l'adresse de retour (redirect URI) de la connexion d'entreprise. Vide : les e-mails prennent la première valeur de `DOMAIN`, et la connexion d'entreprise l'adresse de la page. |
+| `COMPANY_SIGN_IN`, `COMPANY_SIGN_IN_TIMEOUT` | `on`, `5` | `off` coupe la connexion d'entreprise pour toute l'installation, quel que soit le réglage des gestionnaires des espaces : le bouton disparaît et chacun peut utiliser son mot de passe. Le délai est l'attente la plus longue, en secondes, de chaque appel au fournisseur d'identité. Voir « Connexion avec le compte d'entreprise » plus bas. |
+| `EXTRA_CA_CERTS` | `/etc/probant/ca` dans l'image | Sans Docker seulement : le fichier ou le dossier des autorités de certification de votre entreprise, pour les connexions sortantes. Séparez-en plusieurs par `:`. Avec Docker, mettez les fichiers dans `certificates/ca/` (`./install.sh --ca-cert`). Voir « Réseau d'entreprise » en section 2. |
 
 ## Sécurité, déjà active
 
@@ -99,3 +103,15 @@ pas permis dans **Administration › Paramètres › Assistants**. Seule conditi
 `Authorization` à l'outil (Caddy, profil `https`, et Clever Cloud le font sans réglage). Les jetons des assistants ne
 sont jamais dans les sauvegardes. Le journal de l'outil montre les jetons refusés (`serveur_mcp: MCP: token refused`).
 Détails : `assistants_mcp.md`, section 7.
+
+## Connexion avec le compte d'entreprise
+
+Chacun peut se connecter avec son compte d'entreprise (connexion unique, OpenID Connect). Elle est éteinte par défaut. Un gestionnaire des espaces la règle dans **Administration › Paramètres › Connexion d'entreprise**. Ce que fait l'IT :
+
+| Élément | Valeur |
+|---|---|
+| Réseau | Autorisez les connexions HTTPS sortantes (TCP 443) du serveur vers le fournisseur d'identité. Rien n'entre. |
+| Adresse | Réglez `PUBLIC_URL` dans `.env` : l'outil en tire l'adresse de retour (redirect URI). |
+| Secours | Si aucun gestionnaire des espaces ne peut se connecter, réglez `COMPANY_SIGN_IN=off` dans `.env`, puis lancez `docker compose up -d`. Chacun peut de nouveau utiliser son mot de passe. |
+
+Détails : [Se connecter avec le compte d'entreprise](/docs/single-sign-on/).

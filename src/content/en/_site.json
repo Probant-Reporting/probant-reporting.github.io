@@ -477,14 +477,15 @@
   "docsUi": {
     "meta": {
       "title": "IT documentation – {name}",
-      "description": "Install, run and secure {name}: prerequisites, Docker, managed hosting, backups, updates, emails and monitoring. For IT teams."
+      "description": "Install, run and secure {name}: what to prepare, security overview, Docker, managed hosting, backups, updates, emails, monitoring and company sign-in. For IT teams."
     },
     "title": "IT documentation",
-    "lead": "Install, run and update {name} on your own server with Docker, or with a managed hosting provider. These pages are for your IT team.",
+    "lead": "Prepare, install, run and update {name} on your own server with Docker, or with a managed hosting provider. These pages are for your IT team: they start with what to prepare and a security overview.",
     "menu": "IT documentation",
     "onThisPage": "On this page",
     "source": "From the tool's documentation: {source}.",
     "groups": {
+      "Before you install": "Before you install",
       "Get started": "Get started",
       "Run": "Run"
     },
@@ -553,7 +554,7 @@
     "version": "Version {version}",
     "untranslated": "The notes of this version are in English.",
     "updateTitle": "How to update",
-    "updateText": "Your IT team runs `./update.sh` in the tool's folder. The script backs up the data first, then installs the new version. See [Update the tool](/docs/update-the-tool/)."
+    "updateText": "Your IT team runs `./update.sh` in the tool's folder. Or, after an installation in one command, the server installs the new version at night. The update backs up the data first. See [Update the tool](/docs/update-the-tool/)."
   },
   "ogImageAlt": "{name}: an open source reporting solution"
 }

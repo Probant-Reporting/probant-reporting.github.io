@@ -21,7 +21,7 @@ Le tableau compare les deux hébergeurs étudiés :
 | Hébergeur | Base | Fichiers déposés (preuves, logo) | Verdict |
 |---|---|---|---|
 | **Clever Cloud** (France) | Add-on PostgreSQL | **FS Bucket** : un dossier persistant monté dans l'application (mode Python, pas Docker) | **Recommandé** : l'outil fonctionne tel quel |
-| Scalingo (France) | Add-on PostgreSQL | Pas de dossier persistant : un stockage objet (S3) est nécessaire, et l'outil ne le gère pas encore | Pas en version 1.0 |
+| Scalingo (France) | Add-on PostgreSQL | Pas de dossier persistant : un stockage objet (S3) est nécessaire, et l'outil ne le gère pas encore | Non pris en charge |
 
 La documentation de référence de Clever Cloud :
 
@@ -41,7 +41,9 @@ Le déploiement prend environ 30 minutes.
 Il vous faut :
 
 - Un compte Clever Cloud
-- Les réglages du serveur d'e-mails (SMTP) qui envoie les relances et les e-mails de test
+- Les réglages du serveur d'e-mails (SMTP) qui envoie les relances, les alertes par e-mail et les e-mails de test.
+  Vous pouvez aussi laisser de côté les lignes `SMTP_…` ci-dessous, et régler le serveur d'e-mails dans l'outil
+  après le déploiement (voir [Installation](/docs/), section 7).
 
 ### Créer l'application et ses add-ons
 
@@ -94,16 +96,26 @@ Le tableau indique ce que règlent ces lignes :
 | `CC_PYTHON_MANAGE_TASKS` | Lance la même préparation que l'image Docker : fichiers statiques, sauvegarde automatique si la base doit changer, et migrations. |
 | Base de données | Vous n'écrivez aucune variable. L'outil lit `POSTGRESQL_ADDON_URI`, que l'add-on fournit. Si l'add-on donne un autre nom, écrivez `DATABASE_URL=postgres://…` avec la valeur de l'add-on. |
 | `CC_WORKER_COMMAND_…` | Ces tâches tournent à côté du site : la sauvegarde quotidienne, les relances automatiques, le contrôle des données de chaque nuit et les gros imports de valeurs. |
-| `CC_WORKER_COMMAND_2` | Le contrôle des données lit seulement la base et vérifie sa cohérence, à `DATA_CHECK_TIME` (03:30 par défaut). Au même moment, le ménage de la nuit efface les sessions terminées et les anciens éléments supprimés. |
+| `CC_WORKER_COMMAND_2` | Le contrôle des données lit seulement la base et vérifie sa cohérence, à `DATA_CHECK_TIME` (03:30 par défaut). Au même moment, le ménage de la nuit efface les sessions terminées et les anciens éléments supprimés. Toutes les 15 minutes, ce worker envoie aussi les alertes par e-mail de la santé de l'installation, si elles sont allumées (**Paramètres › Santé**). |
 | `CC_WORKER_COMMAND_3` | Fait les gros imports de valeurs, au-delà de `BACKGROUND_IMPORT_ROWS` lignes (5 000 par défaut), et les gros exports (seuil dans **Paramètres › Hébergement**). L'outil affiche une barre d'avancement. Sans ce worker, le site fait lui-même les gros imports, ce qui est moins robuste à un redémarrage. |
 | `DOMAIN` | Le nom en `cleverapps.io`, ou votre propre nom de domaine après l'avoir ajouté dans l'onglet **Domain names**. Clever Cloud fournit HTTPS. |
 | `TIME_ZONE` (facultatif) | Le fuseau horaire de l'installation, `Europe/Brussels` par défaut. Écrivez un nom IANA, par exemple `TIME_ZONE=America/New_York`. L'heure des relances, de la sauvegarde et du contrôle des données, et les dates des exports le suivent. Si le nom est inconnu, l'outil ne démarre pas. |
+| `PUBLIC_URL` (facultatif) | L'adresse de l'outil dans les e-mails et dans l'adresse de retour (redirect URI) de la connexion d'entreprise, par exemple `https://reporting.example.com`. Réglez-la quand vous ajoutez votre propre nom de domaine. |
 
 Si votre offre n'a pas de workers, utilisez les tâches planifiées (« cron ») de Clever Cloud avec ces commandes :
 
-- `python manage.py backup`
+- `python manage.py backup`, puis `python manage.py backup --copy` si une copie externe des sauvegardes est réglée
+  (**Paramètres › Hébergement**, encart **Copie hors du serveur**). La commande sauvegarde aussi le registre commun
+  (comptes et réglages de l'installation) une fois par jour, dans `data/backups/shared`. Avec plusieurs espaces, ajoutez
+  `SPACE=<code> python manage.py backup` pour chaque autre espace, l'un après l'autre : le registre n'est sauvegardé
+  qu'une fois.
 - `python manage.py send_reminders --auto`
 - `python manage.py check_data`
+- `python manage.py check_data --alerts`, toutes les 15 minutes : les alertes par e-mail de la santé de l'installation
+  (rien n'est envoyé tant que les alertes sont éteintes)
+- `python manage.py backup --copy`, toutes les heures, si une destination est réglée pour la copie externe des
+  sauvegardes (**Paramètres › Hébergement**) : copie les archives pas encore copiées (sans destination, la commande
+  s'arrête sur une erreur)
 
 `send_reminders --auto` n'envoie les relances d'un espace qu'une fois par jour : un second lancement le même jour
 n'envoie rien (`--simulation` dit toujours qui serait relancé).
@@ -145,11 +157,13 @@ Le tableau indique comment faire les opérations courantes chez Clever Cloud :
 | Mettre à jour | Poussez la nouvelle version sur la branche déployée, ou cliquez sur **Redeploy**. La préparation sauvegarde la base avant de la migrer. |
 | Sauvegarder | Par défaut, l'outil sauvegarde automatiquement chaque nuit dans `data/backups`, sur le FS Bucket. S'y ajoutent les sauvegardes de l'add-on PostgreSQL. Pour télécharger une sauvegarde, allez dans **Administration › Paramètres › Hébergement**. |
 | Restaurer | Depuis l'outil, allez dans **Administration › Paramètres › Hébergement** et cliquez sur **Restaurer…**. Si l'outil ne démarre plus, ouvrez une console SSH (`clever ssh`). Lancez `python manage.py restore <archive>`, puis redémarrez l'application. |
-| Revenir à la version précédente | Prévenez les équipes. Déployez la version précédente (poussez le commit précédent sur la branche déployée) : la préparation n'applique aucune migration. Ouvrez ensuite une console SSH (`clever ssh`) et restaurez l'archive « before-update » de chaque espace : `python manage.py restore <archive> --yes --rebuild`, et `SPACE=<code> python manage.py restore <archive de cet espace> --yes --rebuild`. Redémarrez ensuite l'application. Si la version précédente n'a pas `--rebuild` (les plus anciennes versions) : avant de la déployer, défaites les changements de la base faits par la mise à jour dans une console SSH de la version installée, puis restaurez sans `--rebuild`. Les commandes sont dans [Installation](/docs/), « Revenir à une version antérieure avec PostgreSQL ». |
+| Revenir à la version précédente | Prévenez les équipes. Déployez la version précédente (poussez le commit précédent sur la branche déployée) : la préparation n'applique aucune migration. Ouvrez ensuite une console SSH (`clever ssh`) et restaurez l'archive « before-update » de chaque espace : `python manage.py restore <archive> --yes --rebuild`, et `SPACE=<code> python manage.py restore <archive de cet espace> --yes --rebuild`. Redémarrez ensuite l'application. Voir aussi [Installation](/docs/), « Revenir à la version précédente ». |
 | Utiliser plusieurs espaces | Le registre commun et chaque espace sont des schémas de la même base PostgreSQL (`commun`, `espace_<code>`). Le compte de l'add-on doit pouvoir créer des schémas. Le registre ouvre ses propres connexions (environ deux fois plus qu'avant). Vérifiez la limite de connexions de l'offre. Au plus : processus × fils × (2 + nombre d'espaces supplémentaires) pour le serveur, plus 4 × (2 + nombre d'espaces supplémentaires) pour les tâches de fond ; PostgreSQL en permet 100 par défaut, assez pour 2 espaces supplémentaires avec les réglages par défaut. À partir de 3, ou si l'offre en permet moins : `SPACES_CONN_MAX_AGE=0`, moins de `GUNICORN_THREADS` ou de `GUNICORN_WORKERS`, ou une offre plus grande. Pour en savoir plus (en anglais), voir Spaces, § 2. |
-| Superviser | Branchez la surveillance de Clever Cloud (ou un outil externe) sur `/sante/`. |
+| Superviser | L'outil envoie des alertes par e-mail sur sa santé (voir le worker `CC_WORKER_COMMAND_2`, ou `check_data --alerts`). Branchez aussi la surveillance de Clever Cloud (ou un outil externe) sur `/sante/` : elle prévient aussi quand l'application est arrêtée. |
+| Copier les sauvegardes hors de la plateforme | Réglez un stockage compatible S3 ou un serveur SFTP dans **Administration › Paramètres › Hébergement**, encart **Copie hors du serveur** (voir [Installation](/docs/), « Copier les sauvegardes hors du serveur »). |
 | Limiter les essais de connexion | Rien à régler. L'outil compte les connexions manquées dans `data/sign-in-attempts`, sur le FS Bucket : tous les processus et toutes les instances de l'application partagent ce compte, qui reste après un redéploiement. |
 | Lire le journal | Ouvrez l'onglet **Logs** de la console, ou lancez `clever logs`. |
+| Mises à jour automatiques | Pas disponibles en hébergement clé en main : la page **Paramètres › Hébergement** le dit. Pour mettre à jour, redéployez (première ligne). |
 
 ## Limites connues
 
@@ -160,4 +174,4 @@ Le tableau indique les limites de l'hébergement clé en main et leurs conséque
 | Les FS Buckets sont faits pour des fichiers, pas pour une base. | La base va dans l'add-on PostgreSQL, jamais en SQLite sur le FS Bucket. |
 | Clever Cloud sauvegarde le FS Bucket toutes les 24 heures, avec 72 heures de rétention. | Les sauvegardes de l'outil restent la référence. L'outil garde par défaut les 14 plus récentes (14 jours avec la sauvegarde quotidienne). Téléchargez-les de temps en temps. |
 | Une sauvegarde garde les fichiers de preuve qui existaient au moment où elle a été faite. | Un fichier de preuve qu'un administrateur supprime (**Administration › Preuves à supprimer**) reste dans les sauvegardes existantes, dans `data/backups` et dans les sauvegardes du FS Bucket (72 heures), jusqu'à leur remplacement. Une restauration le remet dans la liste. Baissez le nombre de sauvegardes gardées pour les données très sensibles, et supprimez vos copies externes selon un calendrier équivalent. Voir [Installation](/docs/), « Sauvegardes et preuves supprimées ». |
-| Scalingo, et tout hébergeur sans dossier persistant, demandent un stockage objet. | Le stockage objet (S3) des preuves est nécessaire (django-storages). Il est prévu après la version 1.0, si le besoin se confirme. |
+| Scalingo, et tout hébergeur sans dossier persistant, demandent un stockage objet. | Le stockage objet (S3) des preuves est nécessaire (django-storages). Il pourra venir dans une version ultérieure, si le besoin se confirme. La copie externe des sauvegardes vers S3 ne le remplace pas. |

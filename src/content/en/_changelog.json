@@ -2,6 +2,77 @@
   "source": "CHANGELOG.md",
   "entries": [
     {
+      "version": "1.1.0",
+      "date": "2026-11-25",
+      "sections": [
+        {
+          "title": "Highlights",
+          "items": [
+            "**For the IT team of a large company**",
+            "Two documents to send before the installation: what to prepare (`docs/it_request.md`, one page for IT) and a security overview with a filled-in security questionnaire (`docs/security_overview.md`). Both exist in French.",
+            "Install with one command, from the published image, without Git: `curl -fsSL https://github.com/Probant-Reporting/probant/raw/main/get.sh | sudo sh`. On Debian or Ubuntu, the command offers to install Docker.",
+            "Check the server before you install: `get.sh --check` or `./install.sh --check` reads Docker, memory, disk, ports, domain name, network, and clock. It changes nothing. The installer runs the same check before a new installation.",
+            "Each image is signed with cosign, without a key: the certificate names the workflow of the public repository and the tag. The SBOM of the image is attached to it as a signed attestation. The release has the SBOM and a report of the known vulnerabilities.",
+            "Each release has a signed list of the SHA-256 sums of the installation files. `get.sh`, `update.sh`, and `auto-update.sh` check each file against it before they put it in place.",
+            "Install and update without Internet access: `./install.sh --offline` and `./update.sh --offline` use the offline package of the release. It holds the image of the tool, the image of Caddy for HTTPS, and the files, with their sums. The package is signed.",
+            "Company network: Caddy can serve the HTTPS certificate of your company (`--cert`, `--key`), without Let's Encrypt. The tool trusts the certificate authorities of your company for its outgoing connections (`--ca-cert`).",
+            "Sign in with the company account, through OpenID Connect (Microsoft Entra ID, Google, Okta, Keycloak, and others). It is off by default. A space manager sets it up for the whole installation. See `docs/single_sign_on.md`.",
+            "The identity provider only proves who the person is. The accounts, roles, and assignments stay in the tool, and the tool creates no account. When company sign-in is on, only the space managers keep their password, as rescue accounts. A person who cannot sign in with a password cannot use an AI assistant (MCP).",
+            "An automatic check updates a demo database from each published version to the new version, in one step, with SQLite and with PostgreSQL. You can update from any published version directly.",
+            "**For a small company without an IT team**",
+            "Set up the email server in the tool, in **Administration › Settings › Hosting**, box **Emails**, then send a test email. If the test fails, the message gives the cause in plain words. The `SMTP_…` settings of `.env` still work.",
+            "Email alerts about the health of the installation: a failed or late backup, a disk almost full, a stopped background task, failed emails, a failed external copy, an automatic update. One email when a problem appears, a reminder at most once a day, and one email when it is resolved.",
+            "The email alerts are on from the start on a new installation. On an installation that you update, they stay off until a space manager turns them on in **Administration › Settings › Health**.",
+            "New lines on the page **Settings › Health**: a failed backup, a backup that cannot be read, a stopped background task, errors of the nightly data check, the certificate authorities that IT added, and the external copy. It also shows the automatic updates, and the demo data when demo accounts on a server still have the public password.",
+            "Automatic updates, with going back. After an installation with one command, a timer of the server installs each new version at night, 3 days after its publication by default. In **Settings › Hosting**, choose **Install it automatically**, **Notify only**, or **Off**.",
+            "The automatic update installs only an image with a verified signature. It backs up each space first. If the new version does not respond, it goes back to the previous version. `./install.sh --auto-update on` or `off` sets up or removes the timer.",
+            "External copy of the backups, set in the tool: to an S3-compatible storage or to an SFTP server, with a button that tests the destination. The tool copies each new backup of each space and of the shared account registry.",
+            "By default, the external copy deletes nothing at the destination. The installation guide tells how to rebuild a server from this copy alone.",
+            "A new guide, “From the all-in-one version to a server” (`docs/from_pc_to_server.md`), moves the data of the all-in-one version (Windows, Mac) to a server.",
+            "The all-in-one version creates its own secret key at its first start. After the update, each person signs in again once. The page **Hosting** refuses the backups made before. IT can still restore one with `restore --unsigned`.",
+            "**Corrections**",
+            "A restore of the shared account registry on a new server with several spaces no longer stops on a space that has no tables yet.",
+            "An installation without Git (for example, with a published image) now shows the commit of its image next to the version number.",
+            "The rotation of the backups always keeps the “before-update” archives of the last update, in addition to the number of backups kept. You can go back to the previous version until the next update.",
+            "`restore --shared` refuses an archive of the shared registry made by a newer version, before it changes anything, and tells you what to restore instead. After a restore, it lists the settings that it reset and that you must set again.",
+            "`python manage.py backup` also backs up the shared account registry, once a day, as the background task does. An installation without background tasks (scheduled tasks of a managed hosting) now backs up its registry too."
+          ]
+        },
+        {
+          "title": "For IT",
+          "items": [
+            "Update with `./update.sh`, from any published version. The update backs up each space first, as before.",
+            "New database migrations, applied at the start: `espaces` 0002 to 0004 and `connexion_entreprise` 0001 in the shared registry, and `referentiel` 0023 in each space. They add tables and columns. They change no data.",
+            "Nothing changes on an existing installation until someone turns it on. These items are off: company sign-in, email alerts, automatic updates (no timer, choice **Off**), external copy (no destination), and the email server in the tool.",
+            "New settings in `.env`: `HTTPS_CERTIFICATE` (the certificate of your company, set by `./install.sh --cert --key`), `COMPANY_SIGN_IN` (`off` turns company sign-in off for the whole installation), and `COMPANY_SIGN_IN_TIMEOUT` (5 seconds). Without Docker, `EXTRA_CA_CERTS` gives the certificate authorities of your company.",
+            "`SMTP_HOST` keeps the priority: when it is set, the `SMTP_…` settings of `.env` apply, and the tool shows them read-only. `PUBLIC_URL` also gives the redirect URI of company sign-in and the link in the email alerts.",
+            "A new folder `certificates/`, next to `.env`, holds the certificate of your company (`https/`, read by Caddy only) and your certificate authorities (`ca/`). The backups of the tool do not contain it. If the folder already exists (for example, made by Docker as root), `install.sh` and `update.sh` keep it as it is. Only a certificate to put there needs write access to it. If this user cannot write there, the command tells you what to do.",
+            "Managed hosting without workers: add `python manage.py backup --copy` to the scheduled tasks, every hour, when an external copy of the backups is set. For each additional space, also add `SPACE=<code> python manage.py backup`.",
+            "Behind a strict firewall, also allow outgoing HTTPS (TCP 443) from the server to `objects.githubusercontent.com` and `release-assets.githubusercontent.com` (files attached to the releases), and to `tuf-repo-cdn.sigstore.dev` (to verify the signatures). With the automatic updates, the server opens these connections at night.",
+            "The tags of the public repository are written in lower case from this version: `v1.1.0`. The signature of an image names this tag (`…/image.yml@refs/tags/v1.1.0`). The tag of version 1.0.1 is `V1.0.1`.",
+            "`get.sh` installs version 1.1.0 or later only: the releases of 1.0.0 and 1.0.1 have no list of sums. An installation of these versions updates with its `./update.sh`, as before.",
+            "New Python packages in the image: PyJWT and cryptography (with cffi and pycparser) for company sign-in, and paramiko (with bcrypt, PyNaCl, and invoke) for the copy to an SFTP server. The all-in-one version does not have them. It has neither company sign-in nor the external copy."
+          ]
+        },
+        {
+          "title": "Security",
+          "items": [
+            "Only the space managers can change the settings that apply to the whole installation: email server, email alerts, automatic updates, and external copy of the backups.",
+            "When company sign-in is on, a session opened with a password follows the same rule as a new sign-in.",
+            "Every failed sign-in with a password gives the same message.",
+            "The tool refuses the addresses of cloud metadata services for the connections that are set in the tool: identity provider and external copy.",
+            "Company sign-in uses the authorization code flow with PKCE (`S256`), a single-use `state`, and a `nonce`. The tool accepts only ID tokens with an asymmetric signature.",
+            "The secrets saved in the tool (password of the email server, secrets of the external copy, client secret of company sign-in) are encrypted with a key derived from the secret key of the installation. The tool never shows them again.",
+            "When you change the destination of a saved secret (email server, external copy, identity provider), the tool does not use the saved secret again: you enter it again, so it is never sent to another server.",
+            "To save an email server with the security \"None\" and a password, you must confirm that the password is sent without encryption.",
+            "The all-in-one version no longer uses a fixed secret key: each copy creates its own key.",
+            "The automatic updates run on the server, not in the tool. The container of the tool never has access to Docker. It opens no connection to check for a new version.",
+            "Each outgoing connection of the tool checks the certificate of the server. The tool never turns this check off."
+          ]
+        }
+      ]
+    },
+    {
       "version": "1.0.1",
       "date": "2026-11-25",
       "sections": [

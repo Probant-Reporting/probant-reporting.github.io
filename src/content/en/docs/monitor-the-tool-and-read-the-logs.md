@@ -1,14 +1,64 @@
 ---
 title: "Monitor the tool and read the logs"
-description: "The page needs no sign-in and shows no sensitive data. Docker uses it too: docker compose ps shows healthy."
+description: "The tool alerts you by email: you have no monitoring to connect. A space manager turns the alerts on in Administration › Settings › Health, box Email…"
 order: 9
 group: "Run"
 source: "docs/installation.md"
 ---
 
+## Get an email when something goes wrong
+
+The tool alerts you by email: you have no monitoring to connect. A space manager turns the alerts on in **Administration › Settings › Health**, box **Email alerts**, and chooses the recipients:
+by default the administrators of the main space and the space managers, plus other addresses, for example the mailbox
+of the IT team. On a new installation, the alerts are on from the start; an installation that existed before the
+email alerts keeps them off after an update, until someone turns them on. Turned off, they stay off. They need the
+email server (section 7): without it, the tool sends nothing.
+
+The alerts come from the same checks as the **Health** page and `/sante/`. These checks send an alert:
+
+| Check | Alert when |
+|---|---|
+| Database | A database does not answer, or the startup check found a damaged database |
+| Demo data | The database is the demo, and demo accounts still have the public password (never in development mode or in the all-in-one version). The tool starts all the same. The line goes away when no active demo account has the public password. |
+| Files | The tool cannot write in its data folder |
+| Last backup | The automatic backup failed or is late, the latest backup cannot be read, or the backup folder cannot be read |
+| Disk space | Less than 10 times `DISK_ALERT_MB` free (“To check”), or less than `DISK_ALERT_MB` (“Failure”) |
+| Email | The reminders failed, or the saved password of the email server can no longer be read |
+| Background tasks | A background task stopped, an import or an export is stuck, or the night data check is late or found errors |
+| Database update | Migrations are not applied |
+| External copy | A copy of the backups fails, or is late (section 5) |
+| Automatic updates | A new version is installed, or waits (“Notify only”). A signature is refused. The server went back to the previous version, or could not go back. The timer or the check has not worked for 3 days (section 6) |
+
+These states do not send an alert: no backup yet, automatic backups turned off, a restore that finishes by itself,
+HTTPS (it depends on the request).
+
+The rules:
+
+- The tool checks every 15 minutes, in the `check_data --schedule` and `backup --schedule` processes. Only one check
+  runs at a time for the whole installation, even with several processes, spaces or servers.
+- One email when a problem appears. All the changes of one check go in one email.
+- A reminder at most once a day while a problem lasts, one email for all the problems.
+- An email when a problem is resolved (absent at two checks in a row).
+- Each person gets the email in their language. The other addresses get it in the language of the installation. The
+  email gives the name of the space, what happens, since when, what to do, and the link to the **Health** page
+  (`PUBLIC_URL`). It never contains data, folders of the disk, or the detail for IT.
+- If the email cannot be sent (email server down), nothing fails: the problem stays on the **Health** page and in
+  `/sante/`, the log gives the cause (`Email alerts not sent through …`), and the tool tries again at the next check.
+- The state of the alerts is kept in the shared registry, outside the database of each space: a restore of a space
+  does not send the alerts again. After a restore of the shared registry, the alerts of the problems that remain are
+  sent again once.
+- **Send a test alert** sends to the saved recipients an email with the problems of the moment.
+
+**Limit:** when the server is off, or when the shared registry does not answer, the tool cannot warn anyone. To be
+warned in this case too, keep an external monitoring of `/sante/` (below), in addition to the email alerts.
+
+Without background tasks (managed hosting with scheduled tasks, see [Managed hosting](/docs/managed-hosting/)), schedule
+`python manage.py check_data --alerts` every 15 minutes. The all-in-one version runs no background task and sends no
+alert.
+
 ## Check that the tool is healthy
 
-`GET /sante/` answers with one of these codes:
+In addition to the email alerts, your monitoring can call `/sante/`. `GET /sante/` answers with one of these codes:
 
 - `200` with `{"etat": "ok"}`: the tool works.
 - `503` with `{"etat": "erreur"}`: the database or the storage has a problem, the database is damaged, a restore was
@@ -39,10 +89,11 @@ This table shows the fields of the details:
 | `controle_donnees` | The latest data check: `etat` (`ok`, `problems`, `late` if there is no data check for 48 hours, `never`), `date`, `erreurs`, `avertissements` |
 | `background_imports` | The state of the background imports (see “Check that a large import is not stuck”) |
 | `background_exports` | The state of the large exports in the background: `running`, `waiting`, `stuck` (same section) |
+| `external_copy` | The external copy of the backups ([Copy the backups outside the server](/docs/back-up-and-restore/#copy-the-backups-outside-the-server)): `state` (`off`, `ok`, `failing`, `late`, `host key to confirm`, `unavailable` in the all-in-one version), `last_success`, `pending` (archives not copied yet). A failing copy never causes `503`: it is in `avertissement`. |
 
 A data problem or a late check **never** makes `/sante/` answer `503`. `503` means “the tool does not answer”. Docker
 or Clever Cloud then restart the tool, and a restart fixes neither a figure nor a stopped scheduler. To watch the
-nightly check, set an alert on `controle_donnees.etat` = `late`.
+nightly check, set an alert on `controle_donnees.etat` = `late`. The email alerts of the tool also say it.
 
 The administrators read the same measures, in plain words, in **Administration › Settings › Health**: one line per
 check (version, database, files, last backup, disk space, email, background tasks, database update, HTTPS), with

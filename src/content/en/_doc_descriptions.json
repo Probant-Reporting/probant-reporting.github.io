@@ -1,17 +1,21 @@
 {
   "note": "One real sentence per page of the documentation, written for this site. The pages themselves are copied from the repository of the tool (npm run sync): this file is not.",
   "descriptions": {
-    "prerequisites": "What you need before you install: a 64-bit Linux server with Docker and Git, one open port or a domain name for HTTPS, and an SMTP account if you want emails.",
-    "install-the-tool": "Get the code and run the installer. The tool starts in a single Docker container, over HTTPS if you give a domain name. It takes 3 to 5 minutes.",
+    "prerequisites": "What you need before you install: a 64-bit Linux server with Docker and curl, one open port or a domain name for HTTPS, and an SMTP account if you want emails.",
+    "install-the-tool": "Check the server, then install with one command from the signed, published image, in about 2 minutes. Or install with Git, without Internet access, or with the certificates of your company.",
     "managed-hosting": "Run the tool with a managed hosting provider, with no server to manage: how to choose a provider, and the deployment on Clever Cloud, step by step.",
     "set-up-the-tool-on-first-launch": "The Setup wizard opens on first launch and has 8 steps. Create the administrator account right after the installation, before you share the address.",
     "change-the-settings": "Each setting of the .env file, with its default value and its purpose: address, HTTPS, port, database, size limits, and backups. The security that's already on.",
-    "back-up-and-restore": "What the data volume and a backup contain, how to back up the tool, and how to restore an archive, for one space or for several. What to do if a restore stops.",
-    "update-the-tool": "Update with one script. It backs up each space first, gets the new version, and restarts the tool. How to go back to the previous version if you need to.",
-    "set-up-emails": "Set up the SMTP account that sends the reminders. Without SMTP, the tool sends no email: it only writes the messages in the log.",
+    "back-up-and-restore": "What a backup contains, how to copy the backups outside the server (S3-compatible storage or SFTP), restore an archive, and rebuild a server from the external copy.",
+    "update-the-tool": "Update with one script, which backs up each space first. After an installation with one command, the server can install each new version at night and go back if it fails.",
+    "set-up-emails": "Set up the email server in the tool or in the .env file, then send a test email. Without an email server, the tool sends no email: it only writes the messages in the log.",
     "use-postgresql": "SQLite is the default database. What the load tests measured, when to choose PostgreSQL, and how to move an existing installation to it.",
-    "monitor-the-tool-and-read-the-logs": "Check that the tool is healthy and that the data is consistent, follow a large import, read the log, and manage the services.",
+    "monitor-the-tool-and-read-the-logs": "Get an email when something goes wrong, check that the tool is healthy and that the data is consistent, follow a large import, and read the log.",
     "troubleshooting": "Common problems when you install or run the tool, with their likely cause and the solution: address refused, HTTPS, storage, database, and disk space.",
-    "test-the-installation": "A script reproduces an installation on a blank machine, then checks the health page, the wizard, the security headers, the backup, and the update."
+    "test-the-installation": "A script reproduces an installation on a blank machine, then checks the health page, the wizard, the security headers, the backup, and the update.",
+    "it-request": "The list of what IT prepares before the installation: hosting, network, email account, backups and monitoring, and who does what. You can send it to your IT team as it is.",
+    "security-overview": "How the tool protects the data, for a security review: architecture, data kept, network flows, sign-in, encryption, backups, logs, and answers to the usual security questions.",
+    "from-pc-to-server": "Move the data of the all-in-one version (Windows, Mac) to a server without losing anything: what the person does on the computer, then what IT does on the server.",
+    "single-sign-on": "Let people sign in with their company account, through OpenID Connect. It is off by default. The accounts stay created in the tool, and the space managers keep their password."
   }
 }

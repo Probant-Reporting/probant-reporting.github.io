@@ -1,5 +1,6 @@
 // Les deux manuels en PDF, mis en page pour l'impression : le manuel d'utilisation (les cinq guides par rôle de l'outil,
-// avec leurs captures d'écran) et le manuel de l'équipe informatique (le guide d'installation et l'hébergement géré,
+// avec leurs captures d'écran) et le manuel de l'équipe informatique (le guide d'installation, l'hébergement géré et
+// les quatre documents pour l'IT : ce qu'il faut préparer, dossier de sécurité, du PC au serveur, compte d'entreprise ;
 // avec leurs captures). Deux documents par langue, à joindre à un courriel ou à imprimer.
 // Demandé par Florent le 25/11/2026 : « un beau PDF avec captures d'écran, qui puisse servir de manuel d'utilisation »
 // (la première version imprimait les pages du site : police trop grosse, aucune capture).
@@ -10,7 +11,8 @@
 // l'outil) · --lang en,fr · --keep (garde le HTML intermédiaire, pour le regarder dans un navigateur)
 //
 // Les textes viennent de l'outil, comme le dit scripts/sync-tool.mjs pour la documentation : docs/guides/ (anglais),
-// docs/fr/guides/ (français), docs/installation.md et docs/managed_hosting.md (et leurs versions françaises). On ne
+// docs/fr/guides/ (français), docs/installation.md, docs/managed_hosting.md et les quatre documents pour l'IT (et leurs
+// versions françaises ; liste dans src/lib/docs-outil.mjs). On ne
 // reprend pas ce que le site ne présente pas : l'assistant IA facultatif et la relecture des traductions (mêmes règles
 // que sync-tool.mjs), ni les renvois vers les autres langues, ni les liens vers des fichiers du dépôt (texte seul).
 // Le qui et le quoi de chaque rôle viennent des guides du site (src/content/<langue>/guides/*.md : who, summary).
@@ -30,6 +32,7 @@
 import { createRequire } from "node:module";
 import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import config from "../site.config.mjs";
+import { DOCS_OUTIL, GUIDES_COUPES, RESTES_IA, couperTextes } from "../src/lib/docs-outil.mjs";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, rmSync, mkdtempSync, readdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, resolve, dirname, basename } from "node:path";
@@ -75,13 +78,8 @@ const GUIDES_OUTIL = {
   en: { dossier: "docs/guides", fichiers: { administrator: "administrator", validator: "validator", contributor: "contributor", reader: "reader", auditor: "auditor" } },
   fr: { dossier: "docs/fr/guides", fichiers: { administrator: "administrateur", validator: "validateur", contributor: "contributeur", reader: "lecteur", auditor: "auditeur" } },
 };
-// documentation de l'équipe informatique, et ce que le site n'en reprend pas (mêmes règles que scripts/sync-tool.mjs)
-const DOCS_OUTIL = {
-  en: { installation: "docs/installation.md", gere: "docs/managed_hosting.md",
-    ecartees: [/^##+ AI assistant \(optional\)$/, /^##+ Have the translated texts proofread$/], lignes: [/`AI_SOCKET`/, /api\.anthropic\.com/, /AI assistant \(optional\)/] },
-  fr: { installation: "docs/fr/installation.md", gere: "docs/fr/hebergement_cle_en_main.md",
-    ecartees: [/^##+ Assistant IA \(facultatif\)$/, /^##+ Faire relire les textes traduits$/], lignes: [/`AI_SOCKET`/, /api\.anthropic\.com/, /Assistant IA \(facultatif\)/, /^> Version française du guide anglais/] },
-};
+// documentation de l'équipe informatique (guide d'installation, hébergement géré, les quatre documents pour l'IT), et ce
+// que le site n'en reprend pas : les mêmes règles que la page /docs/ (src/lib/docs-outil.mjs)
 
 // ── Markdown → HTML ─────────────────────────────────────────────────────────────────────────────────────────
 const md = await createMarkdownProcessor({ syntaxHighlight: false, smartypants: false });
@@ -98,7 +96,14 @@ function ecarter(texte, regles) {
     }
     if (!saute && !regles.lignes.some((r) => r.test(l))) sortie.push(l);
   }
-  return sortie.join("\n");
+  // puis les morceaux de phrase et les lignes qui citent ce que le site ne présente pas (src/lib/docs-outil.mjs)
+  return couperTextes(sortie.join("\n"), regles);
+}
+// Garde-fou : aucun texte imprimé ne cite l'assistant IA facultatif (règles de src/lib/docs-outil.mjs).
+function sansIA(texte, ou) {
+  const ligne = texte.split("\n").find((l) => RESTES_IA.test(l));
+  if (ligne) { console.error(`${ou} : l'assistant IA facultatif est encore cité (« ${ligne.trim().slice(0, 140)} »). Ajoutez une coupe dans src/lib/docs-outil.mjs.`); process.exit(1); }
+  return texte;
 }
 function nettoyer(texte) {
   return texte
@@ -188,7 +193,7 @@ async function manuelUtilisation(lang) {
   const chapitres = [];
   for (const r of roles) {
     const fichier = join(OUTIL, G.dossier, `${G.fichiers[r.cle]}.md`);
-    const guide = decouper(nettoyer(readFileSync(fichier, "utf8")));
+    const guide = decouper(sansIA(nettoyer(ecarter(readFileSync(fichier, "utf8"), GUIDES_COUPES[lang])), fichier));
     const sections = [];
     for (const s of guide.sections) sections.push({ id: `${r.cle}-${s.ancre || slug(s.titre)}`, titre: s.titre, html: await rendre(s.corps, lang, T) });
     chapitres.push({ id: r.cle, titre: guide.titre, qui: nomProduit(r.fm.who || ""), resume: nomProduit(r.fm.summary || ""),
@@ -216,8 +221,8 @@ async function manuelUtilisation(lang) {
 
 async function manuelIT(lang) {
   const T = TEXTES[lang], D = DOCS_OUTIL[lang];
-  const install = nettoyer(ecarter(readFileSync(join(OUTIL, D.installation), "utf8"), D));
-  const gere = nettoyer(ecarter(readFileSync(join(OUTIL, D.gere), "utf8"), D));
+  const install = sansIA(nettoyer(ecarter(readFileSync(join(OUTIL, D.installation), "utf8"), D)), D.installation);
+  const gere = sansIA(nettoyer(ecarter(readFileSync(join(OUTIL, D.gere), "utf8"), D)), D.gere);
   const [tete, ...sections] = install.split(/\n(?=## )/);
   const intro = tete.replace(/^# .+$/m, "").trim();
   const chapitres = [];
@@ -228,8 +233,10 @@ async function manuelIT(lang) {
   const cles = sectionsEn.map((x) => x.split("\n")[0].replace(/^## /, "").toLowerCase().replace(/^\d+\.\s*/, "").replace(/`/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
   if (cles.length !== sections.length) { console.error(`Manuel IT (${lang}) : ${sections.length} chapitres, ${cles.length} en anglais`); process.exit(1); }
   const chapitre = async (titre, texte, id, cle) => {
-    // les intertitres ### deviennent les sections du chapitre ; ce qui les précède est son introduction
-    const [debut, ...sous] = texte.split(/\n(?=### )/);
+    // les intertitres ### deviennent les sections du chapitre ; ce qui les précède est son introduction (vide quand le
+    // chapitre commence par un intertitre, comme « Monitor the tool » : sans le « \n » ajouté, sa première section
+    // restait dans l'introduction, hors du plan du chapitre)
+    const [debut, ...sous] = ("\n" + texte).split(/\n(?=### )/);
     const secs = [];
     for (const s of sous) {
       const [ligne, ...reste] = s.split("\n"); const t = ligne.replace(/^### /, "").replace(/`/g, "").trim();
@@ -237,13 +244,25 @@ async function manuelIT(lang) {
     }
     chapitres.push({ id, titre, cle, desc: nomProduit(descriptions[cle] || ""), intro: await rendre(debut, lang, T), sections: secs });
   };
+  // Les chapitres dans l'ordre du menu de la page /docs/ du site (« ordre » de src/lib/docs-outil.mjs) : les sections du
+  // guide d'installation (1 à 11), l'hébergement géré (2,5) et les quatre documents pour l'IT (ce qu'il faut préparer
+  // et le dossier de sécurité d'abord, le passage du PC au serveur après la mise en place, la connexion d'entreprise
+  // après les réglages). Dans un document, les intertitres ## deviennent les sections du chapitre, les ### leurs
+  // intertitres.
+  const aFaire = [];
   for (const [i, s] of sections.entries()) {
     const [ligne, ...reste] = s.split("\n");
     const titre = ligne.replace(/^## /, "").replace(/^\d+\.\s*/, "").replace(/`/g, "").trim();
-    await chapitre(titre, reste.join("\n").trim(), slug(titre), cles[i]);
+    aFaire.push({ ordre: i + 1, faire: () => chapitre(titre, reste.join("\n").trim(), slug(titre), cles[i]) });
   }
-  const g = gere.split("\n"); const titreGere = g[0].replace(/^# /, "").trim();
-  await chapitre(titreGere, g.slice(1).join("\n").replace(/^## /gm, "### ").replace(/^### (?=#)/gm, "").trim(), "managed-hosting", "managed-hosting");
+  const g = gere.split("\n"); const titreGere = D.titreGere; // le titre court du site, pas le titre long du guide
+  aFaire.push({ ordre: 2.5, faire: () => chapitre(titreGere, g.slice(1).join("\n").replace(/^## /gm, "### ").replace(/^### (?=#)/gm, "").trim(), "managed-hosting", "managed-hosting") });
+  for (const [cle, a] of Object.entries(D.autres)) {
+    let texte = sansIA(nettoyer(ecarter(readFileSync(join(OUTIL, a.fichier), "utf8"), D)), a.fichier).replace(/^# .+\n/, "");
+    if (a.note) texte = texte.replace(/\n## /, `\n${a.note}\n\n## `); // la note écrite pour le site (dossier de sécurité)
+    aFaire.push({ ordre: a.ordre, faire: () => chapitre(a.titre, texte.replace(/^### /gm, "#### ").replace(/^## /gm, "### ").trim(), cle, cle) });
+  }
+  for (const c of aFaire.sort((x, y) => x.ordre - y.ordre)) await c.faire();
   // L'essentiel : ce que fait l'IT (page d'accueil du site : features « it » et specs), puis l'introduction du guide
   // d'installation (les opérations, leurs commandes et leur durée).
   const accueil = JSON.parse(readFileSync(join(SITE, "src/content", lang, "esg.json"), "utf8"));
@@ -325,6 +344,12 @@ figcaption span { font-weight: 700; color: var(--encre); margin-right: 1mm; }
 .sommaire.serre .n { font-size: 15pt; }
 .sommaire.serre .tx b, .sommaire.serre .p { font-size: 11.5pt; }
 .sommaire.serre .tx small { font-size: 8.4pt; margin-top: 0.6mm; }
+/* plus de 13 chapitres (manuel de l'IT avec les quatre documents de la 1.1.0) : le sommaire tient encore sur une page */
+.sommaire.tres-serre h2 { margin-bottom: 2mm; }
+.sommaire.tres-serre a { padding: 1.2mm 0; grid-template-columns: 10mm 1fr 11mm; }
+.sommaire.tres-serre .n { font-size: 13pt; }
+.sommaire.tres-serre .tx b, .sommaire.tres-serre .p { font-size: 10.5pt; }
+.sommaire.tres-serre .tx small { font-size: 7.8pt; line-height: 1.3; margin-top: 0.3mm; }
 .avant.intro-it { break-after: page; }
 .avant table.roles td:first-child { white-space: nowrap; font-weight: 600; }
 .fonction { display: flex; gap: 5mm; align-items: flex-start; padding: 3mm 0; border-top: 0.3mm solid var(--filet); break-inside: avoid; }
@@ -374,7 +399,7 @@ function pageHtml(lang, d, numeros) {
   // sommaire : une ligne par chapitre (numéro, titre, une phrase, page) ; le détail des sections ouvre chaque chapitre
   const entree = (id, n, titre, desc) => `<li><a href="#${id}"><span class="n">${n}</span><span class="tx"><b>${echappe(titre)}</b>` +
     (desc ? `<small>${echappe(desc)}</small>` : "") + `</span><span class="p">${num(id)}</span></a></li>`;
-  const sommaire = `<nav class="sommaire${chapitres.length > 8 ? " serre" : ""}"><h2>${T.sommaire}</h2>` +
+  const sommaire = `<nav class="sommaire${chapitres.length > 8 ? " serre" : ""}${chapitres.length > 13 ? " tres-serre" : ""}"><h2>${T.sommaire}</h2>` +
     (d.chapeauSommaire ? `<p class="chapeau">${echappe(d.chapeauSommaire)}</p>` : "") + `<ol>` +
     premiers.map((x) => entree(x.id, "", x.titre, x.desc)).join("") +
     chapitres.map((c, i) => entree(c.id, i + 1, c.titre, c.desc)).join("") + `</ol></nav>`;

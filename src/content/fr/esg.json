@@ -95,8 +95,12 @@
       "id": "it",
       "visual": "hosting",
       "title": "L'IT ne s'occupe que de l'hébergement",
-      "lead": "À part l'hébergement et les mises à jour, votre équipe informatique n'a rien à faire : tout le reste se règle dans l'outil.",
-      "points": [],
+      "lead": "Votre équipe informatique héberge l'outil. Tout le reste se règle dans l'outil, y compris les e-mails et la copie des sauvegardes.",
+      "points": [
+        "Une installation en une commande, depuis une image signée. Un contrôle du serveur passe d'abord.",
+        "Les mises à jour peuvent s'installer seules la nuit, et revenir en arrière si la nouvelle version ne répond pas.",
+        "Une liste de ce qu'il faut préparer et un dossier de sécurité, à envoyer à votre équipe informatique."
+      ],
       "cta": true,
       "tab": "Pour l'IT"
     }
@@ -108,11 +112,15 @@
     },
     {
       "term": "Ce que fait l'IT",
-      "value": "L'hébergement et les mises à jour, sans développement"
+      "value": "L'hébergement, et les mises à jour si elles ne sont pas automatiques"
     },
     {
       "term": "Sauvegardes",
-      "value": "Automatiques"
+      "value": "Automatiques, avec une copie hors du serveur si vous le voulez"
+    },
+    {
+      "term": "Connexion",
+      "value": "Mot de passe, ou compte d'entreprise (éteint par défaut)"
     },
     {
       "term": "Espaces",
@@ -237,7 +245,7 @@
     "provideLabel": "Ce que vous apportez",
     "provideTitle": "Vous payez votre hébergement",
     "provide": [
-      "Sur un serveur de votre entreprise, ou chez un hébergeur qui fait tourner l'outil pour vous (Clever Cloud). Votre équipe informatique installe les mises à jour."
+      "Sur un serveur de votre entreprise, ou chez un hébergeur qui fait tourner l'outil pour vous (Clever Cloud). Votre équipe informatique installe les mises à jour, ou laisse le serveur les installer la nuit."
     ],
     "priceNote": "pour le logiciel"
   },
@@ -282,11 +290,15 @@
       },
       {
         "q": "Un assistant IA peut-il utiliser {name} ?",
-        "a": "Oui, si un administrateur l'a permis. La fonction est éteinte par défaut. Chaque personne connecte son propre assistant avec un jeton personnel. L'assistant a les mêmes droits qu'elle."
+        "a": "Oui, si un administrateur l'a permis. La fonction est éteinte par défaut. Chaque personne connecte son propre assistant avec un jeton personnel. L'assistant a les mêmes droits qu'elle. Quand la connexion d'entreprise est allumée, une personne qui ne peut pas se connecter avec un mot de passe ne peut pas utiliser d'assistant."
+      },
+      {
+        "q": "Peut-on se connecter avec son compte d'entreprise ?",
+        "a": "Oui, par OpenID Connect, par exemple Microsoft Entra ID, Google, Okta ou Keycloak. C'est éteint par défaut. Un gestionnaire des espaces l'allume. Seuls les gestionnaires des espaces gardent alors leur mot de passe, comme comptes de secours. Le compte d'entreprise prouve seulement qui est la personne : les administrateurs créent toujours les comptes et donnent les rôles dans l'outil."
       },
       {
         "q": "Que doit faire l'IT ?",
-        "a": "Héberger l'outil et appliquer les mises à jour. Il n'y a rien à développer."
+        "a": "Héberger l'outil. Avec l'installation en une commande, le serveur peut installer les mises à jour la nuit. Il n'y a rien à développer. La documentation IT commence par une liste de ce qu'il faut préparer et un dossier de sécurité."
       }
     ]
   },
@@ -350,7 +362,7 @@
       {
         "anchor": "installer-sur-un-serveur",
         "title": "Installer sur un serveur",
-        "text": "Pour votre équipe informatique : Docker, un script et un guide."
+        "text": "Pour votre équipe informatique : Docker, une commande et un guide."
       },
       {
         "anchor": "hébergement-clé-en-main",
