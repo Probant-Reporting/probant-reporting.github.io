@@ -506,7 +506,8 @@
     "rolesTitle": "Un guide par rôle",
     "pdf": "Télécharger en PDF",
     "pdfGuides": "les cinq guides par rôle",
-    "pdfDocs": "toute la documentation IT"
+    "pdfDocs": "toute la documentation IT",
+    "sheet": "La fiche pour l'IT, 2 pages, PDF"
   },
   "frameworksUi": {
     "meta": {

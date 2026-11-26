@@ -75,7 +75,7 @@ This part is for the IT team. What the server needs:
 - Docker, the software that runs the tool. On Debian or Ubuntu, don't install it beforehand: if it is missing, the installer offers to install it and waits for your yes. On another system, install Docker first.
 - Optional, for HTTPS: a domain name that points to the server, with ports 80 and 443 open.
 
-[What to prepare](/docs/it-request/) lists everything else, for example the email account and the network. The [Security overview](/docs/security-overview/) answers the questions of a security review.
+To send or print for your IT team: [the IT sheet, 2 pages, PDF](/pdf/probant-it-sheet-en.pdf). It has everything else, for example the email account and the network, and it is also on this site as [What to prepare](/docs/it-request/). The [Security overview](/docs/security-overview/) answers the questions of a security review.
 
 ### With one command
 

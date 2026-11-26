@@ -32,7 +32,7 @@ const descriptions = (await import("../lib/content")).donnees(lang, "doc_descrip
   <section aria-labelledby="g-it">
     <h2 id="g-it">{t.title}</h2>
     <p class="guides-lead">{nom(t.lead)}</p>
-    <p class="pdf-lien"><a href={fichier(`pdf/probant-it-documentation-${lang}.pdf`)} download><Icon name="download" />{g.pdf}<span class="sr">{" "}{g.pdfDocs}</span></a></p>
+    <p class="pdf-lien"><a href={fichier(`pdf/probant-it-documentation-${lang}.pdf`)} download><Icon name="download" />{g.pdf}<span class="sr">{" "}{g.pdfDocs}</span></a>{" "}<a href={fichier(`pdf/probant-it-sheet-${lang}.pdf`)} download><Icon name="download" />{g.sheet}</a></p>
     <ul class="guides-cartes">
       {docs.map((x) => (
         <li><a href={`${chemin("docs", lang)}#${ancreDoc(x.slug)}`}>

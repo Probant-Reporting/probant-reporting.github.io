@@ -6,7 +6,7 @@ import Sandbox from "./Sandbox.astro";
 import Mock from "./Mock.astro";
 import ContactForm from "./ContactForm.astro";
 import FrameworkInstaller from "./FrameworkInstaller.astro";
-import { site, chemin } from "../lib/content";
+import { site, chemin, fichier } from "../lib/content";
 const { lang, theme: c, page = "" } = Astro.props;
 const t = site(lang);
 // Les sections entre le haut de page et la clôture alternent fond teinté et fond de page. L'alternance se calcule
@@ -52,6 +52,7 @@ const bande = () => (rang++ % 2 === 0 ? "band" : undefined);
               <p>{f.lead}</p>
               {f.points.length > 0 && <ul class="points">{f.points.map((p: string) => <li>{p}</li>)}</ul>}
               {f.cta && <p class="cta-row"><a class="btn ghost" href={chemin("get", lang)}>{c.get.cta}</a></p>}
+              {f.sheet && <p class="pdf-lien"><a href={fichier(`pdf/probant-it-sheet-${lang}.pdf`)} download><Icon name="download" />{t.guidesUi.sheet}</a></p>}
             </div>
             <div class="f-visual">
               {f.visual === "hosting"

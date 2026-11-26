@@ -22,7 +22,7 @@ const apercu = docs.find((d) => d.slug === "index");
     <p class="fil"><a href={chemin("guides", lang)}>{site(lang).guidesUi.title}</a></p>
     <h1>{titre(t.title)}</h1>
     {t.lead && <p class="lead">{nom(t.lead)}</p>}
-    <p class="pdf-lien"><a href={fichier(`pdf/probant-it-documentation-${lang}.pdf`)} download><Icon name="download" />{site(lang).guidesUi.pdf}<span class="sr">{" "}{site(lang).guidesUi.pdfDocs}</span></a></p>
+    <p class="pdf-lien"><a href={fichier(`pdf/probant-it-documentation-${lang}.pdf`)} download><Icon name="download" />{site(lang).guidesUi.pdf}<span class="sr">{" "}{site(lang).guidesUi.pdfDocs}</span></a>{" "}<a href={fichier(`pdf/probant-it-sheet-${lang}.pdf`)} download><Icon name="download" />{site(lang).guidesUi.sheet}</a></p>
   </header>
   {/* Le même menu deux fois, jamais ensemble : replié (details) sous 960 px, déplié et fixe au-delà. Celui qui ne sert
       pas est en display:none, donc absent pour le clavier et les lecteurs d'écran. Aucun JavaScript. */}
@@ -44,6 +44,8 @@ const apercu = docs.find((d) => d.slug === "index");
     {docs.map((d) => (
       <section class="docs-partie" aria-labelledby={ancreDoc(d.slug)}>
         <h2 id={ancreDoc(d.slug)}>{titre(d.fm.title)}</h2>
+        {/* la fiche pour l'IT : le même texte, en PDF de deux pages (qa/guide-pdfs.mjs) */}
+        {d.slug === "it-request" && <p class="pdf-lien"><a href={fichier(`pdf/probant-it-sheet-${lang}.pdf`)} download><Icon name="download" />{site(lang).guidesUi.sheet}</a></p>}
         <d.Content />
       </section>
     ))}

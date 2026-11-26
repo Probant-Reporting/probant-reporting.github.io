@@ -695,7 +695,7 @@ p, li { text-wrap: pretty; }
 }
 
 /* le lien vers le document imprimable, sous un titre de section ou dans l'en-tête d'un guide */
-.pdf-lien { margin-top: 14px; }
+.pdf-lien { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; } /* une ou deux pastilles de téléchargement */
 .pdf-lien a { display: inline-flex; align-items: center; gap: 8px; min-height: 24px; padding: 7px 14px 7px 12px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--card); color: var(--ink); font-size: 1rem; font-weight: 600; text-decoration: none; }
 .pdf-lien a:hover { border-color: var(--ink); }
 .pdf-lien svg { width: 17px; height: 17px; flex: none; }

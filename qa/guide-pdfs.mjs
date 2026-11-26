@@ -46,6 +46,8 @@ const OUTIL = resolve(option("tool", process.env.TOOL_REPO || ""));
 const CAPTURES = resolve(option("shots", join(OUTIL, "docs", "screenshots")));
 const LANGUES = option("lang", "en,fr").split(",").map((x) => x.trim()).filter(Boolean);
 const GARDER = process.argv.includes("--keep");
+// --only manuels ou --only fiche : une seule sorte de document (pour mettre au point) ; par défaut, les deux
+const SEULEMENT = option("only", "");
 const SORTIE = join(SITE, "public", "pdf");
 if (!option("tool", process.env.TOOL_REPO) || !existsSync(join(OUTIL, "docs", "guides"))) { console.error(`${OUTIL} : dépôt de l'outil introuvable (--tool ou TOOL_REPO).`); process.exit(2); }
 mkdirSync(SORTIE, { recursive: true });
@@ -62,6 +64,7 @@ const TEXTES = {
     demo: "The screens come from the fictitious demo of the tool. No real data is shown.",
     chapitre: "Chapter", apercu: "At a glance", essentiel: "Key functions", voir: "See:", page: "p.",
     essentielLead: "What {name} does, in one page. Each function sends you to the tasks that use it.",
+    fiche: { fichier: "probant-it-sheet", titre: "IT sheet", docs: "IT documentation" },
   },
   fr: {
     guides: { fichier: "probant-guides", titre: "Manuel d'utilisation", sous: "Utiliser {name}, rôle par rôle, avec les écrans de l'outil." },
@@ -71,6 +74,7 @@ const TEXTES = {
     demo: "Les écrans viennent de la démo fictive de l'outil. Aucune donnée réelle n'y figure.",
     chapitre: "Chapitre", apercu: "L'essentiel", essentiel: "L'essentiel", voir: "Voir\u00a0:", page: "p.",
     essentielLead: "Ce que fait {name}, en une page. Chaque fonction renvoie aux tâches qui s'en servent.",
+    fiche: { fichier: "probant-it-sheet", titre: "Fiche pour l'IT", docs: "Documentation IT" },
   },
 };
 // guides de l'outil, dans l'ordre du site (champ order des guides du site) ; même nom de fichier côté site
@@ -510,16 +514,109 @@ print(n, mauvais)
   return sortie;
 }
 
+// ── La fiche pour l'IT ───────────────────────────────────────────────────────────────────────────────────────
+// « Ce qu'il faut préparer » (docs/it_request.md de l'outil et sa version française), seule, mise en page de fiche :
+// A4, ni couverture ni sommaire, un en-tête sobre (produit, titre, adresse du site), un pied de page avec l'adresse
+// de la documentation IT et le numéro de page ; lisible imprimée en noir et blanc ; ni date ni numéro de version.
+// Mêmes coupes que la page /docs/ (src/lib/docs-outil.mjs). La fabrication échoue si la fiche dépasse 2 pages, si une
+// page est presque vide, ou si un élément déborde de la largeur de la page.
+const PAGES_FICHE_MAX = 2;
+const CSS_FICHE = CSS.slice(0, CSS.indexOf(":root")) + `
+:root { --encre: #111418; --doux: #3F444B; --filet: #B9B6AE; --fond: #EDEDEB; --marque: #334155; }
+@page { size: A4; margin: 10mm 12mm 13mm; }
+* { box-sizing: border-box; }
+html { font-family: "Source Sans 3", Arial, sans-serif; font-size: 8.8pt; line-height: 1.3; color: var(--encre); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; }
+.tete { display: flex; align-items: flex-end; justify-content: space-between; gap: 6mm; padding-bottom: 2.2mm; margin-bottom: 3mm; border-bottom: 0.7mm solid var(--marque); }
+.tete .marque { margin: 0; display: flex; align-items: center; gap: 1.6mm; font: 600 11pt/1 "Source Serif 4", serif; }
+.tete .marque svg { width: 1.15em; height: 1.15em; }
+.tete h1 { margin: 1.4mm 0 0; font: 600 15pt/1.15 "Source Serif 4", serif; letter-spacing: -0.01em; }
+.tete .type { margin: 0 0 0.6mm; font: 700 8.5pt/1 "Source Sans 3", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--doux); }
+.tete .adresse { margin: 0; font-size: 8.5pt; color: var(--doux); white-space: nowrap; }
+h2 { font: 600 10.5pt/1.2 "Source Serif 4", serif; margin: 2.6mm 0 1.2mm; padding-top: 1.4mm; border-top: 0.3mm solid var(--filet); break-after: avoid; }
+h2:first-of-type { border-top: 0; padding-top: 0; }
+p { margin: 0 0 1.4mm; }
+ul, ol { margin: 0 0 1.6mm; padding-left: 5mm; }
+li { margin: 0 0 0.6mm; }
+p, li { orphans: 2; widows: 2; }
+p:has(+ table), p:has(+ pre) { break-after: avoid; } /* la phrase qui annonce un tableau reste avec lui */
+strong { font-weight: 700; }
+a { color: inherit; text-decoration: none; }
+code { font-family: "DejaVu Sans Mono", Consolas, monospace; font-size: 0.95em; overflow-wrap: anywhere; }
+pre { font-family: "DejaVu Sans Mono", Consolas, monospace; font-size: 8.5pt; line-height: 1.35; margin: 1mm 0 1.6mm; padding: 1.4mm 2mm; border: 0.3mm solid var(--filet); border-left: 0.9mm solid var(--marque); white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid; }
+pre code { font-size: inherit; }
+table { width: 100%; border-collapse: collapse; margin: 0 0 2mm; font-size: 8.5pt; /* corps le plus petit de la fiche */ line-height: 1.3; }
+th, td { text-align: left; vertical-align: top; padding: 0.7mm 1.5mm; border-bottom: 0.25mm solid var(--filet); }
+thead th { background: var(--fond); border-bottom: 0.4mm solid var(--doux); font-weight: 700; }
+tr { break-inside: avoid; }
+td:first-child { font-weight: 600; }
+table.coche td:first-child { font-weight: 400; white-space: nowrap; width: 1%; }
+table.coche td:nth-child(2) { font-weight: 600; }
+table.c2 th:first-child, table.c2 td:first-child { width: 25%; } /* deux colonnes : un nom court, puis le détail */
+table.c3:not(.coche) th:first-child, table.c3:not(.coche) td:first-child { width: 15%; }
+blockquote { margin: 0; }
+`;
+async function ficheIT(nav, lang) {
+  const T = TEXTES[lang], D = DOCS_OUTIL[lang], F = T.fiche;
+  const source = D.autres["it-request"].fichier;
+  const texte = sansIA(nettoyer(ecarter(readFileSync(join(OUTIL, source), "utf8"), D)), source);
+  const titre = (texte.match(/^# (.+)$/m) || [, F.titre])[1].trim();
+  let html = (await md.render(texte.replace(/^# .+\n/, ""))).code;
+  // en gras, la première colonne qui nomme ; dans un tableau à cocher (première colonne « Ready » / « Prêt »), la deuxième
+  html = html.replace(/<table>(\s*<thead>\s*<tr>\s*<th>(?:Ready|Prêt)<\/th>)/g, '<table class="coche">$1');
+  const site = config.url.replace(/^https?:\/\//, "");
+  const docs = `${site}${lang === config.defaultLang ? "" : `/${lang}`}/docs/`;
+  const page = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><title>${echappe(`${config.name} – ${titre}`)}</title><style>${CSS_FICHE}</style></head><body>` +
+    `<header class="tete"><div><p class="marque">${LOGO}${echappe(config.name)}</p><h1>${echappe(titre)}</h1></div>` +
+    `<div><p class="type">${echappe(F.titre)}</p><p class="adresse">${echappe(site)}</p></div></header>${html}</body></html>`;
+  const fichierHtml = join(TRAVAIL, `${F.fichier}-${lang}.html`);
+  writeFileSync(fichierHtml, page);
+  const onglet = await nav.newPage();
+  // largeur de la page imprimée (A4 moins les marges, 96 px par pouce) : on y cherche ce qui déborde
+  await onglet.setViewportSize({ width: Math.floor((210 - 24) / 25.4 * 96), height: 1100 });
+  await onglet.emulateMedia({ media: "print" });
+  await onglet.goto(pathToFileURL(fichierHtml).href, { waitUntil: "load" });
+  await onglet.evaluate(() => document.fonts.ready);
+  await onglet.evaluate(() => document.querySelectorAll("table").forEach((t) => t.classList.add(`c${t.rows[0].cells.length}`)));
+  const debords = await onglet.evaluate(() => [...document.body.querySelectorAll("*")]
+    .filter((e) => e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).overflow !== "visible" || e.getBoundingClientRect().right > document.body.clientWidth + 1)
+    .map((e) => `${e.tagName.toLowerCase()} « ${(e.textContent || "").trim().slice(0, 50)} »`));
+  if (debords.length) { console.error(`${F.fichier}-${lang} : du texte déborde de la page : ${debords.slice(0, 5).join(" ; ")}`); process.exit(1); }
+  const pied = `<div style="width:100%;font:8pt 'Source Sans 3',Arial,sans-serif;color:#3F444B;padding:0 12mm;display:flex;justify-content:space-between">` +
+    `<span>${echappe(config.name)} · ${echappe(F.docs)} : ${echappe(docs)}</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>`;
+  const sortie = join(SORTIE, `${F.fichier}-${lang}.pdf`);
+  await onglet.pdf({ path: sortie, format: "A4", printBackground: true, tagged: true, margin: { top: "10mm", bottom: "13mm", left: "12mm", right: "12mm" },
+    displayHeaderFooter: true, headerTemplate: "<span></span>", footerTemplate: pied.replace(" : ", lang === "fr" ? "\u00a0: " : ": ") });
+  await onglet.close();
+  const mesure = JSON.parse(execFileSync(PYTHON, ["-c", `
+import sys, json
+from pypdf import PdfReader, PdfWriter
+r = PdfReader(sys.argv[1])
+print(json.dumps([len((p.extract_text() or "").strip()) for p in r.pages]))
+w = PdfWriter(clone_from=sys.argv[1])
+w.add_metadata({"/Title": sys.argv[2], "/Author": sys.argv[3], "/Creator": "", "/Producer": ""})
+with open(sys.argv[1], "wb") as f: w.write(f)
+`, sortie, `${config.name} – ${titre}`, config.name]).toString());
+  if (mesure.length > PAGES_FICHE_MAX) { console.error(`${sortie} : ${mesure.length} pages, ${PAGES_FICHE_MAX} au plus`); process.exit(1); }
+  const vides = mesure.map((n, i) => [n, i + 1]).filter(([n]) => n < 300).map(([, i]) => i);
+  if (vides.length) { console.error(`${sortie} : page(s) presque vide(s) : ${vides.join(", ")}`); process.exit(1); }
+  return { sortie, pages: mesure.length };
+}
+
 const nav = await chromium.launch();
 try {
   for (const lang of LANGUES) {
     if (!TEXTES[lang]) { console.error(`Langue sans textes de manuel : ${lang}`); process.exit(2); }
-    for (const fabrique of [manuelUtilisation, manuelIT]) {
+    if (SEULEMENT !== "fiche") for (const fabrique of [manuelUtilisation, manuelIT]) {
       numeroFigure = 0;
       const d = await fabrique(lang);
       const sortie = await imprimer(nav, lang, d);
       const pages = execFileSync(PYTHON, ["-c", "import sys;from pypdf import PdfReader;print(len(PdfReader(sys.argv[1]).pages))", sortie]).toString().trim();
       console.log(`${lang} · ${d.doc.titre} · ${pages} pages · ${numeroFigure} figures · ${(statSync(sortie).size / 1024).toFixed(0)} Ko`);
+    }
+    if (SEULEMENT !== "manuels") {
+      const f = await ficheIT(nav, lang);
+      console.log(`${lang} · ${TEXTES[lang].fiche.titre} · ${f.pages} page(s) · ${(statSync(f.sortie).size / 1024).toFixed(0)} Ko`);
     }
   }
 } finally {

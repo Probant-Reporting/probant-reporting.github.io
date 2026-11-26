@@ -506,7 +506,8 @@
     "rolesTitle": "One guide for each role",
     "pdf": "Download as PDF",
     "pdfGuides": "the five role guides",
-    "pdfDocs": "the whole IT documentation"
+    "pdfDocs": "the whole IT documentation",
+    "sheet": "The IT sheet, 2 pages, PDF"
   },
   "frameworksUi": {
     "meta": {

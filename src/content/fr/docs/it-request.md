@@ -1,110 +1,116 @@
 ---
 title: "Ce qu'il faut préparer"
-description: "Cette page liste ce que l'équipe informatique prépare avant l'installation de Probant, et qui fait quoi. Vous pouvez l'envoyer telle quelle à votre équipe…"
+description: "Le détail est dans Installer Probant et dans le Dossier de sécurité, qui contient un questionnaire de sécurité déjà rempli. La connexion d'entreprise est…"
 order: 0.3
 group: "Before you install"
 source: "docs/fr/demande_it.md"
 ---
 
-Cette page liste ce que l'équipe informatique prépare avant l'installation de Probant, et qui fait quoi. Vous pouvez
-l'envoyer telle quelle à votre équipe informatique.
+## 1. L'outil en bref
 
-Probant tourne sur un serveur de votre entreprise, ou sur votre propre compte chez un hébergeur clé en main. Les
-personnes qui développent Probant ne l'hébergent pas et n'en reçoivent aucune donnée. Pour la revue de sécurité, voir
-le [Dossier de sécurité](/docs/security-overview/).
+- Probant est une application web dans **un seul conteneur Docker**. Toutes ses données sont dans **un seul volume**,
+  `/data` : la base, les preuves, les sauvegardes et la clé secrète. La base est SQLite, sans rien à installer.
+  Choisissez PostgreSQL au-delà d'une vingtaine de personnes actives au même moment.
+- Il tourne sur un serveur de votre entreprise, ou sur votre propre compte chez un hébergeur clé en main. Il n'a besoin
+  d'aucun service extérieur pour tourner : les e-mails, la connexion d'entreprise et la copie externe des sauvegardes
+  sont facultatifs. Les personnes qui développent Probant ne l'hébergent pas, n'en reçoivent aucune donnée et n'ont
+  aucun accès à votre installation.
 
-## 1. Hébergement
+## 2. Ce que vous fournissez
 
-Choisissez l'une des deux options. Ce tableau présente ce que l'IT fournit pour chaque option :
-
-| Prêt | Option | Ce que l'IT fournit |
+| Prêt | Élément | Ce qu'il faut fournir |
 |---|---|---|
-| ☐ | A. Votre propre serveur, avec Docker | Un serveur Linux 64 bits (`x86_64`), avec un compte qui peut utiliser `sudo`. Sur Debian 12 ou Ubuntu 22.04, ou une version plus récente, n'installez rien d'avance, seulement `curl` s'il manque : l'installeur propose d'installer Docker et attend votre oui. Sur un autre système Linux, installez d'abord Docker Engine 24 ou plus récent et son module Compose v2.24 ou plus récent. Git seulement pour installer avec Git (aussi sur `arm64`) |
-| ☐ | B. Hébergement clé en main (Clever Cloud) | Un compte Clever Cloud avec une application Python, un add-on PostgreSQL et un add-on FS Bucket. Voir [Hébergement clé en main](/docs/managed-hosting/) |
+| ☐ | Serveur | Linux 64 bits sur `x86_64` (sur `arm64`, installez avec Git), avec un compte qui peut utiliser `sudo`. Minimum : 1 processeur, 1 Go de mémoire, 5 Go de disque. Pour un usage réel : 2 à 4 processeurs. Prévoyez le disque pour les sauvegardes : chacune est une copie complète des données, et l'outil garde 14 sauvegardes par défaut. Sur Debian 12 ou Ubuntu 22.04, ou une version plus récente, n'installez rien d'avance, seulement `curl` s'il manque : le script d'installation propose d'installer Docker et attend votre oui. Sur un autre système Linux, installez d'abord Docker et son module Compose (versions dans le guide d'installation). |
+| ☐ | Ou hébergement clé en main | Un compte Clever Cloud avec une application Python, un add-on PostgreSQL et un add-on FS Bucket. Voir [Hébergement clé en main](/docs/managed-hosting/). |
+| ☐ | Nom de domaine, pour HTTPS | Un nom qui pointe vers le serveur, par exemple `reporting.example.com`. |
+| ☐ | Compte e-mail (facultatif) | Le serveur SMTP et son port (587 pour `starttls`, 465 pour `ssl`), l'identifiant et le mot de passe, l'adresse d'expédition. Sans lui, l'outil n'envoie aucun e-mail. |
+| ☐ | Lieu pour la copie des sauvegardes (conseillé) | Un bucket compatible S3 ou un compte SFTP que seule l'IT peut ouvrir : les sauvegardes contiennent des données confidentielles et les empreintes des mots de passe. Ou copiez vous-même `/data/backups` hors du serveur, à intervalles réguliers. |
 
-Pour l'option A, ce tableau présente la taille du serveur :
+## 3. Installer
 
-| Prêt | Élément | Minimum | Pour un usage réel |
-|---|---|---|---|
-| ☐ | Processeurs | 1 | 2 à 4, réservés à l'outil. Les essais de charge ont utilisé cette taille. |
-| ☐ | Mémoire | 1 Go | Chaque processus du serveur web utilise environ 170 Mo. L'outil en démarre un par processeur, de 2 à 4. |
-| ☐ | Disque | 5 Go | Chaque sauvegarde est une copie complète de la base et des preuves. L'outil garde 14 sauvegardes par défaut. Prévoyez le disque pour les données et ces copies. |
-| ☐ | Base de données | SQLite, dans le volume des données. Il n'y a rien à installer. | PostgreSQL quand plus d'une vingtaine de personnes sont actives au même moment |
+1. Contrôlez le serveur. Le contrôle lit Docker, la mémoire, le disque, les ports, le nom de domaine, le réseau et
+   l'horloge, et ne change rien :
 
-## 2. Réseau
+   ```bash
+   curl -fsSL https://github.com/Probant-Reporting/probant/raw/main/get.sh \
+     | sudo sh -s -- --check --domain reporting.example.com
+   ```
 
-Ce tableau présente les accès réseau à préparer. Pour l'accès entrant, choisissez l'une des quatre lignes « Entrant » :
+2. Installez l'outil avec la même commande, sans `--check`. Comptez 2 minutes environ. La commande contrôle chaque
+   fichier avec la liste signée de la release : si la liste manque ou si un fichier ne correspond pas, elle n'installe
+   rien.
+3. Ouvrez l'adresse et créez tout de suite le compte administrateur. D'ici là, la première personne qui ouvre
+   l'adresse le crée.
 
-| Prêt | Besoin | Valeur |
+Variantes :
+
+- **Sans accès à Internet** : le paquet hors ligne signé de la release, avec `./install.sh --offline`.
+- **Réseau d'entreprise** : le certificat HTTPS de votre entreprise (`--cert`, `--key`), votre autorité de
+  certification interne (`--ca-cert`) et un proxy pour les connexions sortantes (`HTTPS_PROXY`).
+- **Avec Git** : le serveur construit l'image, en 3 à 5 minutes.
+
+## 4. Réseau
+
+Pour l'accès entrant, choisissez une ligne :
+
+| Accès entrant | Ports |
+|---|---|
+| HTTPS avec le proxy Caddy fourni | TCP 80 et 443, et UDP 443, ouverts depuis Internet. Caddy obtient automatiquement un certificat Let's Encrypt. |
+| HTTPS avec le certificat de votre entreprise | TCP 443, et 80 pour la redirection, depuis le réseau interne. Aucun accès depuis Internet. |
+| HTTPS avec votre propre proxy | Votre proxy envoie les requêtes au port TCP 8000, avec les en-têtes `X-Forwarded-Proto` et `X-Forwarded-For`. |
+| Essai interne seulement | TCP 8000, en HTTP sans chiffrement |
+
+Les connexions sortantes, toutes en TCP 443 sauf le serveur d'e-mails et SFTP :
+
+| Usage | Destinations, depuis le serveur |
+|---|---|
+| Installation et mises à jour | `github.com`, `raw.githubusercontent.com`, `objects.githubusercontent.com`, `release-assets.githubusercontent.com`, `ghcr.io`, `pkg-containers.githubusercontent.com`, `tuf-repo-cdn.sigstore.dev`. Avec HTTPS (`--domain`) : aussi Docker Hub. Si le script d'installation installe Docker : aussi `download.docker.com` et les miroirs de paquets du système. Avec le paquet hors ligne : rien. |
+| Mises à jour automatiques | Les mêmes hôtes GitHub et Sigstore, chaque nuit, depuis le serveur (pas depuis l'outil) |
+| E-mails (facultatif) | Votre serveur SMTP, sur son port |
+| Copie des sauvegardes (facultatif) | La destination S3 (443, ou le port de son adresse) ou le serveur SFTP (22 par défaut) |
+| Connexion d'entreprise (facultatif) | Votre fournisseur d'identité OpenID Connect |
+
+## 5. Après l'installation
+
+Ce tableau présente ce qui tourne tout seul, et ce qui reste à l'IT :
+
+| Sujet | Tout seul | Ce que fait l'IT |
 |---|---|---|
-| ☐ | Adresse | Un nom de domaine qui pointe vers le serveur, par exemple `reporting.example.com` |
-| ☐ | Entrant, HTTPS avec le proxy Caddy fourni | TCP 80 et 443, et UDP 443, ouverts depuis Internet. Caddy obtient automatiquement un certificat Let's Encrypt. |
-| ☐ | Entrant, HTTPS avec votre propre proxy et votre certificat | Votre proxy envoie les requêtes vers le port TCP 8000 du serveur, avec les en-têtes `X-Forwarded-Proto` et `X-Forwarded-For`. Choisissez cette option si le serveur n'est pas joignable depuis Internet. |
-| ☐ | Entrant, HTTPS avec Caddy et le certificat de votre entreprise | TCP 443 (et 80 pour la redirection) depuis le réseau interne. Le certificat avec sa chaîne complète et sa clé privée sans mot de passe, au format PEM (`./install.sh --cert --key`). Pas de Let's Encrypt, pas d'accès depuis Internet. |
-| ☐ | Entrant, essai interne seulement | TCP 8000, en HTTP sans chiffrement |
-| ☐ | Sortant, installation et mises à jour | Depuis le serveur, TCP 443 : `github.com`, `raw.githubusercontent.com`, `objects.githubusercontent.com`, `release-assets.githubusercontent.com` (fichiers et leurs empreintes signées), `ghcr.io`, `pkg-containers.githubusercontent.com` (image), `tuf-repo-cdn.sigstore.dev` (signatures). Si l'installeur installe Docker : aussi `download.docker.com` et les miroirs de paquets du système. Avec HTTPS (`--domain`) : aussi Docker Hub (image de Caddy). Avec Git, le serveur construit l'image : aussi Docker Hub et PyPI. Sans accès à Internet : rien, avec le paquet hors ligne de la release ([Installer sans accès à Internet](/docs/install-the-tool/#installer-sans-accès-à-internet)). |
-| ☐ | Sortant, mises à jour automatiques (facultatif) | Allumées par défaut après une installation en une commande. Chaque nuit, le serveur (pas l'outil) ouvre les mêmes connexions vers GitHub et Sigstore que l'installation, TCP 443. Pour installer sans elles, ajoutez `--auto-update off` ([Mises à jour automatiques](/docs/update-the-tool/#mises-à-jour-automatiques)). |
-| ☐ | Sortant, e-mails | Le serveur SMTP, sur son port : 587 pour `starttls`, 465 pour `ssl` |
-| ☐ | Sortant, connexion d'entreprise (facultatif) | Votre fournisseur d'identité OpenID Connect, TCP 443, seulement si un gestionnaire des espaces allume la connexion d'entreprise. Réglez `PUBLIC_URL`, et enregistrez l'outil chez le fournisseur ([Connexion d'entreprise](/docs/single-sign-on/)). |
-| ☐ | Autorité de certification interne | Si le serveur d'e-mails, ou un proxy qui inspecte le HTTPS, a un certificat d'une autorité interne : le certificat de cette autorité au format PEM (`./install.sh --ca-cert`). |
+| Mises à jour | Après une installation en une commande, le serveur installe chaque nouvelle version la nuit, 3 jours après sa publication. Il n'installe qu'une image signée, sauvegarde d'abord chaque espace, et revient en arrière si la nouvelle version ne répond pas. | Pour les éteindre : `--auto-update off` à l'installation, ou le choix **Éteint** dans l'outil. Sinon, lancez `./update.sh` (1 à 3 minutes). |
+| Sauvegardes | Chaque nuit. Elles sont signées, pas chiffrées. | Copiez-les hors du serveur, ou donnez la destination à un gestionnaire des espaces. Chiffrez le disque. |
+| Alertes par e-mail | Sauvegarde échouée, disque presque plein, tâche arrêtée, copie échouée, et d'autres. Sur une installation neuve, elles sont allumées d'office (**Administration › Paramètres › Santé**). | Donnez la boîte qui les reçoit. |
+| Page de santé | `GET /sante/` répond `200` quand l'outil fonctionne, `503` quand il y a un problème. | Posez-y une supervision : elle seule vous prévient quand le serveur est éteint. |
+| Journaux | L'outil les écrit sur la sortie standard du conteneur. | Réglez la rotation des journaux de Docker. |
 
-## 3. Compte e-mail (SMTP)
+## 6. La sécurité en bref
 
-L'outil envoie les relances, les alertes par e-mail et l'e-mail de test avec un compte SMTP. Sans ce compte, l'outil
-n'envoie aucun e-mail. Donnez ces réglages à un gestionnaire des espaces (le premier compte administrateur en est un),
-qui les saisit dans **Administration › Paramètres › Hébergement**. Ou mettez-les vous-même dans `.env`. Ce tableau
-présente ce qu'il faut donner :
+- Chaque image est signée, avec sa liste de composants (SBOM) jointe. Chaque release contient un rapport des failles
+  connues.
+- Le conteneur tourne sous l'utilisateur 1000. Le code appartient à root, et l'outil ne peut pas le modifier. Seule la
+  dernière version reçoit les corrections de sécurité.
+- La connexion d'entreprise passe par OpenID Connect. Elle est éteinte par défaut, et les comptes restent créés dans
+  l'outil. Il n'y a ni SAML, ni LDAP, ni second facteur propre à l'outil.
+- Les secrets enregistrés dans l'outil (mot de passe des e-mails, secrets de la copie externe, secret du client de la
+  connexion d'entreprise) sont chiffrés. L'outil ne les réaffiche jamais.
+- Aucune télémétrie : l'outil n'envoie rien aux personnes qui le développent, et ses pages ne chargent rien d'un autre
+  site.
+- En HTTPS, l'outil envoie HSTS et une politique de sécurité des contenus stricte. Une session se termine après
+  12 heures sans activité. Des échecs de connexion répétés bloquent la connexion pendant 15 minutes.
+- Non fournis : aucune certification (ISO 27001, SOC 2), aucun test d'intrusion par un tiers, aucun chiffrement des
+  données ni des sauvegardes par l'outil, aucune analyse antivirus des preuves et aucune haute disponibilité.
 
-| Prêt | Élément | Exemple |
-|---|---|---|
-| ☐ | Serveur et port | `smtp.office365.com`, `587` |
-| ☐ | Sécurité | `starttls` (port 587), `ssl` (port 465) ou `none` |
-| ☐ | Identifiant et mot de passe | Le compte qui envoie les e-mails |
-| ☐ | Adresse d'expédition | `reporting@example.com` |
+## 7. Qui fait quoi
 
-## 4. Sauvegardes et supervision
+| Qui | Tâches |
+|---|---|
+| L'IT | Serveur, nom de domaine, pare-feu, compte e-mail. L'installation et le premier compte administrateur. La copie des sauvegardes, la supervision, les journaux. Les mises à jour à la main, ou la tâche planifiée des mises à jour automatiques. |
+| Un gestionnaire des espaces (le premier administrateur en est un) | Les réglages de toute l'installation : serveur d'e-mails, alertes par e-mail, mises à jour automatiques, copie externe des sauvegardes, connexion d'entreprise |
+| Les administrateurs de l'outil | L'assistant de mise en place, les comptes et les rôles, les référentiels, les campagnes |
 
-Ce tableau présente ce que l'IT fait tourner après l'installation :
+## 8. Où trouver le reste
 
-| Prêt | Besoin | Ce qu'il faut préparer |
-|---|---|---|
-| ☐ | Copie externe des sauvegardes | Un emplacement hors du serveur que seule l'IT peut ouvrir : les archives contiennent des données confidentielles et les empreintes des mots de passe. Choisissez une façon. **L'outil copie lui-même chaque sauvegarde** : donnez à un gestionnaire des espaces un compartiment compatible S3 (adresse, région, compartiment, identifiant de la clé d'accès, clé secrète) ou un compte SFTP (serveur, port, nom du compte, mot de passe ou clé privée, dossier, empreinte SHA-256 de la clé du serveur). Ouvrez depuis le serveur le port de la destination : 443 ou le port de l'adresse pour S3, 22 par défaut pour SFTP. **Ou vous copiez** le dossier `/data/backups`, avec tous ses sous-dossiers, à intervalle régulier. Voir [Installer Probant](/docs/), « Copier les sauvegardes hors du serveur ». |
-| ☐ | Contrôle de santé | Donnez la boîte qui doit recevoir les alertes par e-mail de l'outil (sauvegarde échouée, disque presque plein, tâche arrêtée…). Sur une installation neuve, elles sont allumées d'office (**Administration › Paramètres › Santé**). Si vous avez un outil de supervision, ajoutez aussi une sonde sur `GET /sante/` : `200` signifie que l'outil fonctionne, `503` signale un problème. Seule cette sonde vous prévient quand le serveur est éteint. |
-| ☐ | Contrôle des données de la nuit | Rien à régler : un contrôle de la nuit en retard ou en erreur fait partie des alertes par e-mail de l'outil. Avec votre propre supervision, vous pouvez aussi alerter quand `controle_donnees.etat` vaut `late` dans le détail de `/sante/`. |
-| ☐ | Journaux | Réglez la rotation des journaux de Docker. L'outil ne la règle pas. |
-
-## 5. Qui fait quoi
-
-Ce tableau présente chaque tâche, qui la fait et combien de temps elle prend :
-
-| Tâche | Qui | Durée |
-|---|---|---|
-| Préparer le serveur, le nom de domaine, le pare-feu et le compte SMTP | IT | Selon vos procédures |
-| Vérifier le serveur avant l'installation (`get.sh --check` ou `./install.sh --check` : il ne change rien) | IT | Quelques secondes |
-| Installer l'outil (`get.sh`, ou `./install.sh` avec Git) | IT | Environ 2 minutes (3 à 5 avec Git) |
-| Ou déployer l'outil sur Clever Cloud | IT | Environ 30 minutes |
-| Créer le compte administrateur (étape 1 de l'assistant **Mise en place**) | IT ou l'administrateur de l'outil | Juste après l'installation |
-| Faire les 7 autres étapes de l'assistant : **Votre structure**, **Langues**, **Organisation**, **Référentiels**, **Fiche KPI**, **Équipe**, **Première campagne** | Administrateur de l'outil | Selon le nombre d'organisations et de KPI. L'administrateur peut s'arrêter et reprendre plus tard. |
-| Régler le serveur d'e-mails dans l'outil, et envoyer un e-mail de test (**Administration › Paramètres › Hébergement**) | Gestionnaire des espaces, ou l'IT dans `.env` | Non mesuré |
-| Régler la connexion d'entreprise (facultatif) : l'application chez le fournisseur, puis **Administration › Paramètres › Connexion d'entreprise** | IT et un gestionnaire des espaces | Non mesuré |
-| Créer les comptes et donner les rôles | Administrateur de l'outil | Non mesuré |
-| Copier les sauvegardes hors du serveur, si l'outil ne le fait pas | IT | À intervalle régulier |
-| Mettre à jour l'outil (`./update.sh`), ou laisser faire les mises à jour automatiques du serveur | IT | 1 à 3 minutes |
-| Restaurer une sauvegarde | IT, ou l'administrateur de l'outil depuis la page **Hébergement** | Quelques secondes |
-
-## 6. Étapes
-
-Pour installer l'outil, suivez ces étapes. [Installer Probant](/docs/) donne le détail de chaque étape, et les
-numéros de section ci-dessous sont ceux de ce guide :
-
-1. Préparez les éléments des sections 1 à 4 de cette page.
-2. Vérifiez le serveur, puis installez l'outil en une commande avec `--domain reporting.example.com`
-   (section 2). Sur Debian et Ubuntu, si Docker manque, l'installeur propose de l'installer.
-3. Ouvrez l'adresse de l'outil et créez tout de suite le compte administrateur (section 3). Tant que cette étape
-   n'est pas faite, la première personne qui ouvre l'adresse crée ce compte.
-4. Donnez les réglages SMTP à un gestionnaire des espaces (l'administrateur de l'étape 3 en est un), ou ajoutez-les
-   dans `.env`, puis envoyez un e-mail de test (section 7).
-5. Donnez à un gestionnaire des espaces la destination de la copie des sauvegardes, ou planifiez vous-même la copie de
-   `/data/backups` hors du serveur (section 5).
-6. Branchez votre supervision sur `/sante/` (section 9).
-7. Donnez l'adresse à l'administrateur de l'outil, qui fait le reste de la mise en place.
+Le détail est dans [Installer Probant](/docs/) et dans le [Dossier de sécurité](/docs/security-overview/), qui
+contient un questionnaire de sécurité déjà rempli. La connexion d'entreprise est dans
+[Se connecter avec le compte d'entreprise](/docs/single-sign-on/), Clever Cloud dans
+[Hébergement clé en main](/docs/managed-hosting/), et comment signaler une faille en privé dans
+[`securite.md`](https://github.com/Probant-Reporting/probant/blob/main/docs/fr/securite.md).

@@ -47,7 +47,7 @@ export const DOCS_OUTIL = {
       ["Outgoing HTTPS of the tool (AI assistant, and the other HTTPS connections)", "Outgoing HTTPS connections of the tool"],
     ],
     // renvoi vers la version de l'autre langue : le site a son propre menu des langues
-    autreLangue: /\s*French version:\s+\[[^\]]+\]\([^)]+\)\.?/g,
+    autreLangue: /\s*French\s+version:\s+\[[^\]]+\]\([^)]+\)\.?/g,
   },
   fr: {
     installation: "docs/fr/installation.md", gere: "docs/fr/hebergement_cle_en_main.md", titreGere: "Hébergement clé en main",
@@ -74,7 +74,7 @@ export const DOCS_OUTIL = {
       ["(STARTTLS et SSL), l'assistant IA et\n", "(STARTTLS et SSL) et\n"],
       ["HTTPS sortant de l'outil (assistant IA, et les autres connexions HTTPS)", "Connexions HTTPS sortantes de l'outil"],
     ],
-    autreLangue: /\s*Version anglaise(?: de référence)?\s?:\s+\[[^\]]+\]\([^)]+\)\.?/g,
+    autreLangue: /\s*Version\s+anglaise(?:\s+de\s+référence)?\s?:\s+\[[^\]]+\]\([^)]+\)\.?/g,
   },
 };
 for (const L of Object.values(DOCS_OUTIL)) for (const a of AUTRES) Object.assign(L.autres[a.slug], a);

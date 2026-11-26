@@ -75,7 +75,7 @@ Cette partie s'adresse à l'équipe informatique. Ce qu'il faut au serveur :
 - Docker, le logiciel qui fait tourner l'outil. Sur Debian ou Ubuntu, ne l'installez pas avant : s'il manque, le script d'installation propose de l'installer et attend votre oui. Sur un autre système, installez d'abord Docker.
 - Facultatif, pour HTTPS : un nom de domaine qui pointe vers le serveur, avec les ports 80 et 443 ouverts.
 
-[Ce qu'il faut préparer](/docs/it-request/) donne tout le reste, par exemple le compte e-mail et le réseau. Le [Dossier de sécurité](/docs/security-overview/) répond aux questions d'une revue de sécurité.
+À envoyer ou à imprimer pour votre équipe informatique : [la fiche pour l'IT, 2 pages, PDF](/pdf/probant-it-sheet-fr.pdf). Elle donne tout le reste, par exemple le compte e-mail et le réseau, et se lit aussi sur ce site : [Ce qu'il faut préparer](/docs/it-request/). Le [Dossier de sécurité](/docs/security-overview/) répond aux questions d'une revue de sécurité.
 
 ### En une commande
 

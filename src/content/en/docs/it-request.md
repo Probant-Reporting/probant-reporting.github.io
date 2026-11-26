@@ -1,109 +1,110 @@
 ---
 title: "What to prepare"
-description: "This page lists what the IT team prepares before the installation of Probant, and who does what. You can send it to your IT team as it is."
+description: "The details are in Install Probant and in the Security overview, which has a filled-in security questionnaire. Company sign-in is in Single sign-on, Clever…"
 order: 0.3
 group: "Before you install"
 source: "docs/it_request.md"
 ---
 
-This page lists what the IT team prepares before the installation of Probant, and who does what. You can send it to
-your IT team as it is.
+## 1. The tool in brief
 
-Probant runs on a server of your company, or on your own account with a managed hosting provider. The people who
-develop Probant do not host it and receive no data from it. For the security review, see
-[Security overview](/docs/security-overview/).
+- Probant is a web application in **one Docker container**. All its data is in **one volume**, `/data`: the database,
+  the evidence files, the backups, and the secret key. The database is SQLite, with nothing to install. Choose
+  PostgreSQL when more than about 20 people are active at the same moment.
+- It runs on a server of your company, or on your own account with a managed hosting provider. It needs no external
+  service to run: emails, company sign-in, and the external copy of the backups are optional. The people who develop
+  Probant do not host it, receive no data from it, and have no access to your installation.
 
-## 1. Hosting
+## 2. What you provide
 
-Choose one of the two options. This table shows what IT provides for each option:
-
-| Ready | Option | What IT provides |
+| Ready | Item | What to provide |
 |---|---|---|
-| ☐ | A. Your own server, with Docker | A 64-bit Linux server (`x86_64`), with an account that can use `sudo`. On Debian 12 or Ubuntu 22.04, or a later version, install nothing in advance, only `curl` if it is missing: the installer offers to install Docker and waits for your yes. On another Linux system, install Docker Engine 24 or later and its Compose plugin v2.24 or later first. Git only to install with Git (also on `arm64`) |
-| ☐ | B. Managed hosting (Clever Cloud) | A Clever Cloud account with a Python application, a PostgreSQL add-on, and an FS Bucket add-on. See [Managed hosting](/docs/managed-hosting/) |
+| ☐ | Server | 64-bit Linux on `x86_64` (on `arm64`, install with Git), with an account that can use `sudo`. Minimum: 1 processor, 1 GB of memory, 5 GB of disk. For production use: 2 to 4 processors. Plan the disk for the backups: each one is a full copy of the data, and the tool keeps 14 backups by default. On Debian 12 or Ubuntu 22.04, or a later version, install nothing in advance, only `curl` if it is missing: the installer offers to install Docker and waits for your yes. On another Linux system, install Docker and its Compose plugin first (versions in the installation guide). |
+| ☐ | Or managed hosting | A Clever Cloud account with a Python application, a PostgreSQL add-on, and an FS Bucket add-on. See [Managed hosting](/docs/managed-hosting/). |
+| ☐ | Domain name, for HTTPS | A name that points to the server, for example `reporting.example.com`. |
+| ☐ | Email account (optional) | The SMTP server and its port (587 for `starttls`, 465 for `ssl`), the username and the password, the sender address. Without it, the tool sends no email. |
+| ☐ | Place for the copy of the backups (recommended) | An S3-compatible bucket or an SFTP account that only IT can open: the backups contain confidential data and the password hashes. Or copy `/data/backups` off the server yourself, on a schedule. |
 
-For option A, this table shows the size of the server:
+## 3. Install
 
-| Ready | Item | Minimum | For production use |
-|---|---|---|---|
-| ☐ | Processors | 1 | 2 to 4, used only by the tool. The load tests used this size. |
-| ☐ | Memory | 1 GB | Each worker of the web server uses about 170 MB. The tool starts one worker per processor, from 2 to 4. |
-| ☐ | Disk | 5 GB | Each backup is a full copy of the database and of the evidence files. The tool keeps 14 backups by default. Plan the disk for the data and these copies. |
-| ☐ | Database | SQLite, in the data volume. There is nothing to install. | PostgreSQL when more than about 20 people are active at the same moment |
+1. Check the server. The check reads Docker, memory, disk, ports, domain name, network, and clock, and changes nothing:
 
-## 2. Network
+   ```bash
+   curl -fsSL https://github.com/Probant-Reporting/probant/raw/main/get.sh \
+     | sudo sh -s -- --check --domain reporting.example.com
+   ```
 
-This table shows the network access to prepare. For the inbound access, choose one of the four “Inbound” lines:
+2. Install the tool with the same command, without `--check`. It takes about 2 minutes. The command checks each file
+   against the signed list of the release: if the list is missing or a file does not match, it installs nothing.
+3. Open the address and create the administrator account right away. Until then, the first person who opens the
+   address creates it.
 
-| Ready | Need | Value |
+Variants:
+
+- **Without Internet access**: the signed offline package of the release, with `./install.sh --offline`.
+- **Company network**: the HTTPS certificate of your company (`--cert`, `--key`), your internal certificate authority
+  (`--ca-cert`), and a proxy for the outgoing connections (`HTTPS_PROXY`).
+- **With Git**: the server builds the image, in 3 to 5 minutes.
+
+## 4. Network
+
+For the inbound access, choose one line:
+
+| Inbound access | Ports |
+|---|---|
+| HTTPS with the Caddy proxy provided | TCP 80 and 443, and UDP 443, open from the Internet. Caddy gets a Let's Encrypt certificate automatically. |
+| HTTPS with the certificate of your company | TCP 443, and 80 for the redirect, from the internal network. No access from the Internet. |
+| HTTPS with your own proxy | Your proxy sends the requests to TCP 8000, with the headers `X-Forwarded-Proto` and `X-Forwarded-For`. |
+| Internal trial only | TCP 8000, over HTTP without encryption |
+
+The outbound connections, all on TCP 443 except the email server and SFTP:
+
+| Use | Destinations, from the server |
+|---|---|
+| Installation and updates | `github.com`, `raw.githubusercontent.com`, `objects.githubusercontent.com`, `release-assets.githubusercontent.com`, `ghcr.io`, `pkg-containers.githubusercontent.com`, `tuf-repo-cdn.sigstore.dev`. With HTTPS (`--domain`): also Docker Hub. If the installer installs Docker: also `download.docker.com` and the package mirrors of the system. With the offline package: nothing. |
+| Automatic updates | The same GitHub and Sigstore hosts, every night, from the server (not from the tool) |
+| Emails (optional) | Your SMTP server, on its port |
+| Copy of the backups (optional) | The S3 destination (443, or the port of its address) or the SFTP server (22 by default) |
+| Company sign-in (optional) | Your OpenID Connect identity provider |
+
+## 5. After the installation
+
+This table shows what runs on its own, and what stays with IT:
+
+| Topic | On its own | What IT does |
 |---|---|---|
-| ☐ | Address | A domain name that points to the server, for example `reporting.example.com` |
-| ☐ | Inbound, HTTPS with the Caddy proxy provided | TCP 80 and 443, and UDP 443, open from the Internet. Caddy gets a Let's Encrypt certificate automatically. |
-| ☐ | Inbound, HTTPS with your own proxy and certificate | Your proxy sends the requests to TCP 8000 of the server, with the headers `X-Forwarded-Proto` and `X-Forwarded-For`. Use this option if the server is not reachable from the Internet. |
-| ☐ | Inbound, HTTPS with Caddy and the certificate of your company | TCP 443 (and 80 for the redirect) from the internal network. The certificate with its full chain and its private key without a password, in PEM format (`./install.sh --cert --key`). No Let's Encrypt, no access from the Internet. |
-| ☐ | Inbound, internal trial only | TCP 8000, over HTTP without encryption |
-| ☐ | Outbound, installation and updates | From the server, TCP 443: `github.com`, `raw.githubusercontent.com`, `objects.githubusercontent.com`, `release-assets.githubusercontent.com` (files and their signed sums), `ghcr.io`, `pkg-containers.githubusercontent.com` (image), `tuf-repo-cdn.sigstore.dev` (signatures). If the installer installs Docker: also `download.docker.com` and the package mirrors of the system. With HTTPS (`--domain`): also Docker Hub (image of Caddy). With Git, the server builds the image: also Docker Hub and PyPI. Without Internet access: nothing, with the offline package of the release ([Install without Internet access](/docs/install-the-tool/#install-without-internet-access)). |
-| ☐ | Outbound, automatic updates (optional) | On by default after an installation with one command. Every night, the server (not the tool) opens the same GitHub and Sigstore connections as the installation, TCP 443. To install without them, add `--auto-update off` ([Automatic updates](/docs/update-the-tool/#automatic-updates)). |
-| ☐ | Outbound, emails | The SMTP server, on its port: 587 for `starttls`, 465 for `ssl` |
-| ☐ | Outbound, company sign-in (optional) | Your OpenID Connect identity provider, TCP 443, only if a space manager turns company sign-in on. Set `PUBLIC_URL`, and register the tool at the provider ([Single sign-on](/docs/single-sign-on/)). |
-| ☐ | Internal certificate authority | If the email server, or a proxy that inspects HTTPS, has a certificate of an internal authority: the certificate of that authority in PEM format (`./install.sh --ca-cert`). |
+| Updates | After an installation with one command, the server installs each new version at night, 3 days after its publication. It installs only a signed image, backs up each space first, and goes back if the new version does not respond. | To turn them off: `--auto-update off` at the installation, or the choice **Off** in the tool. Otherwise, run `./update.sh` (1 to 3 minutes). |
+| Backups | Every night. They are signed, not encrypted. | Copy them off the server, or give the destination to a space manager. Encrypt the disk. |
+| Email alerts | Failed backup, disk almost full, stopped task, failed copy, and more. On a new installation, they are on from the start (**Administration › Settings › Health**). | Give the mailbox that receives them. |
+| Health page | `GET /sante/` answers `200` when the tool works, `503` when there is a problem. | Add a monitor on it: only this monitor warns you when the server is off. |
+| Logs | The tool writes them on the standard output of the container. | Set the rotation of the Docker logs. |
 
-## 3. Email account (SMTP)
+## 6. Security in brief
 
-The tool sends the reminders, the email alerts, and the test email with an SMTP account. Without it, the tool sends
-no email. Give these settings to a space manager (the first administrator account is one), who enters them in
-**Administration › Settings › Hosting**. Or put them in `.env` yourself. This table shows what to give:
+- Each image is signed, with its list of components (SBOM) attached. Each release has a report of the known
+  vulnerabilities.
+- The container runs as user 1000. The code belongs to root, and the tool cannot change it. Only the latest version
+  receives security corrections.
+- Company sign-in uses OpenID Connect. It is off by default, and the accounts stay created in the tool. There is no SAML,
+  no LDAP, and no second factor of the tool's own.
+- The secrets saved in the tool (email password, secrets of the external copy, client secret of company sign-in) are
+  encrypted. The tool never shows them again.
+- No telemetry: the tool sends nothing to the people who develop it, and its pages load nothing from another site.
+- Over HTTPS, the tool sends HSTS and a strict content security policy. A session ends after 12 hours without activity.
+  Repeated failed sign-ins block the sign-in for 15 minutes.
+- Not provided: no certification (ISO 27001, SOC 2), no penetration test by a third party, no encryption of the data or
+  of the backups by the tool, no malware scan of the evidence files, and no high availability.
 
-| Ready | Item | Example |
-|---|---|---|
-| ☐ | Server and port | `smtp.office365.com`, `587` |
-| ☐ | Security | `starttls` (port 587), `ssl` (port 465), or `none` |
-| ☐ | Username and password | The account that sends the emails |
-| ☐ | Sender address | `reporting@example.com` |
+## 7. Who does what
 
-## 4. Backups and monitoring
+| Who | Tasks |
+|---|---|
+| IT | Server, domain name, firewall, email account. Installation and the first administrator account. Copy of the backups, monitoring, logs. Updates by hand, or the timer of the automatic updates. |
+| A space manager (the first administrator is one) | The settings of the whole installation: email server, email alerts, automatic updates, external copy of the backups, company sign-in |
+| The administrators of the tool | The setup wizard, the accounts and the roles, the frameworks, the campaigns |
 
-This table shows what IT runs after the installation:
+## 8. Where to find the rest
 
-| Ready | Need | What to prepare |
-|---|---|---|
-| ☐ | External copy of the backups | A place off the server that only IT can open: the archives contain confidential data and the password hashes. Choose one way. **The tool copies each backup itself**: give a space manager an S3-compatible bucket (address, region, bucket, access key ID, secret access key) or an SFTP account (server, port, username, password or private key, folder, SHA-256 fingerprint of the key of the server). Open the port of the destination from the server: 443 or the port of the address for S3, 22 by default for SFTP. **Or you copy** the folder `/data/backups`, with all its subfolders, on a schedule. See [Install Probant](/docs/), “Copy the backups outside the server”. |
-| ☐ | Health check | Give the mailbox that must receive the email alerts of the tool (failed backup, disk almost full, stopped task…). On a new installation, they are on from the start (**Administration › Settings › Health**). If you have a monitoring tool, also add a monitor on `GET /sante/`: `200` means that the tool works, `503` means a problem. Only this monitor warns you when the server is off. |
-| ☐ | Nightly data check | Nothing to set: a late or failed night check is in the email alerts of the tool. With your own monitoring, you can also alert when `controle_donnees.etat` is `late` in the details of `/sante/`. |
-| ☐ | Logs | Set the rotation of the Docker logs. The tool does not set it. |
-
-## 5. Who does what
-
-This table shows each task, who does it, and how long it takes:
-
-| Task | Who | Time |
-|---|---|---|
-| Prepare the server, the domain name, the firewall, and the SMTP account | IT | Depends on your procedures |
-| Check the server before the installation (`get.sh --check` or `./install.sh --check`: it changes nothing) | IT | A few seconds |
-| Install the tool (`get.sh`, or `./install.sh` with Git) | IT | About 2 minutes (3 to 5 with Git) |
-| Or deploy the tool on Clever Cloud | IT | About 30 minutes |
-| Create the administrator account (step 1 of the **Setup** wizard) | IT or the administrator of the tool | Right after the installation |
-| Do the other 7 steps of the wizard: **Your organisation**, **Languages**, **Organisation**, **Frameworks**, **KPI sheet**, **Team**, **First campaign** | Administrator of the tool | Depends on the number of organisations and KPIs. The administrator can stop and continue later. |
-| Set up the email server in the tool, and send a test email (**Administration › Settings › Hosting**) | Space manager, or IT in `.env` | Not measured |
-| Set up company sign-in (optional): the application at the provider, then **Administration › Settings › Company sign-in** | IT and a space manager | Not measured |
-| Create the accounts and give the roles | Administrator of the tool | Not measured |
-| Copy the backups off the server, if the tool does not do it | IT | On a schedule |
-| Update the tool (`./update.sh`), or let the automatic updates of the server do it | IT | 1 to 3 minutes |
-| Restore a backup | IT, or the administrator of the tool from the **Hosting** page | A few seconds |
-
-## 6. Steps
-
-To install the tool, do these steps. [Install Probant](/docs/) gives the details of each step, and the
-section numbers below are those of that guide:
-
-1. Prepare the items of sections 1 to 4 of this page.
-2. Check the server, then install the tool with one command and `--domain reporting.example.com`
-   (section 2). On Debian and Ubuntu, if Docker is missing, the installer offers to install it.
-3. Open the address of the tool, and create the administrator account right away (section 3). Until this step is
-   done, the first person who opens the address creates this account.
-4. Give the SMTP settings to a space manager (the administrator of step 3 is one), or add them to `.env`, then send
-   a test email (section 7).
-5. Give a space manager the destination for the copy of the backups, or schedule the copy of `/data/backups` off
-   the server yourself (section 5).
-6. Connect your monitoring to `/sante/` (section 9).
-7. Give the address to the administrator of the tool, who does the rest of the setup.
+The details are in [Install Probant](/docs/) and in the [Security overview](/docs/security-overview/), which has
+a filled-in security questionnaire. Company sign-in is in [Single sign-on](/docs/single-sign-on/), Clever Cloud in
+[Managed hosting](/docs/managed-hosting/), and how to report a vulnerability in private in [`SECURITY.md`](https://github.com/Probant-Reporting/probant/blob/main/SECURITY.md).
