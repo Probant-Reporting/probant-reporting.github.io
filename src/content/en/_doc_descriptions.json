@@ -1,8 +1,8 @@
 {
   "note": "One real sentence per page of the documentation, written for this site. The pages themselves are copied from the repository of the tool (npm run sync): this file is not.",
   "descriptions": {
-    "prerequisites": "What you need before you install: a 64-bit Linux server with Docker and curl, one open port or a domain name for HTTPS, and an SMTP account if you want emails.",
-    "install-the-tool": "Check the server, then install with one command from the signed, published image, in about 2 minutes. Or install with Git, without Internet access, or with the certificates of your company.",
+    "prerequisites": "What the server needs: 64-bit Linux, curl and Docker. On Debian or Ubuntu, the installer offers to install Docker. Also one open port or a domain name for HTTPS, and an email account for the emails.",
+    "install-the-tool": "Check the server, then install with one command from the official image, in about 2 minutes. Or install with Git, without Internet access, or with the certificates of your company.",
     "managed-hosting": "Run the tool with a managed hosting provider, with no server to manage: how to choose a provider, and the deployment on Clever Cloud, step by step.",
     "set-up-the-tool-on-first-launch": "The Setup wizard opens on first launch and has 8 steps. Create the administrator account right after the installation, before you share the address.",
     "change-the-settings": "Each setting of the .env file, with its default value and its purpose: address, HTTPS, port, database, size limits, and backups. The security that's already on.",

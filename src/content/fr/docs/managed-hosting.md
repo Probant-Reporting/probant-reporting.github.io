@@ -8,8 +8,9 @@ source: "docs/fr/hebergement_cle_en_main.md"
 
 Ce guide explique comment installer et faire tourner l'outil chez un hébergeur clé en main, sans serveur à gérer.
 
-C'est l'option « sans serveur ». L'hébergeur fait tourner l'outil, applique les mises à jour de sécurité du système et
-fournit HTTPS. L'IT n'a ni machine ni Docker à gérer.
+L'hébergeur fait tourner l'outil, applique les mises à jour de sécurité du système et fournit HTTPS. L'IT n'a ni
+machine ni Docker à gérer. Les mises à jour automatiques de l'outil ne sont pas disponibles : vous mettez à jour par un
+nouveau déploiement.
 
 ## Choisir un hébergeur
 
@@ -105,7 +106,7 @@ Le tableau indique ce que règlent ces lignes :
 Si votre offre n'a pas de workers, utilisez les tâches planifiées (« cron ») de Clever Cloud avec ces commandes :
 
 - `python manage.py backup`, puis `python manage.py backup --copy` si une copie externe des sauvegardes est réglée
-  (**Paramètres › Hébergement**, encart **Copie hors du serveur**). La commande sauvegarde aussi le registre commun
+  (**Paramètres › Hébergement**, cadre **Copie hors du serveur**). La commande sauvegarde aussi le registre commun
   (comptes et réglages de l'installation) une fois par jour, dans `data/backups/shared`. Avec plusieurs espaces, ajoutez
   `SPACE=<code> python manage.py backup` pour chaque autre espace, l'un après l'autre : le registre n'est sauvegardé
   qu'une fois.
@@ -160,7 +161,7 @@ Le tableau indique comment faire les opérations courantes chez Clever Cloud :
 | Revenir à la version précédente | Prévenez les équipes. Déployez la version précédente (poussez le commit précédent sur la branche déployée) : la préparation n'applique aucune migration. Ouvrez ensuite une console SSH (`clever ssh`) et restaurez l'archive « before-update » de chaque espace : `python manage.py restore <archive> --yes --rebuild`, et `SPACE=<code> python manage.py restore <archive de cet espace> --yes --rebuild`. Redémarrez ensuite l'application. Voir aussi [Installation](/docs/), « Revenir à la version précédente ». |
 | Utiliser plusieurs espaces | Le registre commun et chaque espace sont des schémas de la même base PostgreSQL (`commun`, `espace_<code>`). Le compte de l'add-on doit pouvoir créer des schémas. Le registre ouvre ses propres connexions (environ deux fois plus qu'avant). Vérifiez la limite de connexions de l'offre. Au plus : processus × fils × (2 + nombre d'espaces supplémentaires) pour le serveur, plus 4 × (2 + nombre d'espaces supplémentaires) pour les tâches de fond ; PostgreSQL en permet 100 par défaut, assez pour 2 espaces supplémentaires avec les réglages par défaut. À partir de 3, ou si l'offre en permet moins : `SPACES_CONN_MAX_AGE=0`, moins de `GUNICORN_THREADS` ou de `GUNICORN_WORKERS`, ou une offre plus grande. Pour en savoir plus (en anglais), voir Spaces, § 2. |
 | Superviser | L'outil envoie des alertes par e-mail sur sa santé (voir le worker `CC_WORKER_COMMAND_2`, ou `check_data --alerts`). Branchez aussi la surveillance de Clever Cloud (ou un outil externe) sur `/sante/` : elle prévient aussi quand l'application est arrêtée. |
-| Copier les sauvegardes hors de la plateforme | Réglez un stockage compatible S3 ou un serveur SFTP dans **Administration › Paramètres › Hébergement**, encart **Copie hors du serveur** (voir [Installation](/docs/), « Copier les sauvegardes hors du serveur »). |
+| Copier les sauvegardes hors de la plateforme | Un gestionnaire des espaces règle un stockage compatible S3 ou un serveur SFTP dans **Administration › Paramètres › Hébergement**, cadre **Copie hors du serveur** (voir [Installation](/docs/), « Copier les sauvegardes hors du serveur »). |
 | Limiter les essais de connexion | Rien à régler. L'outil compte les connexions manquées dans `data/sign-in-attempts`, sur le FS Bucket : tous les processus et toutes les instances de l'application partagent ce compte, qui reste après un redéploiement. |
 | Lire le journal | Ouvrez l'onglet **Logs** de la console, ou lancez `clever logs`. |
 | Mises à jour automatiques | Pas disponibles en hébergement clé en main : la page **Paramètres › Hébergement** le dit. Pour mettre à jour, redéployez (première ligne). |

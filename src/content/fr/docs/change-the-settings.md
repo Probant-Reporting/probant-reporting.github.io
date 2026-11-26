@@ -27,13 +27,13 @@ Ce tableau présente chaque réglage, sa valeur par défaut et son rôle :
 | `SMTP_…` | Vide | E-mails. Quand `SMTP_HOST` est rempli, ces réglages passent avant les réglages des e-mails saisis dans l'outil. Voir la section 7. |
 | `DEFAULT_LANGUAGE` | `en` | La langue d'une nouvelle installation (interface et contenus) : l'une des sept langues de l'interface (`en`, `fr`, `es`, `de`, `it`, `nl`, `pt`). L'outil ne la lit qu'à la création de la base. Ensuite, changez-la dans **Administration › Paramètres › Langues**. Pour une installation en français, mettez `fr` avant le premier démarrage. |
 | `GUIDED_TOUR` | `on` | `off` retire la courte visite guidée que les personnes voient à leur première connexion. La visite ne change que l'affichage. |
+| `TIME_ZONE` | `Europe/Brussels` | Le fuseau horaire de l'installation, sous la forme d'un nom de la liste IANA, par exemple `Europe/Paris` ou `America/New_York`. L'heure des relances automatiques, de la sauvegarde automatique et du contrôle de chaque nuit, « aujourd'hui », et les dates des exports et du journal suivent ce fuseau. **Administration › Paramètres › Hébergement** l'affiche à côté de l'heure du serveur. Si le nom est inconnu, l'outil ne démarre pas et le journal montre l'erreur. |
 | `MAX_EVIDENCE_SIZE_MB`, `MAX_IMPORT_SIZE_MB` | `5`, `10` | La taille maximale, en Mo, d'une preuve et d'un fichier d'import. |
 | `MAX_BACKUP_UPLOAD_MB` | `2048` | La taille maximale, en Mo, d'une sauvegarde déposée dans l'outil par un administrateur (**Hébergement** › **Restaurer**). L'outil refuse toute autre requête plus grosse que la plus grande des tailles `MAX_EVIDENCE_SIZE_MB` et `MAX_IMPORT_SIZE_MB` (plus 1 Mo), avant de la recevoir. Avec le proxy HTTPS, `CADDY_MAX_SIZE` (50 Mo par défaut) s'applique aussi : augmentez-le pour déposer une sauvegarde plus grosse. |
 | `MAX_XLSX_UNCOMPRESSED_MB` | 20 × `MAX_IMPORT_SIZE_MB` | La taille maximale, en Mo, d'un fichier Excel une fois décompressé. L'outil refuse un fichier plus gros avant de l'ouvrir. Un texte de cellule de plus de 32 767 caractères (la limite d'Excel) est aussi refusé. Les mêmes limites s'appliquent aux commandes d'import lancées sur le serveur (`import_kpi`, `import_organisations`, `import_valeurs`) : pour importer un fichier plus gros par une commande, augmentez `MAX_XLSX_UNCOMPRESSED_MB` le temps de cette commande. |
 | `BACKGROUND_IMPORT_ROWS` | `5000` | Un import de valeurs (**Import / Export › Importer des valeurs**) de plus de lignes que ce nombre se fait en arrière-plan. La personne voit une barre d'avancement, et peut quitter la page et revenir. Le processus `run_imports --schedule` fait ces imports. L'image le lance d'elle-même : vous n'installez rien. `0` veut dire jamais : tout import se fait dans la page, qui ne peut durer que 120 s. |
 | `DISK_ALERT_MB` | `100` | Quand la place libre sur le disque des données passe sous cette valeur, en Mo, `/sante/` répond `503` (« disk almost full »). |
 | `BACKUP_AUTO`, `BACKUP_TIME`, `BACKUPS_KEEP` | `1`, `02:30`, `14` | Valeurs de départ seulement. Ensuite, ces valeurs se règlent dans l'outil, dans **Administration › Paramètres › Hébergement** : sauvegarde automatique activée ou non, fréquence (6 h, 12 h, jour, semaine), heure et nombre de sauvegardes gardées. |
-| `TIME_ZONE` | `Europe/Brussels` | Le fuseau horaire de l'installation, sous la forme d'un nom de la liste IANA, par exemple `Europe/Paris` ou `America/New_York`. L'heure des relances automatiques, de la sauvegarde automatique et du contrôle de chaque nuit, « aujourd'hui », et les dates des exports et du journal suivent ce fuseau. **Administration › Paramètres › Hébergement** l'affiche à côté de l'heure du serveur. Si le nom est inconnu, l'outil ne démarre pas et le journal montre l'erreur. |
 | `DATA_CHECK_TIME` | `03:30` | L'heure du contrôle et du ménage de chaque nuit. Le contrôle lit la base et ne modifie rien. Le ménage efface les sessions terminées et les éléments supprimés depuis plus longtemps que le délai de la corbeille. Voir la section 9. |
 | `GUNICORN_WORKERS`, `GUNICORN_THREADS` | 1 processus par processeur (de 2 à 4), `4` | Capacité du serveur. Un processus utilise 1 processeur à la fois et environ 170 Mo de mémoire. La valeur par défaut convient à un serveur de 2 à 4 processeurs. Voir « Capacité » à la section 8. |
 | `GUNICORN_TIMEOUT`, `GUNICORN_KEEPALIVE` | `120`, `75` | La durée maximale d'une requête, en secondes, et la durée pendant laquelle une connexion inutilisée reste ouverte. Gardez `GUNICORN_KEEPALIVE` au-dessus du délai du proxy placé devant l'outil. Le Caddy fourni ferme les connexions inutilisées après 60 s. Si la valeur est plus basse, un enregistrement peut de temps en temps échouer avec l'erreur 502. |
@@ -96,17 +96,20 @@ Avec `report-only`, la protection est coupée : ne gardez cette valeur que le te
 
 ## Assistants IA (MCP) : rien à faire
 
-L'outil contient un serveur pour les assistants IA (Model Context Protocol), à l'adresse `/mcp/` de chaque espace
-(`/espace/<code>/mcp/` pour un autre espace). Il tourne dans le même conteneur, sur le même port, derrière le même
-HTTPS : aucun service, aucun port, aucune variable, rien à installer. Il reste éteint tant qu'un administrateur ne l'a
-pas permis dans **Administration › Paramètres › Assistants**. Seule condition : le proxy transmet l'en-tête
-`Authorization` à l'outil (Caddy, profil `https`, et Clever Cloud le font sans réglage). Les jetons des assistants ne
-sont jamais dans les sauvegardes. Le journal de l'outil montre les jetons refusés (`serveur_mcp: MCP: token refused`).
-Détails : `assistants_mcp.md`, section 7.
+Une personne peut brancher son propre assistant IA sur l'outil, par le Model Context Protocol (MCP). L'assistant lit
+et modifie alors les données avec les droits de cette personne. Le serveur MCP fait partie de l'outil, à l'adresse
+`/mcp/` de chaque espace (`/espace/<code>/mcp/` pour un autre espace). Il tourne dans le même conteneur, sur le même
+port, derrière le même HTTPS : aucun service, aucun port, aucune variable, rien à installer. Il reste éteint tant
+qu'un administrateur ne l'a pas allumé dans **Administration › Paramètres › Assistants**. Seule condition : le proxy
+transmet l'en-tête `Authorization` à l'outil (Caddy, profil `https`, et Clever Cloud le font sans réglage). Les jetons
+des assistants ne sont jamais dans les sauvegardes. Le journal de l'outil montre les jetons refusés
+(`serveur_mcp: MCP: token refused`). Détails : `assistants_mcp.md`, section 7.
 
 ## Connexion avec le compte d'entreprise
 
-Chacun peut se connecter avec son compte d'entreprise (connexion unique, OpenID Connect). Elle est éteinte par défaut. Un gestionnaire des espaces la règle dans **Administration › Paramètres › Connexion d'entreprise**. Ce que fait l'IT :
+Chacun peut se connecter avec son compte d'entreprise (connexion unique, OpenID Connect). Elle est éteinte par
+défaut. Un gestionnaire des espaces la règle dans **Administration › Paramètres › Connexion d'entreprise**. Ce que
+fait l'IT :
 
 | Élément | Valeur |
 |---|---|

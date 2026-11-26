@@ -126,7 +126,7 @@ This table shows each outbound flow:
 | Destination | Port | When | Purpose |
 |---|---|---|---|
 | Your SMTP server | `SMTP_PORT` (587 by default, 465 with `ssl`) | Only if an email server is set (in **Settings › Hosting**, or `SMTP_HOST`) | Reminders, email alerts about the health of the installation, and test email |
-| Your destination for the external copy of the backups: S3-compatible storage, or SFTP server | The port of the address (443 by default with https), or the SFTP port (22 by default) | Only if an administrator sets a destination in **Settings › Hosting › External copy** | Copy of each new backup and of the backup of the shared registry, a few seconds after it is made; test file when the administrator tests the destination; deletion of the old copies only if the administrator asks for it. The address is the one that the administrator enters: never the server itself, a link-local address (cloud metadata), or a reserved address. Internal addresses (NAS, MinIO) are accepted. With `HTTPS_PROXY`, a public S3 service is reached through the proxy. SFTP needs a direct connection. |
+| Your destination for the external copy of the backups: S3-compatible storage, or SFTP server | The port of the address (443 by default with https), or the SFTP port (22 by default) | Only if a space manager sets a destination in **Administration › Settings › Hosting**, box **Copy outside the server** | Copy of each new backup and of the backup of the shared registry, a few seconds after it is made; test file when the space manager tests the destination; deletion of the old copies only if the space manager asks for it. The address is the one that the space manager enters: never the server itself, a link-local address (cloud metadata), or a reserved address. Internal addresses (NAS, MinIO) are accepted. With `HTTPS_PROXY`, a public S3 service is reached through the proxy. SFTP needs a direct connection. |
 | Let's Encrypt | TCP 443 | With the Caddy proxy and the automatic certificate only | Get and renew the certificate. Never with the certificate of your company. |
 | Your identity provider (OpenID Connect) | TCP 443 | Only when company sign-in is set: when a person clicks the button, when the provider sends the person back, and when a space manager checks or saves the settings | Settings and signing keys of the provider, and exchange of the code for the ID token. HTTPS only, no redirect followed, JSON of 1 MB at most, 5 seconds at most for each call (`COMPANY_SIGN_IN_TIMEOUT`). Never the server itself, a link-local address (cloud metadata), or a reserved address. |
 | Your PostgreSQL server | The port of `DATABASE_URL` | Only if `DATABASE_URL` points to an external server | Database |
@@ -161,7 +161,8 @@ flows every night:
     `aud`, `exp`, and `iat` are checked.
   - When it is on, only the space managers keep their password, as rescue accounts, unless a space manager allows the
     password for everyone. A person that the company blocks at the provider can then no longer sign in.
-  - When company sign-in is on, a session opened with a password follows the same rule as a new sign-in.
+  - When company sign-in is turned on, a session opened earlier with a password ends at the next page if the person
+    may no longer use a password.
   - After 30 refused company sign-ins in 15 minutes from one network address, the button is refused from this address
     for 15 minutes.
   - IT can turn it off for the whole installation (`COMPANY_SIGN_IN=off`): everyone can use their password again.
@@ -238,7 +239,7 @@ This table shows what the tool encrypts, and what it does not:
 | Browser to the tool, without a domain name | No | HTTP on port 8000. Use it only on an internal network, or for a trial. |
 | Tool to the SMTP server | Your choice | `SMTP_SECURITY`: `starttls` (default), `ssl`, or `none`. With TLS, the tool checks the certificate of the server. |
 | Tool to the identity provider | Yes | HTTPS only, with a check of the certificate. |
-| Tool to the destination of the external copy | Yes, except `http` | S3: HTTPS with a check of the certificate; `http` is accepted only for an address of the internal network. Each request is signed (Signature Version 4): the secret key never leaves the server. SFTP: SSH, with the key of the server pinned: the tool shows its SHA-256 fingerprint at the first test, an administrator confirms it, and the tool then refuses any other key before it sends the password or the signature. |
+| Tool to the destination of the external copy | Yes, except `http` | S3: HTTPS with a check of the certificate; `http` is accepted only for an address of the internal network. Each request is signed (Signature Version 4): the secret key never leaves the server. SFTP: SSH, with the key of the server pinned: the tool shows its SHA-256 fingerprint at the first test, a space manager confirms it, and the tool then refuses any other key before it sends the password or the signature. |
 | Certificates checked by the tool | Yes | Every outgoing connection checks the certificate of the server against the authorities of the system, and against the authorities of your company that IT adds (`certificates/ca/`, `EXTRA_CA_CERTS`). The tool never turns the check off. **Administration › Settings › Health** shows the added authorities and their expiry dates. |
 | Tool to PostgreSQL | Not set by the tool | The tool sets no TLS option for this connection. With the `postgres` profile, the connection stays on the internal Docker network. |
 | Databases, evidence files, logo | No | The tool does not encrypt them. |
@@ -271,11 +272,12 @@ own key at its first start. The tool does not use a key management service or a 
 - **Safe restore.** A restore first backs up the current state. If a restore stops halfway, the tool finishes it at
   the next start. A restore deletes all the MCP tokens of the space.
 - **Updates.** `./update.sh` backs up each space before it changes anything.
-- **External copy.** IT copies `/data/backups` off the server, on a schedule. Or an administrator sets a destination
-  in **Settings › Hosting › External copy** (S3-compatible storage or SFTP server): the tool then copies each new
-  archive of each space and of the shared registry, and catches up after a failure. The copies contain the password
+- **External copy.** Two ways. IT copies `/data/backups` off the server, on a schedule. Or a space manager sets a
+  destination in **Administration › Settings › Hosting**, box **Copy outside the server** (S3-compatible storage or
+  SFTP server): the tool then copies each new archive of each space and of the shared registry, and catches up after
+  a failure. The copies contain the password
   hashes and the encrypted secrets: the destination must be private, and only IT may open it. By default, the tool
-  deletes nothing at the destination. If the administrator sets a number of copies to keep, the tool deletes only the
+  deletes nothing at the destination. If a space manager sets a number of copies to keep, the tool deletes only the
   older archives that it made itself (folder and name that it recognises). A failure of the copy sends an email alert
   (if the alerts are on) and appears in **Settings › Health** and in `/sante/` (`external_copy`).
 
@@ -350,7 +352,8 @@ Other protections:
   changes of each version are in `CHANGELOG.md`.
 - **Automatic updates.** After an installation with one command, a timer of the server (`auto-update.sh`, set up by
   `./install.sh --auto-update on`, removed by `--auto-update off`) installs each new version at night, 3 days after
-  its publication by default. The administrators choose “automatic”, “notify only” or “off”. The script compares
+  its publication by default. A space manager chooses **Install it automatically** (the choice after an installation
+  with one command), **Notify only**, or **Off**. The script compares
   image digests, never version numbers. It installs only an image whose signature it verified with cosign (official
   container pinned by its digest): the identity of the workflow `image.yml` of the public repository for the tag of
   the version, and the GitHub OIDC issuer. No verified signature: nothing is installed. The timer runs on the server,
@@ -378,15 +381,15 @@ This table shows who is responsible for each part:
 | Network, firewall, domain name, HTTPS certificate (or your proxy) | Yes | | |
 | Encryption of the disk | Yes | | |
 | SMTP account | Yes | | |
-| Identity provider for company sign-in: application, assigned people, multi-factor authentication, blocking a person | Yes | Yes (settings in the tool) | |
+| Identity provider for company sign-in: application, assigned people, multi-factor authentication, blocking a person | Yes | Yes, space managers (settings in the tool) | |
 | Certificate of your company for HTTPS, and certificate authorities of your company (`./install.sh --cert --key`, `--ca-cert`) | Yes | | |
 | Verification of the signature of the image or of the offline package before an installation by hand | Yes | | |
-| External copy of the backups: destination and its account, retention of the copies | Yes | Yes (destination set in the tool) | |
+| External copy of the backups: destination and its account, retention of the copies | Yes | Yes, space managers (destination set in the tool) | |
 | Rotation and retention of the server log | Yes | | |
 | Monitoring of `/sante/`, in addition to the email alerts of the tool (it also warns when the server is off) | Yes | | |
-| Email alerts about the health of the installation: turn on, recipients | | Yes | |
+| Email alerts about the health of the installation: turn on, recipients | | Yes, space managers | |
 | Application of the updates (`./update.sh`), or the timer of the automatic updates (`./install.sh --auto-update`) | Yes | | |
-| Choice of the automatic updates: automatic, notify only, off, wait after the publication | | Yes | |
+| Choice of the automatic updates: automatic, notify only, off, wait after the publication | | Yes, space managers | |
 | Accounts, roles, and access to the spaces | | Yes | |
 | Settings: backups kept, sign-in history, trash, MCP server | | Yes | |
 | Statement of the company on the page **Data and privacy** | | Yes | |
@@ -409,20 +412,20 @@ This table gives a short answer to the usual questions of a security review:
 | 6 | Is there a contract with a service level (SLA)? | Not provided by the open-source project. [`SECURITY.md`](https://github.com/Probant-Reporting/probant/blob/main/SECURITY.md) gives the target times for a vulnerability report. |
 | 7 | Who operates the tool? | Your IT team, on your server or on your account with a hosting provider |
 | 8 | Where is the data? | On the server or the hosting account that you choose |
-| 9 | Does the tool send data to the maintainers or to other services? | No. Only to your SMTP server, to the destination of the external copy of the backups if one is set, and to your identity provider if company sign-in is on. |
+| 9 | Does the tool send data to the maintainers or to other services? | To the maintainers: no. To other services: only to those that you set. These are your SMTP server, the destination of the external copy of the backups if one is set, and your identity provider if company sign-in is on. |
 | 10 | Is there telemetry, analytics, or content from another site? | No. |
 | 11 | Is the data of other customers in the same installation? | No. Each company has its own installation. |
 | 12 | Single sign-on (SAML, OpenID Connect), LDAP, or Active Directory? | Yes, OpenID Connect, off by default, without automatic creation of accounts. No SAML and no LDAP. Active Directory only through an OpenID Connect provider (section 4). |
 | 13 | Multi-factor authentication? | Not in the tool. With company sign-in, through the identity provider. A sign-in with a password, for example by a rescue account, has no second factor. |
 | 14 | Are the password rules configurable? | No. The rules are fixed: 8 characters at least, not similar to the account, not common, not only digits. |
 | 15 | Do passwords expire? | No. |
-| 16 | Is there a lockout after failed sign-ins? | Yes. 15 minutes, after 5, 20, or 50 failures (section 4). |
+| 16 | Is there a lockout after failed sign-ins? | Yes. 15 minutes, after 5 failures for one username from one address, 20 on one account, or 50 from one address (section 4). |
 | 17 | Do sessions end automatically? | Yes. After 12 hours without activity. This duration is fixed. |
 | 18 | Is there role-based access? | Yes. 5 roles in each space, and space managers (section 5). |
 | 19 | Automatic provisioning of accounts (SCIM)? | No. The administrators create and deactivate the accounts in the tool, one by one or several at once. Company sign-in creates no account. |
 | 20 | Is there a record of the sign-ins? | Yes. The sign-in history, 180 days by default, with the method of each sign-in. |
 | 21 | Is there an API? | Yes. The MCP server for AI assistants, off by default, with personal tokens that expire. |
-| 22 | Encryption in transit? | Yes, with HTTPS (Caddy, with a Let's Encrypt certificate or the certificate of your company, or your proxy) and HSTS. Without a domain name, the tool uses HTTP. |
+| 22 | Encryption in transit? | Yes, when HTTPS is set up: Caddy (with a Let's Encrypt certificate or the certificate of your company) or your own proxy, and HSTS. Without HTTPS, the tool uses HTTP without encryption: for a trial or an internal network only. |
 | 23 | Encryption at rest? | Not by the tool. Use the encryption of the disk or of the hosting provider. |
 | 24 | Key management (KMS, HSM)? | No. One secret key, in a file of the data volume or in a setting. |
 | 25 | Which personal data does the tool keep? | Name, email address, username, role, team, language, sign-in dates, and the history of changes (section 2) |
@@ -434,9 +437,9 @@ This table gives a short answer to the usual questions of a security review:
 | 31 | Are the dependencies controlled? | Yes. Exact versions, and a `pip-audit` check on GitHub that informs and does not block. Each image has a signed SBOM and a report of the known vulnerabilities. |
 | 32 | Is there automated security testing? | Automated tests check the rights of the roles, the isolation of the spaces, and the content security policy. There is no dedicated static analysis tool: `ruff` checks only mechanical defects. |
 | 33 | Does the container run as root? | No. As user 1000. The code belongs to root, and the tool cannot change it. |
-| 34 | Read-only file system or dropped capabilities for the container? | Not set in `docker-compose.yml`. |
+| 34 | Read-only file system or dropped capabilities for the container? | No. `docker-compose.yml` sets neither. |
 | 35 | Which ports are open? | 80 and 443 with Caddy, or 8000 without it (section 3) |
-| 36 | Are there backups? | Yes. Automatic, signed, not encrypted. IT copies them off the server, or the tool copies them itself to an S3-compatible storage or an SFTP server set by a space manager. |
+| 36 | Are there backups? | Yes. Automatic, signed, not encrypted. They stay on the server until IT copies them off it, or until a space manager sets a destination: the tool then copies them itself to an S3-compatible storage or an SFTP server. |
 | 37 | How much data can be lost (RPO)? | What was done since the last backup: 1 day by default, 6 hours at the shortest frequency |
 | 38 | How long does a restore take? | A few seconds for the restore itself. The rebuild of a server from the external copy is documented, but its total time is not measured. There is no high availability. |
 | 39 | Can the logs go to a SIEM? | Yes, with the log driver of Docker. The tool has no SIEM connector. It can send email alerts about the health of the installation (section 8). |

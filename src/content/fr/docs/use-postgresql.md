@@ -7,7 +7,8 @@ source: "docs/fr/installation.md"
 ---
 
 SQLite est la base par défaut. Vous n'avez aucun serveur de base de données à gérer. SQLite écrit un enregistrement à
-la fois. Les autres enregistrements attendent leur tour, jusqu'à 60 secondes.
+la fois. Les autres enregistrements attendent leur tour, jusqu'à 60 secondes. Quand beaucoup de personnes
+enregistrent au même moment, passez à PostgreSQL : voir « Capacité ».
 
 ## Capacité
 
@@ -90,8 +91,9 @@ Si l'installation n'a que l'espace principal, vous pouvez faire plus court. Saut
 nom de l'espace, ni les comptes qui n'existent que dans un autre espace.
 
 La commande `python manage.py shell` de l'étape 2 est le seul moyen de faire une archive du registre à la demande : l'outil n'a
-pas de commande pour cela. Nous avons comparé les données de l'installation PostgreSQL à celles de l'installation SQLite,
-table par table, pour deux espaces : elles sont identiques (seuls les numéros des lignes d'accès du registre changent).
+pas de commande pour cela. Un essai de ce passage a comparé les données de l'installation PostgreSQL à celles de
+l'installation SQLite, table par table, pour deux espaces : elles sont identiques (seuls les numéros des lignes d'accès
+du registre changent).
 
 ## Plusieurs espaces avec PostgreSQL
 

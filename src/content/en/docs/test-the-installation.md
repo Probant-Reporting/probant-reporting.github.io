@@ -1,10 +1,13 @@
 ---
 title: "Test the installation"
-description: "At the end, the script deletes everything that it created. To run the same test with the test suite, run TESTER_DOCKER=1 python manage.py test…"
+description: "This part is for the people who change the code of the tool. You do not need it to install the tool. The test scripts are in the code (folder docker/), not…"
 order: 11
 group: "Run"
 source: "docs/installation.md"
 ---
+
+This part is for the people who change the code of the tool. You do not need it to install the tool. The test
+scripts are in the code (folder `docker/`), not in the folder of an installation with one command.
 
 The script `bash docker/test_installation.sh` reproduces an installation on a blank machine. It copies the repository
 into an empty folder and runs `./install.sh`. Then it checks these points:

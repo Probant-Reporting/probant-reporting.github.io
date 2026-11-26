@@ -368,13 +368,13 @@ table.specs th { width: 42mm; font-weight: 600; }
 /* chapitres */
 .chapitre { margin-top: 9mm; }
 .avant + .chapitre { margin-top: 0; }
-.ouverture { display: flex; gap: 5mm; align-items: flex-start; padding: 4mm 5mm; margin-bottom: 0; background: var(--marque); color: #fff; border-radius: 1.6mm 1.6mm 0 0; break-after: avoid; }
+.ouverture { display: flex; gap: 5mm; align-items: flex-start; padding: 4mm 5mm; margin-bottom: 0; background: var(--marque); color: #fff; border-radius: 1.6mm 1.6mm 0 0; break-after: avoid; break-inside: avoid; } /* un bandeau de chapitre n'est jamais coupé entre deux pages */
 .ouverture .grand { font: 600 40pt/0.9 "Source Serif 4", serif; color: #A9AFB8; }
 .ouverture .num { margin: 0; font: 700 8pt/1 "Source Sans 3", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #C9CDD3; }
 .ouverture h2 { font-size: 19pt; margin: 1.4mm 0 0; color: #fff; }
 .ouverture .qui { margin: 1.2mm 0 0; font-size: 9.5pt; color: #E3E6EA; }
 /* plan du chapitre : ses sections et leur page */
-.plan { list-style: none; margin: 0 0 4mm; padding: 2.6mm 5mm 2.2mm; columns: 2; column-gap: 9mm; background: var(--papier); border: 0.3mm solid var(--filet); border-top: 0; border-radius: 0 0 1.6mm 1.6mm; break-before: avoid; }
+.plan { list-style: none; margin: 0 0 4mm; padding: 2.6mm 5mm 2.2mm; columns: 2; column-gap: 9mm; background: var(--papier); border: 0.3mm solid var(--filet); border-top: 0; border-radius: 0 0 1.6mm 1.6mm; break-before: avoid; break-inside: avoid; }
 .plan li { margin: 0; break-inside: avoid; font-size: 8.4pt; line-height: 1.5; }
 .plan a { display: flex; align-items: baseline; }
 .plan a::after { content: ""; order: 1; flex: 1 1 3mm; border-bottom: 0.3mm dotted var(--filet-fort); margin: 0 1mm; transform: translateY(-0.7mm); }

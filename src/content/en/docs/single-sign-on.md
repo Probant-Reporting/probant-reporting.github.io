@@ -79,13 +79,16 @@ Both are off by default. Keep them off unless you have a reason.
 
 ## 4. At your provider
 
+You register the tool as a web application. Then you give three values to the space manager: the issuer address,
+the client ID, and the client secret.
+
 ### What every provider needs
 
 | Setting | Value |
 |---|---|
 | Type of application | Web application (confidential client), with a client secret |
 | Flow | Authorization code. The tool always sends PKCE with `S256`. |
-| Redirect URI | The address shown on the page (step 3) |
+| Redirect URI | `https://<address of the tool>/connexion/entreprise/retour/`, exactly as the page of the tool shows it (step 3) |
 | Scopes | `openid email` |
 | Signature of the ID token | RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384 or ES512. Shared-key signatures (HS256) and unsigned tokens are refused. |
 | Claims of the ID token | `email` and, unless you turned on the second safety choice, `email_verified` |
@@ -187,7 +190,7 @@ link, so the policy keeps `form-action 'self'`.
 | “Your company did not confirm your email address” | The provider sends no `email`, or sends `email_verified: false`, or sends no `email_verified`. | Add the `email` claim at the provider. Mark the address as verified at the provider. For a provider that never sends `email_verified`, read section 4. |
 | “Sign-in with your company account did not work” | The provider does not answer, the client secret is wrong, the clocks differ by more than one minute, or the token is refused. | Click **Check the provider**. Read the log of the tool: `docker compose logs web \| grep connexion_entreprise` gives the technical reason (never a token). |
 | “The sign-in took too long or was already used” | The person waited more than 10 minutes at the provider, used the back button, or the settings changed meanwhile. | Click the button again. |
-| “Sign in with your company account (button above)” | The person typed their password, but only the space managers can still use it. | Use the button. |
+| “Incorrect email or password. If your account uses the company account, sign in with the button above.” | The person typed their password, but only the space managers can still use it. | Use the button. |
 | The button does not appear | Company sign-in is off, incomplete, or turned off by IT (`COMPANY_SIGN_IN=off`). | Open **Administration › Settings › Company sign-in**. |
 | **Check the provider**: “The provider gives another issuer address” | The issuer entered is not exactly the one the provider publishes. | Copy the `issuer` value of the provider exactly (for Microsoft Entra ID, use the address with your tenant ID). |
 | **Check the provider**: “Address refused” | `http`, an address of the server itself or a link-local address. | Use the `https` address of the provider. |

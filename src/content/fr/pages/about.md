@@ -30,5 +30,5 @@ Si vous l'essayez et que vous avez une question, écrivez-moi, je vous aide volo
 ## Comment il est maintenu
 
 - Chaque nouvelle version est décrite dans [Nouveautés](/whats-new/), avec ses notes.
-- Votre équipe informatique applique une mise à jour avec une seule commande. La mise à jour sauvegarde d'abord la base.
+- Votre équipe informatique applique une mise à jour avec une seule commande, ou laisse le serveur l'installer la nuit. La mise à jour sauvegarde d'abord la base.
 - Chaque changement est testé avant d'être publié : calculs, rôles, accessibilité et temps de réponse.

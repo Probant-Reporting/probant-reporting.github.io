@@ -128,7 +128,7 @@ Ce tableau présente chaque flux sortant :
 | Destination | Port | Quand | Rôle |
 |---|---|---|---|
 | Votre serveur SMTP | `SMTP_PORT` (587 par défaut, 465 avec `ssl`) | Seulement si un serveur d'e-mails est réglé (dans **Paramètres › Hébergement**, ou `SMTP_HOST`) | Relances, alertes par e-mail de la santé de l'installation et e-mail de test |
-| Votre destination de la copie externe des sauvegardes : stockage compatible S3, ou serveur SFTP | Le port de l'adresse (443 par défaut en https), ou le port SFTP (22 par défaut) | Seulement si un administrateur règle une destination dans **Paramètres › Hébergement › Copie externe** | Copie de chaque nouvelle sauvegarde et de la sauvegarde du registre commun, quelques secondes après sa création ; fichier d'essai quand l'administrateur essaie la destination ; suppression des anciennes copies seulement si l'administrateur le demande. L'adresse est celle que saisit l'administrateur : jamais le serveur lui-même, une adresse locale au lien (métadonnées de l'hébergeur) ni une adresse réservée. Les adresses internes (NAS, MinIO) sont acceptées. Avec `HTTPS_PROXY`, un service S3 public est joint par le proxy. SFTP demande une connexion directe. |
+| Votre destination de la copie externe des sauvegardes : stockage compatible S3, ou serveur SFTP | Le port de l'adresse (443 par défaut en https), ou le port SFTP (22 par défaut) | Seulement si un gestionnaire des espaces règle une destination dans **Administration › Paramètres › Hébergement**, cadre **Copie hors du serveur** | Copie de chaque nouvelle sauvegarde et de la sauvegarde du registre commun, quelques secondes après sa création ; fichier d'essai quand le gestionnaire des espaces essaie la destination ; suppression des anciennes copies seulement si le gestionnaire des espaces le demande. L'adresse est celle que saisit le gestionnaire des espaces : jamais le serveur lui-même, une adresse locale au lien (métadonnées de l'hébergeur) ni une adresse réservée. Les adresses internes (NAS, MinIO) sont acceptées. Avec `HTTPS_PROXY`, un service S3 public est joint par le proxy. SFTP demande une connexion directe. |
 | Let's Encrypt | TCP 443 | Avec le proxy Caddy et le certificat automatique seulement | Obtenir et renouveler le certificat. Jamais avec le certificat de votre entreprise. |
 | Votre fournisseur d'identité (OpenID Connect) | TCP 443 | Seulement quand la connexion d'entreprise est réglée : quand une personne clique sur le bouton, quand le fournisseur la renvoie vers l'outil, et quand un gestionnaire des espaces vérifie ou enregistre le réglage | Réglages et clés de signature du fournisseur, et échange du code contre le jeton d'identité. HTTPS seulement, aucune redirection suivie, JSON de 1 Mo au plus, 5 secondes au plus pour chaque appel (`COMPANY_SIGN_IN_TIMEOUT`). Jamais le serveur lui-même, une adresse lien-local (métadonnées d'un cloud) ni une adresse réservée. |
 | Votre serveur PostgreSQL | Le port de `DATABASE_URL` | Seulement si `DATABASE_URL` désigne un serveur externe | Base de données |
@@ -165,8 +165,8 @@ ces flux sortants :
   - Quand elle est allumée, seuls les gestionnaires des espaces gardent leur mot de passe, comme comptes de secours,
     sauf si un gestionnaire des espaces permet le mot de passe à tous. Une personne que l'entreprise bloque chez le
     fournisseur ne peut alors plus se connecter.
-  - Quand la connexion d'entreprise est allumée, une session ouverte par mot de passe suit la même règle qu'une
-    nouvelle connexion.
+  - Quand la connexion d'entreprise est allumée, une session ouverte plus tôt par mot de passe se ferme à la page
+    suivante si la personne n'a plus le droit d'utiliser un mot de passe.
   - Après 30 connexions d'entreprise refusées en 15 minutes depuis une même adresse réseau, le bouton est refusé depuis
     cette adresse pendant 15 minutes.
   - L'IT peut la couper pour toute l'installation (`COMPANY_SIGN_IN=off`) : chacun peut de nouveau utiliser son mot de
@@ -247,7 +247,7 @@ Ce tableau présente ce que l'outil chiffre, et ce qu'il ne chiffre pas :
 | Du navigateur vers l'outil, sans nom de domaine | Non | HTTP sur le port 8000. À réserver à un réseau interne ou à un essai. |
 | De l'outil vers le serveur SMTP | À votre choix | `SMTP_SECURITY` : `starttls` (par défaut), `ssl` ou `none`. Avec TLS, l'outil vérifie le certificat du serveur. |
 | De l'outil vers le fournisseur d'identité | Oui | HTTPS seulement, avec vérification du certificat. |
-| De l'outil vers la destination de la copie externe | Oui, sauf `http` | S3 : HTTPS avec vérification du certificat ; `http` n'est accepté que pour une adresse du réseau interne. Chaque requête est signée (Signature Version 4) : la clé secrète ne quitte jamais le serveur. SFTP : SSH, avec la clé du serveur épinglée : l'outil montre son empreinte SHA-256 au premier essai, un administrateur la confirme, puis l'outil refuse toute autre clé avant d'envoyer le mot de passe ou la signature. |
+| De l'outil vers la destination de la copie externe | Oui, sauf `http` | S3 : HTTPS avec vérification du certificat ; `http` n'est accepté que pour une adresse du réseau interne. Chaque requête est signée (Signature Version 4) : la clé secrète ne quitte jamais le serveur. SFTP : SSH, avec la clé du serveur épinglée : l'outil montre son empreinte SHA-256 au premier essai, un gestionnaire des espaces la confirme, puis l'outil refuse toute autre clé avant d'envoyer le mot de passe ou la signature. |
 | Certificats vérifiés par l'outil | Oui | Chaque connexion sortante vérifie le certificat du serveur avec les autorités du système, et avec les autorités de votre entreprise que l'IT ajoute (`certificates/ca/`, `EXTRA_CA_CERTS`). L'outil ne coupe jamais la vérification. **Administration › Paramètres › Santé** montre les autorités ajoutées et leur date d'expiration. |
 | De l'outil vers PostgreSQL | Non réglé par l'outil | L'outil ne règle aucune option TLS pour cette connexion. Avec le profil `postgres`, la connexion reste sur le réseau interne de Docker. |
 | Bases, preuves, logo | Non | L'outil ne les chiffre pas. |
@@ -282,11 +282,12 @@ sa propre clé à son premier démarrage. L'outil n'utilise ni service de gestio
 - **Restauration sûre.** Une restauration sauvegarde d'abord l'état actuel. Si une restauration s'arrête en cours de
   route, l'outil la termine au démarrage suivant. Une restauration supprime tous les jetons MCP de l'espace.
 - **Mises à jour.** `./update.sh` sauvegarde chaque espace avant de rien changer.
-- **Copie externe.** L'IT copie `/data/backups` hors du serveur, à intervalle régulier. Ou un administrateur règle une
-  destination dans **Paramètres › Hébergement › Copie externe** (stockage compatible S3 ou serveur SFTP) : l'outil copie
-  alors chaque nouvelle archive de chaque espace et du registre commun, et rattrape après un échec. Les copies
+- **Copie externe.** Deux façons. L'IT copie `/data/backups` hors du serveur, à intervalle régulier. Ou un gestionnaire
+  des espaces règle une destination dans **Administration › Paramètres › Hébergement**, cadre **Copie hors du serveur**
+  (stockage compatible S3 ou serveur SFTP) : l'outil copie alors chaque nouvelle archive de chaque espace et du registre
+  commun, et rattrape après un échec. Les copies
   contiennent les empreintes des mots de passe et les secrets chiffrés : la destination doit être privée, et seule l'IT
-  doit pouvoir l'ouvrir. Par défaut, l'outil ne supprime rien à la destination. Si l'administrateur règle un nombre de
+  doit pouvoir l'ouvrir. Par défaut, l'outil ne supprime rien à la destination. Si un gestionnaire des espaces règle un nombre de
   copies à garder, l'outil ne supprime que les archives plus anciennes qu'il a faites lui-même (dossier et nom qu'il
   reconnaît). Un échec de la copie part en alerte par e-mail (si les alertes sont allumées) et se lit dans
   **Paramètres › Santé** et dans `/sante/` (`external_copy`).
@@ -364,8 +365,8 @@ Autres protections :
   les corrections de sécurité. Les changements de chaque version sont dans `CHANGELOG.md`.
 - **Mises à jour automatiques.** Après une installation en une commande, une minuterie du serveur (`auto-update.sh`,
   posée par `./install.sh --auto-update on`, retirée par `--auto-update off`) installe chaque nouvelle version la nuit,
-  3 jours après sa publication par défaut. Les administrateurs choisissent « automatique », « prévenir seulement » ou
-  « éteint ». Le script compare des empreintes d'image, jamais des numéros de version. Il n'installe qu'une image dont
+  3 jours après sa publication par défaut. Un gestionnaire des espaces choisit **L'installer automatiquement** (le choix
+  après une installation en une commande), **Prévenir seulement** ou **Éteint**. Le script compare des empreintes d'image, jamais des numéros de version. Il n'installe qu'une image dont
   il a vérifié la signature avec cosign (conteneur officiel épinglé par son empreinte) : l'identité du workflow
   `image.yml` du dépôt public pour l'étiquette de la version, et l'émetteur OIDC de GitHub. Sans signature vérifiée :
   rien n'est installé. La minuterie tourne sur le serveur, hors des conteneurs. Il sauvegarde d'abord chaque espace, et revient à l'image et aux fichiers d'avant si la
@@ -392,15 +393,15 @@ Ce tableau présente qui est responsable de chaque partie :
 | Réseau, pare-feu, nom de domaine, certificat HTTPS (ou votre proxy) | Oui | | |
 | Chiffrement du disque | Oui | | |
 | Compte SMTP | Oui | | |
-| Fournisseur d'identité de la connexion d'entreprise : application, personnes autorisées, authentification à plusieurs facteurs, blocage d'une personne | Oui | Oui (réglage dans l'outil) | |
+| Fournisseur d'identité de la connexion d'entreprise : application, personnes autorisées, authentification à plusieurs facteurs, blocage d'une personne | Oui | Oui, gestionnaires des espaces (réglage dans l'outil) | |
 | Certificat de votre entreprise pour HTTPS, et autorités de certification de votre entreprise (`./install.sh --cert --key`, `--ca-cert`) | Oui | | |
 | Vérification de la signature de l'image ou du paquet hors ligne avant une installation à la main | Oui | | |
-| Copie externe des sauvegardes : destination et son compte, durée de conservation des copies | Oui | Oui (destination réglée dans l'outil) | |
+| Copie externe des sauvegardes : destination et son compte, durée de conservation des copies | Oui | Oui, gestionnaires des espaces (destination réglée dans l'outil) | |
 | Rotation et conservation du journal du serveur | Oui | | |
 | Supervision de `/sante/`, en plus des alertes par e-mail de l'outil (elle prévient aussi quand le serveur est éteint) | Oui | | |
-| Alertes par e-mail de la santé de l'installation : allumage, destinataires | | Oui | |
+| Alertes par e-mail de la santé de l'installation : allumage, destinataires | | Oui, gestionnaires des espaces | |
 | Application des mises à jour (`./update.sh`), ou minuterie des mises à jour automatiques (`./install.sh --auto-update`) | Oui | | |
-| Choix des mises à jour automatiques : automatique, prévenir seulement, éteint, attente après la publication | | Oui | |
+| Choix des mises à jour automatiques : automatique, prévenir seulement, éteint, attente après la publication | | Oui, gestionnaires des espaces | |
 | Comptes, rôles et accès aux espaces | | Oui | |
 | Paramètres : sauvegardes gardées, historique des connexions, corbeille, serveur MCP | | Oui | |
 | Déclaration de l'entreprise sur la page **Données et confidentialité** | | Oui | |
@@ -423,20 +424,20 @@ Ce tableau donne une réponse courte aux questions habituelles d'une revue de s�
 | 6 | Existe-t-il un contrat avec un niveau de service (SLA) ? | Le projet libre n'en fournit pas. La [Politique de sécurité](https://github.com/Probant-Reporting/probant/blob/main/docs/fr/securite.md) donne les délais visés pour un signalement de faille. |
 | 7 | Qui exploite l'outil ? | Votre équipe informatique, sur votre serveur ou sur votre compte chez un hébergeur |
 | 8 | Où sont les données ? | Sur le serveur ou le compte d'hébergement que vous choisissez |
-| 9 | L'outil envoie-t-il des données aux mainteneurs ou à d'autres services ? | Non. Seulement à votre serveur SMTP, à la destination de la copie externe des sauvegardes si elle est réglée, et à votre fournisseur d'identité si la connexion d'entreprise est allumée. |
+| 9 | L'outil envoie-t-il des données aux mainteneurs ou à d'autres services ? | Aux mainteneurs : non. À d'autres services : seulement à ceux que vous réglez. Ce sont votre serveur SMTP, la destination de la copie externe des sauvegardes si elle est réglée, et votre fournisseur d'identité si la connexion d'entreprise est allumée. |
 | 10 | Y a-t-il de la télémétrie, de la mesure d'audience ou des contenus venus d'un autre site ? | Non. |
 | 11 | Les données d'autres clients sont-elles dans la même installation ? | Non. Chaque entreprise a sa propre installation. |
 | 12 | Authentification unique (SAML, OpenID Connect), LDAP ou Active Directory ? | Oui, OpenID Connect, éteinte par défaut, sans création automatique de compte. Ni SAML ni LDAP. Active Directory seulement à travers un fournisseur OpenID Connect (section 4). |
 | 13 | Authentification à plusieurs facteurs ? | Pas dans l'outil. Avec la connexion d'entreprise, par le fournisseur d'identité. Une connexion par mot de passe, par exemple d'un compte de secours, n'a pas de second facteur. |
 | 14 | Les règles des mots de passe sont-elles réglables ? | Non. Les règles sont fixes : 8 caractères au moins, pas proche du compte, pas courant, pas fait que de chiffres. |
 | 15 | Les mots de passe expirent-ils ? | Non. |
-| 16 | Y a-t-il un blocage après des échecs de connexion ? | Oui. 15 minutes, après 5, 20 ou 50 échecs (section 4). |
+| 16 | Y a-t-il un blocage après des échecs de connexion ? | Oui. 15 minutes, après 5 échecs pour un identifiant depuis une adresse, 20 sur un compte, ou 50 depuis une adresse (section 4). |
 | 17 | Les sessions se terminent-elles toutes seules ? | Oui. Au bout de 12 heures sans activité. Cette durée est fixe. |
 | 18 | L'accès est-il géré par rôles ? | Oui. 5 rôles dans chaque espace, et les gestionnaires des espaces (section 5). |
 | 19 | Création automatique des comptes (SCIM) ? | Non. Les administrateurs créent et désactivent les comptes dans l'outil, un par un ou plusieurs à la fois. La connexion d'entreprise ne crée aucun compte. |
 | 20 | Existe-t-il une trace des connexions ? | Oui. L'historique des connexions, 180 jours par défaut, avec la méthode de chaque connexion. |
 | 21 | Existe-t-il une API ? | Oui. Le serveur MCP pour les assistants IA, éteint par défaut, avec des jetons personnels qui expirent. |
-| 22 | Chiffrement en transit ? | Oui, avec HTTPS (Caddy, avec un certificat Let's Encrypt ou le certificat de votre entreprise, ou votre proxy) et HSTS. Sans nom de domaine, l'outil utilise HTTP. |
+| 22 | Chiffrement en transit ? | Oui, quand HTTPS est en place : Caddy (avec un certificat Let's Encrypt ou le certificat de votre entreprise) ou votre propre proxy, et HSTS. Sans HTTPS, l'outil utilise HTTP sans chiffrement : pour un essai ou un réseau interne seulement. |
 | 23 | Chiffrement au repos ? | Pas par l'outil. Utilisez le chiffrement du disque ou celui de l'hébergeur. |
 | 24 | Gestion des clés (KMS, HSM) ? | Non. Une clé secrète, dans un fichier du volume des données ou dans un réglage. |
 | 25 | Quelles données personnelles l'outil garde-t-il ? | Nom, adresse e-mail, identifiant, rôle, équipe, langue, dates de connexion, et l'historique des modifications (section 2) |
@@ -448,9 +449,9 @@ Ce tableau donne une réponse courte aux questions habituelles d'une revue de s�
 | 31 | Les dépendances sont-elles contrôlées ? | Oui. Versions exactes, et un contrôle `pip-audit` sur GitHub qui informe sans bloquer. Chaque image a un SBOM signé et un rapport des failles connues. |
 | 32 | Y a-t-il des tests de sécurité automatiques ? | Des tests automatiques contrôlent les droits des rôles, le cloisonnement des espaces et la politique de sécurité des contenus. Il n'y a pas d'outil d'analyse statique dédié : `ruff` ne contrôle que des défauts mécaniques. |
 | 33 | Le conteneur tourne-t-il en root ? | Non. Sous l'utilisateur 1000. Le code appartient à root, et l'outil ne peut pas le modifier. |
-| 34 | Système de fichiers en lecture seule ou capacités retirées pour le conteneur ? | Pas réglé dans `docker-compose.yml`. |
+| 34 | Système de fichiers en lecture seule ou capacités retirées pour le conteneur ? | Non. `docker-compose.yml` ne règle ni l'un ni l'autre. |
 | 35 | Quels ports sont ouverts ? | 80 et 443 avec Caddy, ou 8000 sans lui (section 3) |
-| 36 | Y a-t-il des sauvegardes ? | Oui. Automatiques, signées, non chiffrées. L'IT les copie hors du serveur, ou l'outil les copie lui-même vers un stockage compatible S3 ou un serveur SFTP réglé par un gestionnaire des espaces. |
+| 36 | Y a-t-il des sauvegardes ? | Oui. Automatiques, signées, non chiffrées. Elles restent sur le serveur tant que l'IT ne les copie pas ailleurs, ou qu'un gestionnaire des espaces ne règle pas une destination : l'outil les copie alors lui-même vers un stockage compatible S3 ou un serveur SFTP. |
 | 37 | Combien de données peut-on perdre (RPO) ? | Ce qui a été fait depuis la dernière sauvegarde : 1 jour par défaut, 6 heures avec la fréquence la plus courte |
 | 38 | Combien de temps prend une restauration ? | Quelques secondes pour la restauration elle-même. La reconstruction d'un serveur à partir de la copie externe est documentée, mais son temps total n'est pas mesuré. Il n'y a pas de haute disponibilité. |
 | 39 | Les journaux peuvent-ils aller vers un SIEM ? | Oui, avec le pilote de journaux de Docker. L'outil n'a pas de connecteur SIEM. Il peut envoyer des alertes par e-mail sur la santé de l'installation (section 8). |

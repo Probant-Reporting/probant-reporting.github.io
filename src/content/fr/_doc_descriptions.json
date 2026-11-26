@@ -1,8 +1,8 @@
 {
   "note": "Une vraie phrase par page de la documentation, écrite pour ce site. Les pages elles-mêmes sont copiées depuis le dépôt de l'outil (npm run sync) : ce fichier, non.",
   "descriptions": {
-    "prerequisites": "Ce qu'il faut avant d'installer : un serveur Linux 64 bits avec Docker et curl, un port ouvert ou un nom de domaine pour HTTPS, et un compte SMTP si vous voulez des e-mails.",
-    "install-the-tool": "Contrôlez le serveur, puis installez en une commande depuis l'image publiée et signée, en 2 minutes environ. Ou installez avec Git, sans accès à Internet, ou avec les certificats de votre entreprise.",
+    "prerequisites": "Ce qu'il faut au serveur : Linux 64 bits, curl et Docker. Sur Debian ou Ubuntu, le script d'installation propose d'installer Docker. Et un port ouvert ou un nom de domaine pour HTTPS, et un compte e-mail pour les e-mails.",
+    "install-the-tool": "Contrôlez le serveur, puis installez en une commande depuis l'image officielle, en 2 minutes environ. Ou installez avec Git, sans accès à Internet, ou avec les certificats de votre entreprise.",
     "managed-hosting": "Faire tourner l'outil chez un hébergeur clé en main, sans serveur à gérer : comment choisir l'hébergeur, et le déploiement sur Clever Cloud, pas à pas.",
     "set-up-the-tool-on-first-launch": "L'assistant Mise en place s'ouvre au premier lancement et compte 8 étapes. Créez le compte administrateur juste après l'installation, avant de diffuser l'adresse.",
     "change-the-settings": "Chaque réglage du fichier .env, avec sa valeur par défaut et son rôle : adresse, HTTPS, port, base de données, tailles maximales et sauvegardes. La sécurité déjà active.",

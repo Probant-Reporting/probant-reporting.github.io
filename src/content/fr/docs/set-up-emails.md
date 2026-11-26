@@ -1,13 +1,13 @@
 ---
 title: "Configurer les e-mails (SMTP)"
-description: "L'outil envoie les e-mails par le serveur d'e-mails (SMTP) de votre entreprise : relances et e-mails de test. Vous pouvez régler ce serveur de deux façons.…"
+description: "L'outil envoie les e-mails par le serveur d'e-mails (SMTP) de votre entreprise : relances, alertes par e-mail (section 9) et e-mails de test. Vous pouvez…"
 order: 7
 group: "Run"
 source: "docs/fr/installation.md"
 ---
 
-L'outil envoie les e-mails par le serveur d'e-mails (SMTP) de votre entreprise : relances et e-mails de test. Vous
-pouvez régler ce serveur de deux façons. Les réglages valent pour toute l'installation, pour tous les espaces.
+L'outil envoie les e-mails par le serveur d'e-mails (SMTP) de votre entreprise : relances, alertes par e-mail
+(section 9) et e-mails de test. Vous pouvez régler ce serveur de deux façons. Les réglages valent pour toute l'installation, pour tous les espaces.
 
 | Façon | Qui | Quand l'utiliser |
 |---|---|---|
@@ -44,7 +44,7 @@ Le mot de passe fonctionne ainsi :
   **Effacer le mot de passe**.
 - Si vous changez le serveur, le port ou l'identifiant, ou si vous passez la sécurité à « Aucune », l'outil efface le
   mot de passe enregistré, pour qu'il ne parte jamais vers un autre serveur. Saisissez-le de nouveau dans le même
-  enregistrement ; sinon, l'écran vous le dit.
+  enregistrement. Sinon, l'écran vous le dit.
 - L'outil garde le mot de passe chiffré avec la clé secrète de l'installation (`DJANGO_SECRET_KEY`, ou le fichier
   `/data/.secret_key`). La sauvegarde d'un espace ne contient jamais les réglages des e-mails. La sauvegarde du registre
   commun (`backups/shared`, réservée à l'IT) les contient, avec le mot de passe chiffré.
@@ -85,10 +85,10 @@ Pour configurer les e-mails dans le fichier `.env` :
 
 ## Relances
 
-L'équipe responsable gère les e-mails de relance dans **Tableau de bord › Relancer…**. Chaque personne reçoit un seul
-e-mail, sans copie. L'e-mail liste ce qui lui reste à saisir. Avant d'envoyer l'e-mail, l'outil affiche l'aperçu exact
-du message. L'équipe responsable règle le modèle.
+Les administrateurs et les validateurs envoient les e-mails de relance dans **Tableau de bord › Relancer…**. Chaque
+personne reçoit un seul e-mail, sans copie. L'e-mail liste ce qui lui reste à saisir. Avant d'envoyer l'e-mail,
+l'outil affiche l'aperçu exact du message. Un administrateur règle le modèle.
 
-L'équipe responsable peut activer les relances automatiques dans la même page. L'outil les envoie aux jours choisis
+Un administrateur peut activer les relances automatiques dans la même page. L'outil les envoie aux jours choisis
 avant la fin de la saisie. Il les vérifie chaque jour à `REMINDER_TIME` (09:00 par défaut). `PUBLIC_URL` donne
 l'adresse mise dans ces e-mails. Par défaut, l'outil déduit cette adresse de `DOMAIN`.

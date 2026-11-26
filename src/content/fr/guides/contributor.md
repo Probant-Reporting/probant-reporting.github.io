@@ -20,6 +20,6 @@ order: 2
 - Un fichier dans **Preuves** quand le KPI l'exige.
 - Si vous modifiez une valeur validée, elle repasse en brouillon. Validez-la de nouveau.
 
-## Sur téléphone
+## Sur téléphone, dans votre langue
 
 La saisie fonctionne de la même façon sur téléphone. L'interface existe en sept langues : anglais, français, espagnol, allemand, italien, néerlandais et portugais. Un guide court par rôle s'ouvre par l'icône d'aide.

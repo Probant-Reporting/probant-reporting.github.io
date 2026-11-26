@@ -6,7 +6,7 @@
   },
   "hero": {
     "title": "Une solution de reporting open source",
-    "lead": "{name} est un outil web pour collecter les KPI de tous vos sites et filiales. Chaque chiffre peut être justifié par une preuve jointe. Vos données sont agrégées à travers les niveaux de votre organisation, et accessibles aux auditeurs. Vous l'hébergez vous-même, gratuitement.",
+    "lead": "{name} est un outil web pour collecter les KPI de tous vos sites et filiales. Chaque chiffre peut être justifié par une preuve jointe. Vos données sont agrégées à travers les niveaux de votre organisation, et accessibles aux auditeurs. Le logiciel est gratuit : vous l'hébergez sur votre serveur, ou un hébergeur le fait tourner pour vous.",
     "ctaSecondary": "Poser une question",
     "proofs": [
       "Un rôle d'auditeur en lecture seule : valeurs, preuves, historique",
@@ -61,7 +61,7 @@
       "id": "consistency",
       "visual": "consistency",
       "title": "Les valeurs inhabituelles sont signalées avant l'audit",
-      "lead": "L'outil compare chaque valeur à la période de comparaison et aux règles que vous avez définies. Tout ce qui mérite un coup d'œil arrive dans une seule liste, À traiter.",
+      "lead": "L'outil compare chaque valeur à la période de comparaison, par exemple l'an dernier, et aux règles que vous avez définies. Tout ce qui mérite un coup d'œil arrive dans une seule liste, À traiter.",
       "points": [
         "Chaque alerte explique le problème en une phrase.",
         "Le contributeur corrige la valeur ou explique pourquoi elle est juste."
@@ -95,11 +95,11 @@
       "id": "it",
       "visual": "hosting",
       "title": "L'IT ne s'occupe que de l'hébergement",
-      "lead": "Votre équipe informatique héberge l'outil. Tout le reste se règle dans l'outil, y compris les e-mails et la copie des sauvegardes.",
+      "lead": "Votre équipe informatique installe et héberge l'outil. Le reste se règle dans l'outil lui-même, pas sur le serveur : les e-mails, les alertes, la copie des sauvegardes.",
       "points": [
-        "Une installation en une commande, depuis une image signée. Un contrôle du serveur passe d'abord.",
-        "Les mises à jour peuvent s'installer seules la nuit, et revenir en arrière si la nouvelle version ne répond pas.",
-        "Une liste de ce qu'il faut préparer et un dossier de sécurité, à envoyer à votre équipe informatique."
+        "Une commande installe l'outil sur un serveur Linux, après un contrôle du serveur. Sur Debian ou Ubuntu, elle propose d'installer Docker s'il manque.",
+        "Les mises à jour peuvent s'installer seules la nuit, et revenir à la version précédente si la nouvelle ne répond pas. Vous pouvez les éteindre.",
+        "Une liste de ce qu'il faut préparer et un dossier de sécurité, prêts à envoyer à votre équipe informatique."
       ],
       "cta": true,
       "tab": "Pour l'IT"
@@ -108,7 +108,7 @@
   "specs": [
     {
       "term": "Hébergement",
-      "value": "Sur votre serveur avec Docker, ou en hébergement clé en main chez Clever Cloud"
+      "value": "Sur votre propre serveur Linux, ou en hébergement clé en main chez Clever Cloud"
     },
     {
       "term": "Ce que fait l'IT",
@@ -120,7 +120,7 @@
     },
     {
       "term": "Connexion",
-      "value": "Mot de passe, ou compte d'entreprise (éteint par défaut)"
+      "value": "Un mot de passe, ou le compte d'entreprise si vous l'allumez"
     },
     {
       "term": "Espaces",
@@ -258,7 +258,7 @@
       },
       {
         "q": "Comment obtenir {name} ?",
-        "a": "Essayez-le sur votre ordinateur, installez-le sur un serveur avec Docker, ou choisissez un hébergement clé en main chez Clever Cloud. La page Obtenir {name} donne les commandes et les liens."
+        "a": "Essayez-le sur votre ordinateur, installez-le sur un serveur en une commande, ou choisissez un hébergement clé en main chez Clever Cloud. La page Obtenir {name} vous aide à choisir, et donne les commandes et les liens."
       },
       {
         "q": "Où sont hébergées les données ?",
@@ -294,11 +294,11 @@
       },
       {
         "q": "Peut-on se connecter avec son compte d'entreprise ?",
-        "a": "Oui, par OpenID Connect, par exemple Microsoft Entra ID, Google, Okta ou Keycloak. C'est éteint par défaut. Un gestionnaire des espaces l'allume. Seuls les gestionnaires des espaces gardent alors leur mot de passe, comme comptes de secours. Le compte d'entreprise prouve seulement qui est la personne : les administrateurs créent toujours les comptes et donnent les rôles dans l'outil."
+        "a": "Oui, si vous l'allumez : c'est éteint par défaut. Cela marche avec Microsoft Entra ID, Google, Okta, Keycloak et les autres services qui suivent la norme OpenID Connect. Un gestionnaire des espaces l'allume pour toute l'installation. Seuls les gestionnaires des espaces gardent alors un mot de passe, comme comptes de secours. Le compte d'entreprise prouve seulement qui est la personne : les administrateurs créent toujours les comptes et donnent les rôles dans l'outil."
       },
       {
         "q": "Que doit faire l'IT ?",
-        "a": "Héberger l'outil. Avec l'installation en une commande, le serveur peut installer les mises à jour la nuit. Il n'y a rien à développer. La documentation IT commence par une liste de ce qu'il faut préparer et un dossier de sécurité."
+        "a": "Installer l'outil et l'héberger. Il n'y a rien à développer. Après l'installation en une commande, le serveur installe aussi les mises à jour la nuit, sauf si vous l'éteignez. La documentation IT commence par une liste de ce qu'il faut préparer et un dossier de sécurité."
       }
     ]
   },
@@ -321,7 +321,7 @@
   },
   "assistant": {
     "title": "Avec votre assistant IA",
-    "lead": "Un assistant IA peut travailler dans {name} en passant par son serveur MCP.",
+    "lead": "Un assistant IA, par exemple Claude, peut travailler dans {name} par MCP, la façon standard pour un assistant de se connecter à un outil.",
     "specs": [
       {
         "term": "Par défaut",
@@ -357,12 +357,12 @@
       {
         "anchor": "essayer-sur-votre-ordinateur",
         "title": "Essayer sur votre ordinateur",
-        "text": "Un essai avec la société de démonstration, pour faire le tour avant de décider."
+        "text": "Sous Windows ou Mac, avec la société de démonstration, pour faire le tour avant de décider. Rien à installer."
       },
       {
         "anchor": "installer-sur-un-serveur",
         "title": "Installer sur un serveur",
-        "text": "Pour votre équipe informatique : Docker, une commande et un guide."
+        "text": "Pour votre équipe informatique : une commande sur un serveur Linux. Sur Debian ou Ubuntu, elle propose d'installer Docker."
       },
       {
         "anchor": "hébergement-clé-en-main",

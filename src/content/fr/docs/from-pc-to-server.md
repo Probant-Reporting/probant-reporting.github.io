@@ -9,7 +9,8 @@ ids: {"Avant de commencer":"from-pc-to-server-avant-de-commencer"}
 
 Vous avez essayé Probant avec la version tout-en-un sur un ordinateur, et vous y avez saisi de vraies données. Cette
 page explique comment passer ces données sur un serveur sans rien perdre. La partie 1 est pour la personne qui utilise
-l'outil sur l'ordinateur. La partie 2 est pour l'équipe informatique qui installe le serveur.
+l'outil sur l'ordinateur. La partie 2 est pour l'équipe informatique qui installe le serveur. Sans équipe informatique, donnez la partie 2 à la
+personne ou au prestataire qui installe le serveur.
 
 La méthode est simple : vous envoyez tout le dossier `data` de la version tout-en-un. Le serveur s'en sert comme
 dossier des données.
@@ -19,12 +20,12 @@ dossier des données.
 | Élément | Passe | Commentaire |
 |---|---|---|
 | Comptes et mots de passe | Oui | Chacun se connecte avec le même mot de passe. |
-| Valeurs, référentiels, campagnes, historique, réglages | Oui | |
+| Valeurs, référentiels, campagnes, historique, réglages | Oui | Sauf le mot de passe du serveur d'e-mails, s'il est enregistré dans l'outil : saisissez-le de nouveau sur le serveur. |
 | Preuves et logo | Oui | |
 | Autres espaces | Oui | |
 | Jetons des assistants (MCP) | Oui | |
 | Sessions de connexion | Non | Chacun se reconnecte une fois. |
-| Clé secrète | Non | La version tout-en-un garde sa propre clé dans `data/.secret_key_all_in_one`. Le serveur ne s'en sert jamais : il crée la sienne à son premier démarrage. L'étape 4 efface la copie de la clé de l'ordinateur. |
+| Clé secrète | Non | La version tout-en-un garde sa propre clé dans `data/.secret_key_all_in_one`. Le serveur ne s'en sert jamais : il crée la sienne à son premier démarrage. L'étape 4 de la partie 2 efface la copie de la clé de l'ordinateur. |
 | Sauvegardes faites sur l'ordinateur | Oui, comme fichiers | Le serveur les liste, mais **Restaurer…** les refuse : une autre installation les a signées. L'équipe informatique peut quand même en restaurer une, voir [Restaurer une sauvegarde](/docs/back-up-and-restore/#restaurer-une-sauvegarde). |
 
 ## Avant de commencer

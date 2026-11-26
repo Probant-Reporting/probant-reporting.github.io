@@ -23,12 +23,11 @@ The script does these steps, in this order:
    a space fails, the update stops and changes nothing.
 2. It gets the new version:
    - After an installation with one command (a folder without Git, with `IMAGE` set to a version of
-     `ghcr.io/probant-reporting/probant`): it downloads the files of the new version, as the installation did, then
-     sets `IMAGE` in `.env` to the image of this version and downloads it. It keeps the other settings of `.env` and
-     the data. If a download fails, the update stops and changes nothing. Before it puts the files in place, it checks
-     each one against the list of the SHA-256 sums of the release, and the signature of this list when it can, as the
-     installation does (see “Install with one command”). If the list is missing, if its signature is refused, or if
-     one file does not match, the update stops and changes nothing (exit code 3).
+     `ghcr.io/probant-reporting/probant`): it downloads the files of the new version and checks them, as the
+     installation does (see “Install with one command”). Then it sets `IMAGE` in `.env` to the image of this version
+     and downloads it. It keeps the other settings of `.env` and the data. If a download fails, if the list of the
+     sums is missing, if its signature is refused, or if one file does not match, the update stops and changes
+     nothing (exit code 3 for the check of the files).
    - After an installation with Git: with `git pull`, followed by a new build of the image
    - Or, if `IMAGE` is set in `.env` to another image, with `docker compose pull`
 3. It restarts the tool. The tool applies the changes to the database structure automatically at startup. If the
@@ -55,10 +54,12 @@ changes nothing.
 
 ## Automatic updates
 
-After an installation with one command, a timer of the server installs each new version at night, and goes back to
-the previous version if the new one does not work. The script `auto-update.sh` of the folder of the tool does all the
-work, on the server. The tool itself never connects to the Internet, never compares two versions, and has no access to
-Docker: no Docker socket is given to its container, and no other tool (such as Watchtower) is used.
+After an installation with one command, the automatic updates are on. A timer of the server (shown as **Task of the
+server** in the tool) installs each new version at night, and goes back to the previous version if the new one does
+not work. The other installations do not have them: see the table below. The script `auto-update.sh` of the folder of
+the tool does all the work, on the server. The tool itself never connects to the Internet, never compares two
+versions, and has no access to Docker: no Docker socket is given to its container, and no other tool (such as
+Watchtower) is used.
 
 The choice is in **Administration › Settings › Hosting**, “Automatic updates”. Only the space managers can change
 it:
@@ -87,9 +88,12 @@ This table shows the setting at the start:
    is the digest of the image that runs, there is nothing to do.
 3. It verifies the signature of the new image (see “Signature of the new image”). If the signature is absent or not
    correct, or if the verification is not possible, nothing is installed.
-4. It stops here with “Notify only”, during the wait after the publication, for an image whose automatic update failed
-   before, and for a version that changes the shared registry of the accounts (that change cannot be undone
-   automatically: IT installs this version with `./update.sh`).
+4. It stops here in these cases:
+   - The choice is “Notify only”.
+   - The wait after the publication is not over.
+   - The automatic update of this image failed before.
+   - The version changes the shared registry of the accounts. That change cannot be undone automatically: IT
+     installs this version with `./update.sh`.
 5. It does not update during a restore, a backup, a large import or a large export of the tool. It tries again the
    next night.
 6. It downloads the list of the SHA-256 sums of the files of this version, from its release, and verifies the
@@ -110,11 +114,11 @@ If the new version does not respond, the script goes back automatically:
 3. It starts the version of before and checks `/sante/`.
 
 The screen then says “The server went back to version X.Y.Z”, and so do the page **Settings › Health** and the email
-alerts. The same image is not tried
-again: when the cause is known, IT runs `sudo ./auto-update.sh --retry`. If going back does not work completely (a
-restore fails, the shared registry changed, or the version of before does not respond), the result is a failure, the
-email alert says “call IT”, and IT follows “Going back to the previous version”. Nothing more is done automatically,
-not even the next nights, until IT runs `sudo ./auto-update.sh --retry`.
+alerts. The same image is not tried again: when the cause is known, IT runs `sudo ./auto-update.sh --retry`.
+
+If going back does not work completely (a restore fails, the shared registry changed, or the version of before does
+not respond), the result is a failure. The email alert says “Call your IT team now”, and IT follows “Going back to the previous
+version”. Nothing more is done automatically, not even the next nights, until IT runs `sudo ./auto-update.sh --retry`.
 
 ### Signature of the new image
 
@@ -141,7 +145,7 @@ In the folder of the tool, as root (`sudo`):
 - `./install.sh --auto-update off` removes the timer. Nothing else changes.
 
 On an installation that already exists, these commands change only the timer: the choice in the tool stays the choice
-of the administrators. Before you delete the folder of the tool, run `./install.sh --auto-update off`. If the folder is
+of the space managers. Before you delete the folder of the tool, run `./install.sh --auto-update off`. If the folder is
 already deleted, remove the timer by hand: `sudo systemctl disable --now probant-auto-update-<number>.timer`, then
 delete the two files `/etc/systemd/system/probant-auto-update-<number>.*` (or the file in `/etc/cron.d/`).
 
@@ -157,11 +161,8 @@ has not run for 3 days, the page **Settings › Health** says so, and so do the 
 
 ### Network of the server
 
-The script needs outgoing HTTPS (TCP 443) from the server, not from the container: `github.com` and
-`raw.githubusercontent.com` (the latest version and its files), `objects.githubusercontent.com` and
-`release-assets.githubusercontent.com` (the list of the sums of the files, attached to the release),
-`ghcr.io` and `pkg-containers.githubusercontent.com` (the image and the container of cosign), and `tuf-repo-cdn.sigstore.dev` (the trusted root of Sigstore, read by
-cosign). Through a proxy, set `HTTPS_PROXY` in the environment of the timer (for example
+The script needs the same outgoing HTTPS (TCP 443) as the installation, from the server, not from the container: see
+“Network, downloads” in section 1. Through a proxy, set `HTTPS_PROXY` in the environment of the timer (for example
 `systemctl edit probant-auto-update-<number>.service`), and the proxy of Docker for the downloads of images.
 
 ## Update without Internet access

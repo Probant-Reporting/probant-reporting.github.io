@@ -82,13 +82,16 @@ Les deux sont éteints par défaut. Gardez-les éteints sauf raison précise.
 
 ## 4. Chez votre fournisseur
 
+Vous enregistrez l'outil comme application web. Puis vous donnez trois valeurs au gestionnaire des espaces :
+l'adresse de l'émetteur (issuer), l'identifiant du client et le secret du client.
+
 ### Ce que demande tout fournisseur
 
 | Réglage | Valeur |
 |---|---|
 | Type d'application | Application web (client confidentiel), avec un secret du client |
 | Flux | Code d'autorisation. L'outil envoie toujours PKCE en `S256`. |
-| Adresse de retour | L'adresse montrée sur la page (étape 3) |
+| Adresse de retour | `https://<adresse de l'outil>/connexion/entreprise/retour/`, exactement comme la page de l'outil la montre (étape 3) |
 | Portées (scopes) | `openid email` |
 | Signature du jeton d'identité | RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES384 ou ES512. Les signatures à clé partagée (HS256) et les jetons non signés sont refusés. |
 | Revendications du jeton d'identité | `email` et, sauf si vous avez allumé le second choix de prudence, `email_verified` |
@@ -194,7 +197,7 @@ est un lien : la politique garde `form-action 'self'`.
 | « Votre entreprise n'a pas confirmé votre adresse e-mail » | Le fournisseur n'envoie pas `email`, envoie `email_verified: false`, ou n'envoie pas `email_verified`. | Ajoutez la revendication `email` chez le fournisseur. Marquez l'adresse comme vérifiée chez le fournisseur. Pour un fournisseur qui n'envoie jamais `email_verified`, lisez la section 4. |
 | « La connexion avec le compte d'entreprise n'a pas fonctionné » | Le fournisseur ne répond pas, le secret du client est faux, les horloges diffèrent de plus d'une minute, ou le jeton est refusé. | Cliquez sur **Vérifier le fournisseur**. Lisez le journal de l'outil : `docker compose logs web \| grep connexion_entreprise` donne la cause technique (jamais un jeton). |
 | « La connexion a pris trop de temps ou a déjà servi » | La personne a attendu plus de 10 minutes chez le fournisseur, a utilisé le bouton Précédent, ou le réglage a changé entre-temps. | Cliquez de nouveau sur le bouton. |
-| « Connectez-vous avec votre compte d'entreprise (bouton ci-dessus) » | La personne a tapé son mot de passe, mais seuls les gestionnaires des espaces peuvent encore s'en servir. | Utilisez le bouton. |
+| « E-mail ou mot de passe incorrect. Si votre compte passe par le compte d'entreprise, connectez-vous avec le bouton ci-dessus. » | La personne a tapé son mot de passe, mais seuls les gestionnaires des espaces peuvent encore s'en servir. | Utilisez le bouton. |
 | Le bouton n'apparaît pas | Connexion d'entreprise éteinte, incomplète, ou coupée par l'IT (`COMPANY_SIGN_IN=off`). | Ouvrez **Administration › Paramètres › Connexion d'entreprise**. |
 | **Vérifier le fournisseur** : « Le fournisseur donne une autre adresse issuer » | L'issuer saisi n'est pas exactement celui que publie le fournisseur. | Recopiez exactement la valeur `issuer` du fournisseur (pour Microsoft Entra ID, l'adresse avec l'identifiant de votre locataire). |
 | **Vérifier le fournisseur** : « Adresse refusée » | `http`, une adresse du serveur lui-même ou une adresse locale au lien. | Utilisez l'adresse `https` du fournisseur. |

@@ -21,10 +21,10 @@ For a security review, send your security team the [Security overview](/docs/sec
 ## How people sign in
 
 - By default, with a password. After 5 failed sign-ins for the same identifier from the same address, sign-in is refused for 15 minutes.
-- Or with their company account, through OpenID Connect: for example Microsoft Entra ID, Google, Okta or Keycloak. This is off by default. A space manager turns it on for the whole installation.
+- Or with their company account: Microsoft Entra ID, Google, Okta, Keycloak and the other services that follow the OpenID Connect standard. This is off by default. A space manager turns it on for the whole installation.
 - The company account only proves who the person is. The tool creates no account and takes no role from the provider: the accounts and the roles stay in the tool.
 - When company sign-in is on, only the space managers keep their password, as rescue accounts. A person that your company blocks at the provider can no longer sign in. A person who cannot sign in with a password cannot use an AI assistant either.
-- The tool has no second factor of its own. With the company account, your provider applies its own. The tool doesn't support SAML or LDAP.
+- The tool has no second factor of its own (a code on top of the password). With the company account, your provider applies its own. The tool doesn't support SAML or LDAP.
 
 ## Protections that are on by default
 
@@ -37,7 +37,7 @@ For a security review, send your security team the [Security overview](/docs/sec
 
 ## Signed image and updates
 
-- Each published image, from version 1.1.0, is signed. Its list of components (SBOM) comes with it, and each release has a report of the known vulnerabilities.
+- Each published image of the tool, from version 1.1.0, is signed: anyone can check that the official repository built it. Its list of components (SBOM) comes with it, and each release has a report of the known vulnerabilities.
 - The installation and the updates check each file against the signed list of the version. If the list is missing or one file doesn't match, nothing changes.
 - After an installation with one command, the server installs each new version at night, 3 days after its publication. It installs only an image with a verified signature, backs up each space first, and goes back to the previous version if the new one doesn't respond. A space manager can choose to be notified only, or turn this off.
 - The tool itself never connects to the internet to look for a new version: a task of the server does that work.
@@ -47,7 +47,7 @@ For a security review, send your security team the [Security overview](/docs/sec
 
 - The tool backs itself up automatically. A backup contains the database and the evidence files.
 - An administrator can restore a backup from the tool, after a confirmation.
-- Keep a copy of the backups outside the server. Your IT team copies them. Or a space manager sets a destination in the tool, an S3-compatible storage or an SFTP server: the tool then copies each new backup there. By default, it deletes nothing at the destination.
+- Keep a copy of the backups outside the server. Your IT team copies them. Or a space manager sets a destination in the tool, a storage space that your IT team provides (S3-compatible storage or SFTP server): the tool then copies each new backup there. By default, it deletes nothing at the destination.
 - If a backup or a copy fails, an email alert tells you. On a new installation, the alerts are on as soon as the emails are set. On an installation that you update, they stay off until a space manager turns them on.
 - The backups are signed, not encrypted. The encryption of the disk is up to your IT team.
 - The all-in-one version, for a trial on a computer, has no copy outside the computer and no company sign-in.

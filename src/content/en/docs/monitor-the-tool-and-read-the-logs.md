@@ -1,6 +1,6 @@
 ---
 title: "Monitor the tool and read the logs"
-description: "The tool alerts you by email: you have no monitoring to connect. A space manager turns the alerts on in Administration › Settings › Health, box Email…"
+description: "The tool alerts you by email: you have no monitoring to connect. On a new installation, the email alerts are on from the start. They need the email server…"
 order: 9
 group: "Run"
 source: "docs/installation.md"
@@ -8,11 +8,14 @@ source: "docs/installation.md"
 
 ## Get an email when something goes wrong
 
-The tool alerts you by email: you have no monitoring to connect. A space manager turns the alerts on in **Administration › Settings › Health**, box **Email alerts**, and chooses the recipients:
-by default the administrators of the main space and the space managers, plus other addresses, for example the mailbox
-of the IT team. On a new installation, the alerts are on from the start; an installation that existed before the
-email alerts keeps them off after an update, until someone turns them on. Turned off, they stay off. They need the
-email server (section 7): without it, the tool sends nothing.
+The tool alerts you by email: you have no monitoring to connect. On a new installation, the email alerts are on from
+the start. They need the email server (section 7): without it, the tool sends nothing. An installation that existed
+before the email alerts keeps them off after an update, until a space manager turns them on. Once turned off, they
+stay off.
+
+A space manager sets the alerts in **Administration › Settings › Health**, box **Email alerts**, and chooses the
+recipients: by default the administrators of the main space and the space managers, plus other addresses, for example
+the mailbox of the IT team.
 
 The alerts come from the same checks as the **Health** page and `/sante/`. These checks send an alert:
 

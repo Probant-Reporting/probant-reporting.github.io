@@ -6,8 +6,9 @@ group: "Run"
 source: "docs/installation.md"
 ---
 
-SQLite is the default database. You do not need to manage a database server. SQLite writes one save at a time. The
-other saves wait for their turn, for up to 60 seconds.
+SQLite is the default database. You do not need to manage a database server.
+SQLite writes one save at a time. The other saves wait for their turn, for up to 60 seconds. When many people save at
+the same moment, use PostgreSQL: see “Capacity”.
 
 ## Capacity
 
@@ -86,8 +87,8 @@ step 7. This way, the tool creates the registry again from the accounts of the m
 name of the space or the accounts that exist only in another space.
 
 The command `python manage.py shell` in step 2 is the only way to make an archive of the registry on demand. The tool does not
-have a command for it. We compared the data of the PostgreSQL installation with the SQLite installation, table by table, for
-two spaces: it is identical (only the numbers of the access rows of the registry change).
+have a command for it. A test of this move compared the data of the PostgreSQL installation with the SQLite installation,
+table by table, for two spaces: it is identical (only the numbers of the access rows of the registry change).
 
 ## Several spaces with PostgreSQL
 

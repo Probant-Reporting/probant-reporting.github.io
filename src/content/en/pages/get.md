@@ -7,11 +7,15 @@ replis: true
 lead: false
 ---
 
-{name} is free software, under the AGPL-3.0-or-later licence:
+{name} is free software, under the AGPL-3.0-or-later licence. Find your way:
 
-- [Latest release](https://github.com/Probant-Reporting/probant/releases/latest)
-- [Source code](https://github.com/Probant-Reporting/probant)
-- [What's new in each version](/whats-new/)
+- **To look around on your own computer**, for one person, on Windows or Mac: [Try it on your computer](#try-it-on-your-computer). Nothing to install.
+- **To use it with your team, on a server of your company**: [Install it on a server](#install-it-on-a-server). Your IT team runs one command. On Debian or Ubuntu, they don't install Docker first: the installer offers to install it and waits for a yes.
+- **On a server without Internet access**: [Without Internet access](#without-internet-access), with the offline package.
+- **With no server to manage**: [Managed hosting](#managed-hosting). A provider, Clever Cloud, runs the tool, and you pay the provider.
+- **To move a trial with real data to a server**: [From your computer to a server](#from-your-computer-to-a-server).
+
+Links: [latest release](https://github.com/Probant-Reporting/probant/releases/latest) · [source code](https://github.com/Probant-Reporting/probant) · [what's new in each version](/whats-new/).
 
 ## Try it on your computer
 
@@ -33,7 +37,7 @@ The all-in-one version has no sign-in with a company account, no copy of the bac
 
 ### With Docker
 
-You need Docker and Git, on a Mac or a Linux computer. On Windows, use WSL.
+For people at ease with a terminal. You need Docker and Git, on a Mac or a Linux computer. On Windows, use WSL, the Linux subsystem of Windows.
 
 1. Get the code from GitHub and start the tool:
 
@@ -65,11 +69,17 @@ You need Docker and Git, on a Mac or a Linux computer. On Windows, use WSL.
 
 ## Install it on a server
 
-This part is for the IT team. They need a 64-bit Linux server with Docker and `curl`. On Debian or Ubuntu, the installer offers to install Docker. Before the installation, send them [What to prepare](/docs/it-request/) and the [Security overview](/docs/security-overview/).
+This part is for the IT team. What the server needs:
+
+- A 64-bit Linux system on `x86_64` (on `arm64`, install with Git), with the `curl` command and an account that can use `sudo`.
+- Docker, the software that runs the tool. On Debian or Ubuntu, don't install it beforehand: if it is missing, the installer offers to install it and waits for your yes. On another system, install Docker first.
+- Optional, for HTTPS: a domain name that points to the server, with ports 80 and 443 open.
+
+[What to prepare](/docs/it-request/) lists everything else, for example the email account and the network. The [Security overview](/docs/security-overview/) answers the questions of a security review.
 
 ### With one command
 
-The command installs the latest published version of {name}, from its signed image. It checks each file against the signed list of the version before it puts it in place: without that list, or if one file doesn't match, it installs nothing. The command exists from version 1.1.0: if the [latest release](https://github.com/Probant-Reporting/probant/releases/latest) is older, install with Git (below).
+The command installs the latest published version of {name}. Before it installs anything, it checks that each file is the one the official repository published (the signed list of the version): without that list, or if one file doesn't match, it installs nothing. The command exists from version 1.1.0: if the [latest release](https://github.com/Probant-Reporting/probant/releases/latest) is older, install with Git (below).
 
 1. On the server, run this command in the folder that will hold the tool, for example `/opt`:
 
@@ -91,7 +101,7 @@ The command installs the latest published version of {name}, from its signed ima
 
      The password of the demo accounts is public: do not leave this installation open to the internet. To start for real afterwards, delete the evaluation and its data (`docker compose down -v`), then run `./install.sh` in the same folder.
 
-After this installation, the server installs each new version at night, 3 days after its publication. It backs up the data first, and goes back to the previous version if the new one doesn't respond. In the tool, a space manager can choose **Notify only** or **Off** instead. To install without the automatic updates, add `--auto-update off` to the command.
+What happens next, on its own: the server installs each new version at night, 3 days after its publication. It backs up the data first, and goes back to the previous version if the new one doesn't respond. In the tool, a space manager can choose **Notify only** or **Off** instead. To install without the automatic updates, add `--auto-update off` to the command.
 
 ### Check the server first
 
@@ -134,11 +144,10 @@ The Docker image of each version is also published as `ghcr.io/probant-reporting
 
 If your IT team doesn't want to manage a server, a hosting provider can run {name}. The guide covers Clever Cloud, a French provider. It runs the tool, applies the system's security updates and provides HTTPS.
 
-- The deployment takes about 30 minutes.
+- You need a Clever Cloud account and the settings of an email account for the reminders.
+- You create a Python application from the repository, with two add-ons: PostgreSQL for the database, and FS Bucket for the evidence files and the backups. The deployment takes about 30 minutes.
 - **Empty.** To start for real. The application starts empty and the setup wizard creates the administrator account.
 - **With the demo.** For an evaluation only: right after the deployment, open an SSH console and run `python manage.py load_demo`. The password of the demo accounts is public. To start for real afterwards, delete the application and deploy again.
-- You need a Clever Cloud account and the settings of an email account for the reminders.
-- You create a Python application from the repository, with two add-ons: PostgreSQL for the database, and FS Bucket for the evidence files and the backups.
 - To update, you deploy the new version again. The automatic updates of a server don't exist with managed hosting.
 
 You pay the provider for the hosting. {name} stays free.

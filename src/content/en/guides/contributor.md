@@ -20,6 +20,6 @@ order: 2
 - An **evidence file** when the KPI requires one.
 - If you change a validated value, it goes back to draft. Validate it again.
 
-## On a phone
+## On a phone, in your language
 
 Data entry works the same way on a phone. The interface is available in seven languages: English, French, Spanish, German, Italian, Dutch, and Portuguese. A short guide for each role opens from the help icon.

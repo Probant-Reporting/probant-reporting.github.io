@@ -1,6 +1,6 @@
 ---
 title: "Installer l'outil"
-description: "Les deux façons donnent le même outil, avec les mêmes réglages, sauvegardes et mises à jour. Pour un serveur sans accès à Internet, voir « Installer sans…"
+description: "Les deux façons donnent le même outil, avec les mêmes réglages et les mêmes sauvegardes. Seule l'installation en une commande pose les mises à jour…"
 order: 2
 group: "Get started"
 source: "docs/fr/installation.md"
@@ -8,17 +8,19 @@ source: "docs/fr/installation.md"
 
 Vous pouvez installer l'outil de deux façons. Ce tableau les compare :
 
-| Façon | Ce qu'il faut sur le serveur | Durée |
+| Façon | Ce qu'il faut sur le serveur, en plus de Docker | Durée |
 |---|---|---|
 | En une commande (conseillé) | `curl` | 2 minutes environ : le serveur télécharge l'image publiée |
 | Avec Git | Git | 3 à 5 minutes : le serveur construit l'image |
 
-Les deux façons donnent le même outil, avec les mêmes réglages, sauvegardes et mises à jour. Pour un serveur sans
-accès à Internet, voir « Installer sans accès à Internet ».
+Les deux façons donnent le même outil, avec les mêmes réglages et les mêmes sauvegardes. Seule l'installation en une
+commande pose les mises à jour automatiques (section 6). Pour un serveur sans accès à Internet, voir « Installer sans
+accès à Internet ».
 
 ## Vérifier le serveur avant d'installer
 
-Le contrôle lit le serveur et indique ce qui manque pour l'installation. Il ne change rien sur le serveur. C'est le
+Vous n'avez pas à lancer ce contrôle vous-même : l'installeur le lance au début d'une installation neuve. Lancez-le
+avant si vous voulez savoir ce qui manque sans rien installer. Le contrôle lit le serveur et ne change rien. C'est le
 script `check.sh`, dans les fichiers de chaque version.
 
 Pour vérifier le serveur avant une installation en une commande, lancez la commande de l'installation avec
@@ -57,9 +59,9 @@ Le contrôle affiche une ligne par contrôle :
 À la fin, le contrôle affiche `Ready` (prêt), ou `Here is what is missing` (ce qui manque) avec la liste des points à
 corriger. Il se termine avec le code de sortie 0 (prêt) ou 1 (il manque quelque chose).
 
-L'installeur lance le même contrôle au début d'une installation neuve (un dossier sans `.env`). Si un point est à
-corriger, l'installeur s'arrête et n'installe rien. Un Docker absent ne l'arrête pas : l'installeur propose ensuite
-d'installer Docker. Pour installer sans le contrôle, ajoutez `--skip-check`. N'utilisez cette option que si vous savez
+Au début d'une installation neuve (un dossier sans `.env`), si un point est à corriger, l'installeur s'arrête et
+n'installe rien. Un Docker absent ne l'arrête pas : l'installeur propose ensuite d'installer Docker. Pour installer
+sans le contrôle, ajoutez `--skip-check`. N'utilisez cette option que si vous savez
 pourquoi le contrôle échoue. Par exemple, derrière un proxy que le contrôle ne sait pas utiliser.
 
 Si le réseau passe par un proxy, réglez-le avant le contrôle : `sudo HTTPS_PROXY=http://proxy.example.com:3128 sh …`.
@@ -74,7 +76,7 @@ il n'a pas besoin de Git.
 Pour installer l'outil :
 
 1. Connectez-vous au serveur avec un compte qui peut utiliser `sudo`.
-2. Allez dans le dossier où vous voulez le dossier de l'outil (par exemple `cd /opt`).
+2. Allez dans le dossier qui contiendra le dossier de l'outil (par exemple `cd /opt`).
 3. Lancez la commande :
 
    ```bash
@@ -90,23 +92,25 @@ Pour installer l'outil :
    La commande affiche l'adresse à ouvrir et le dossier de l'installation.
 4. Allez dans le dossier de l'outil : `cd probant`. Lancez les autres commandes de ce guide dans ce dossier.
 
+> **Remarque :** les mises à jour automatiques sont allumées après cette installation : le serveur installe chaque
+> nouvelle version la nuit, 3 jours après sa publication. Pour installer sans elles, ajoutez `--auto-update off`.
+> Voir « Mises à jour automatiques » (section 6).
+
 La commande effectue ces étapes, dans cet ordre :
 
 1. Elle trouve la dernière version publiée de l'outil.
 2. Elle crée le dossier `probant`. Si ce dossier contient déjà une installation, la commande s'arrête et ne change
    rien.
 3. Elle télécharge dans ce dossier les seuls fichiers qui font tourner l'outil : `docker-compose.yml`, `.env.example`,
-   `install.sh`, `update.sh`, `check.sh`, `docker/Caddyfile` et `auto-update.sh`. Ils viennent de l'étiquette de cette version dans le dépôt public
-   (https://github.com/Probant-Reporting/probant), en HTTPS seulement. Avant de les mettre en place, elle contrôle
-   chaque fichier avec la liste des empreintes SHA-256 jointe à la release de cette version
-   (`probant-X.Y.Z-files.sha256`). Elle vérifie aussi la signature de cette liste quand cosign est sur le serveur, ou
-   quand Docker répond (elle utilise alors le conteneur officiel de cosign). Si la liste manque, si sa signature est
-   refusée, ou si un seul fichier ne correspond pas, la commande s'arrête et n'installe rien. La commande dit ce
-   qu'elle a vérifié.
-4. Elle lance `./install.sh` avec l'image publiée de cette version. Voir « Ce que fait l'installeur ».
-5. Elle pose la minuterie des mises à jour automatiques, et l'outil démarre avec le choix « L'installer
-   automatiquement ». Voir « Mises à jour automatiques » (section 6). Pour installer sans elles, ajoutez
-   `--auto-update off`.
+   `install.sh`, `update.sh`, `check.sh`, `docker/Caddyfile` et `auto-update.sh`. Ils viennent de l'étiquette de
+   cette version dans le dépôt public (https://github.com/Probant-Reporting/probant), en HTTPS seulement.
+4. Elle contrôle chaque fichier avec la liste des empreintes SHA-256 (une empreinte par fichier) jointe à la release
+   de cette version (`probant-X.Y.Z-files.sha256`). La release est la page de la version sur GitHub, avec ses
+   fichiers. La commande vérifie aussi la signature de cette liste avec cosign (l'outil de signature de Sigstore),
+   quand cosign est sur le serveur ou quand Docker répond. Si la liste manque, si sa signature est refusée, ou si un
+   seul fichier ne correspond pas, la commande s'arrête et n'installe rien. La commande dit ce qu'elle a vérifié.
+5. Elle lance `./install.sh` avec l'image publiée de cette version. Voir « Ce que fait l'installeur ».
+6. Elle pose la minuterie des mises à jour automatiques (voir la remarque plus haut).
 
 Ce tableau présente les options de la commande :
 
@@ -122,10 +126,11 @@ Le contrôle des fichiers apporte cette protection :
 
 - Il trouve un fichier changé ou abîmé en chemin (un proxy, un miroir, un cache), et une étiquette déplacée après la
   release.
-- Avec la signature vérifiée, seul le workflow `image.yml` du dépôt public, pour cette étiquette, peut faire la liste,
-  et chaque signature est inscrite dans le journal public de transparence de Sigstore.
-- Il ne protège pas d'une personne qui peut changer le dépôt et lancer son workflow, et il ne contrôle pas `get.sh`
-  lui-même : voir « Lire le script avant de le lancer ».
+- Avec la signature vérifiée, seul le workflow `image.yml` du dépôt public, pour cette étiquette, peut faire la liste.
+  Chaque signature est inscrite dans le journal public de transparence de Sigstore.
+- Il ne protège pas d'une personne qui peut changer le dépôt et lancer son workflow.
+- Il ne contrôle ni `get.sh` lui-même (voir « Lire le script avant de le lancer »), ni la signature de l'image (voir
+  « Vérifier l'image »).
 
 Les versions publiées avant ces listes (1.0.0 et 1.0.1) n'en ont pas : la commande les refuse. Juste après une
 publication, la liste peut manquer pendant une heure au plus : réessayez plus tard.
@@ -135,12 +140,13 @@ publication, la liste peut manquer pendant une heure au plus : réessayez plus t
 Si vos règles de sécurité n'autorisent pas un script à se lancer dès son téléchargement, suivez ces étapes :
 
 1. Téléchargez le script : `curl -fsSLO https://github.com/Probant-Reporting/probant/raw/main/get.sh`.
-2. Lisez-le : `less get.sh`. Le script est court, et des commentaires expliquent chaque étape. Il ne change rien hors
-   du dossier de l'installation, sauf Docker si vous acceptez de l'installer.
+2. Lisez-le : `less get.sh`. Le script est court, et des commentaires expliquent chaque étape. Hors du dossier de
+   l'installation, il ne change que deux choses : Docker, si vous acceptez de l'installer, et la minuterie des mises
+   à jour automatiques (sauf avec `--auto-update off`).
 3. Lancez-le, avec les mêmes options que la commande : `sudo sh get.sh` (ou `sudo sh get.sh --domain reporting.example.com`).
 
-Le script lance ensuite le `install.sh` de la version. Vous pouvez lire `install.sh` et `update.sh` dans le dépôt
-public avant, à l'étiquette de la version (`vX.Y.Z`).
+Le script lance ensuite le `install.sh` de la version. Avant, vous pouvez lire `install.sh` et `update.sh` dans le
+dépôt public, à l'étiquette de la version (`vX.Y.Z`).
 
 Pour vérifier le script avant de le lancer, téléchargez-le depuis l'étiquette de la version, avec la liste des
 empreintes SHA-256 de la release. Remplacez `X.Y.Z` par la version (la dernière est sur
@@ -183,10 +189,10 @@ Ce tableau présente les options de `./install.sh` :
 | Option | Effet |
 |---|---|
 | Sans option | L'outil s'ouvre en HTTP sur `http://ADRESSE-DU-SERVEUR:8000`. Utilisez-la pour un réseau interne ou un essai. |
-| `--domain reporting.example.com` | L'outil s'ouvre en HTTPS. Le script ajoute Caddy devant l'outil, et Caddy obtient le certificat automatiquement. Le port 8000 n'est alors ouvert qu'au serveur lui-même. |
+| `--domain reporting.example.com` | L'outil s'ouvre en HTTPS. L'installeur ajoute Caddy, le proxy HTTPS fourni, devant l'outil. Caddy obtient le certificat auprès de Let's Encrypt automatiquement. Le port 8000 n'est alors ouvert qu'au serveur lui-même. |
 | `--port 8080` | L'outil utilise un autre port HTTP. |
 | `--image ghcr.io/probant-reporting/probant:X.Y.Z` | L'outil utilise cette image publiée (le réglage `IMAGE` de `.env`). Le serveur la télécharge et ne la construit pas. |
-| `--yes` | Si Docker manque, le script l'installe sans poser la question. |
+| `--yes` | Si Docker manque, l'installeur l'installe sans poser la question. |
 | `--check` | Vérifie seulement le serveur, avec les autres options, et n'installe rien. |
 | `--skip-check` | Installe sans le contrôle du serveur. |
 | `--offline probant-image-X.Y.Z.tar.gz` | Installe sans accès à Internet, avec l'image du paquet hors ligne. Voir « Installer sans accès à Internet ». |
@@ -213,8 +219,9 @@ Pour installer l'outil avec Git :
    ./install.sh                      # ou : ./install.sh --domain reporting.example.com
    ```
 
-   Le serveur construit l'image. Pour utiliser l'image publiée à la place, ajoutez
-   `--image ghcr.io/probant-reporting/probant:X.Y.Z`, avec la version du code.
+   Le serveur construit l'image. Pour cela, il télécharge l'image de base depuis Docker Hub et les paquets Python
+   depuis PyPI. Pour utiliser l'image publiée à la place, ajoutez `--image ghcr.io/probant-reporting/probant:X.Y.Z`,
+   avec la version du code.
 
 ## Installer sans le script
 
@@ -226,13 +233,16 @@ Pour faire la même installation à la main, dans le dossier du code (voir « In
 
 ## Vérifier l'image
 
-Cette partie concerne une installation qui utilise l'image publiée (`IMAGE` dans `.env`, voir la section 4). Chaque
-image, depuis la version 1.1.0, a ces trois éléments (les images des versions 1.0.0 et 1.0.1 n'en ont aucun) :
+Cette partie est facultative. Elle concerne une installation qui utilise l'image publiée (`IMAGE` dans `.env`, voir
+la section 4). L'installation et `./update.sh` ne vérifient pas la signature de l'image : faites-le vous-même ici si
+vos règles de sécurité le demandent. Les mises à jour automatiques la vérifient avant chaque installation (section 6).
+
+Chaque image, depuis la version 1.1.0, a ces trois éléments (les images des versions 1.0.0 et 1.0.1 n'en ont aucun) :
 
 | Élément | Ce que c'est | Où le trouver |
 |---|---|---|
 | Signature | La preuve que l'image vient du workflow `image.yml` du dépôt `Probant-Reporting/probant`, pour l'étiquette de la version. Elle est faite avec cosign, sans clé : le certificat nomme le workflow et l'étiquette. | Dans le registre, à côté de l'image |
-| SBOM | La liste des composants de l'image (paquets du système et bibliothèques Python), au format SPDX JSON. Elle est aussi attachée à l'image sous forme d'attestation signée. | Release de la version : `probant-<version>-sbom.spdx.json` |
+| SBOM (nomenclature logicielle) | La liste des composants de l'image (paquets du système et bibliothèques Python), au format SPDX JSON. Elle est aussi attachée à l'image sous forme d'attestation signée. | Release de la version : `probant-<version>-sbom.spdx.json` |
 | Rapport des failles | Les failles connues de ces composants le jour de la construction, établies par Grype. Un tableau en texte et un fichier JSON. | Release de la version : `probant-<version>-vulnerabilities.txt` et `.json` |
 
 La page des releases est `https://github.com/Probant-Reporting/probant/releases`. Si un fichier n'est pas dans la
@@ -241,7 +251,7 @@ release, il est dans l'artefact `probant-image-reports` de l'exécution « Docke
 
 Pour vérifier la signature d'une image :
 
-1. Installez cosign, version 3 ou ultérieure (https://docs.sigstore.dev/cosign/system_config/installation/).
+1. Installez cosign, version 3 ou plus récente (https://docs.sigstore.dev/cosign/system_config/installation/).
 2. Lancez cette commande. Remplacez `X.Y.Z` par la version (par exemple `1.1.0`), dans l'image et dans l'étiquette :
 
    ```bash
@@ -283,18 +293,19 @@ Pour lire le rapport des failles :
 
 Utilisez cette façon pour un serveur qui ne peut pas joindre Internet. Chaque version, depuis la 1.1.0, a
 un paquet hors ligne : l'image de l'outil et les fichiers qui l'installent et le mettent à jour, en un seul fichier.
-Rien n'est téléchargé pendant l'installation.
+Rien n'est téléchargé pendant l'installation. Il n'y a pas de mises à jour automatiques : pour mettre à jour, prenez
+le paquet de la nouvelle version (voir « Mettre à jour sans accès à Internet », section 6).
 
 Ce tableau présente les fichiers du paquet hors ligne, sur la page de la version
 (`https://github.com/Probant-Reporting/probant/releases`) :
 
 | Fichier | Ce que c'est |
 |---|---|
-| `probant-X.Y.Z-offline.tar` | Le paquet : un dossier `probant` avec l'archive de l'image (`probant-image-X.Y.Z.tar.gz`), l'archive de l'image de Caddy (`caddy-image.tar.gz`, pour le HTTPS), `docker-compose.yml`, `.env.example`, `install.sh`, `update.sh`, `check.sh`, `docker/Caddyfile`, `VERSION` et `SHA256SUMS` (la somme SHA-256 de chaque fichier) |
-| `probant-X.Y.Z-offline.tar.sha256` | La somme SHA-256 du paquet |
+| `probant-X.Y.Z-offline.tar` | Le paquet : un dossier `probant` avec l'archive de l'image (`probant-image-X.Y.Z.tar.gz`), l'archive de l'image de Caddy (`caddy-image.tar.gz`, pour le HTTPS), `docker-compose.yml`, `.env.example`, `install.sh`, `update.sh`, `check.sh`, `docker/Caddyfile`, `VERSION` et `SHA256SUMS` (l'empreinte SHA-256 de chaque fichier) |
+| `probant-X.Y.Z-offline.tar.sha256` | L'empreinte SHA-256 du paquet |
 | `probant-X.Y.Z-offline.tar.sigstore.json` | La signature du paquet (paquet de signature cosign). Il contient tout ce dont cosign a besoin pour vérifier le paquet sans réseau. |
 
-Ce qui marche aujourd'hui sans accès à Internet :
+Sans accès à Internet, vous pouvez utiliser :
 
 - L'outil, avec sa base SQLite (le réglage par défaut). Le paquet contient l'image de l'outil et l'image de Caddy.
   Il ne contient pas l'image de PostgreSQL (profil `postgres`) : voir « PostgreSQL sans accès à Internet » plus bas.
@@ -311,7 +322,7 @@ Pour installer l'outil sans accès à Internet :
 
 1. Sur un ordinateur qui a accès à Internet, téléchargez les trois fichiers de la version depuis la page de la version.
 2. Sur cet ordinateur, vérifiez le paquet :
-   - La somme : `sha256sum -c probant-X.Y.Z-offline.tar.sha256`. La commande affiche `OK`.
+   - L'empreinte : `sha256sum -c probant-X.Y.Z-offline.tar.sha256`. La commande affiche `OK`.
    - La signature, avec cosign version 3 ou plus récente. Remplacez `X.Y.Z` par la version, dans les noms des fichiers
      et dans l'étiquette :
 
@@ -373,9 +384,10 @@ apportez l'image vous-même :
 
 ## Réseau d'entreprise
 
-Cette partie concerne un serveur sur le réseau d'une entreprise : un certificat que votre entreprise donne pour
-l'adresse HTTPS, une autorité de certification de l'entreprise pour les connexions sortantes, et un proxy. Une
-installation qui n'utilise rien de cela marche comme avant.
+Cette partie est facultative. Elle concerne un serveur sur le réseau d'une entreprise, avec un ou plusieurs de ces
+éléments : un certificat que votre entreprise donne pour l'adresse HTTPS, une autorité de certification de votre
+entreprise (le certificat qui signe ses certificats internes) pour les connexions sortantes, et un proxy. Si votre
+réseau n'utilise rien de cela, passez cette partie.
 
 Les fichiers de cette partie vont dans le dossier `certificates/` de l'installation, à côté de `.env` :
 
@@ -457,7 +469,7 @@ toute autre connexion HTTPS. Les autorités publiques restent de confiance.
 L'outil n'utilise que le certificat d'une autorité. Un fichier qu'il ne peut pas lire, qui ne contient aucun
 certificat, ou qui contient un certificat de serveur, est écrit dans le journal au démarrage (`docker compose logs web`)
 et laissé de côté : l'outil démarre quand même. **Administration › Paramètres › Santé** montre les autorités en
-service, avec leur date d'expiration, au gestionnaire des espaces et aux administrateurs de l'espace principal. La
+service, avec leur date d'expiration, aux gestionnaires des espaces et aux administrateurs de l'espace principal. La
 ligne passe à « À regarder » 30 jours avant l'expiration d'une autorité.
 
 Pour retirer une autorité, supprimez son fichier de `certificates/ca/`, puis lancez `docker compose restart web`.
@@ -479,7 +491,7 @@ paquet hors ligne.
 
 ### Utiliser un proxy pour les connexions sortantes
 
-L'outil sait déjà passer par un proxy pour ses connexions HTTPS sortantes. Ce tableau montre quoi régler :
+L'outil peut passer par un proxy pour ses connexions HTTPS sortantes. Ce tableau montre quoi régler :
 
 | Quoi | Comment |
 |---|---|

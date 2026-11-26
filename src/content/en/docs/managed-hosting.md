@@ -8,8 +8,8 @@ source: "docs/managed_hosting.md"
 
 This guide tells you how to install and run the tool with a managed hosting provider, without a server to manage.
 
-This is the "serverless" option. The provider runs the tool, applies the security updates of the system, and provides
-HTTPS. IT has no machine and no Docker to manage.
+The provider runs the tool, applies the security updates of the system, and provides HTTPS. IT has no machine and
+no Docker to manage. The automatic updates of the tool are not available: you update with a new deployment.
 
 ## Choose a provider
 
@@ -157,7 +157,7 @@ The table shows how to do the usual operations on Clever Cloud:
 | Go back to the previous version | Warn the teams. Deploy the previous version (push the previous commit to the deployed branch): the preparation applies no migration. Then open an SSH console (`clever ssh`) and restore the “before-update” archive of each space: `python manage.py restore <archive> --yes --rebuild`, and `SPACE=<code> python manage.py restore <archive of this space> --yes --rebuild`. Then restart the application. See also [Installation](/docs/), “Going back to the previous version”. |
 | Use several spaces | The shared registry and each space are schemas of the same PostgreSQL database (`commun`, `espace_<code>`). The account of the add-on must be able to create schemas. The registry opens its own connections (about twice as many as before). Check the connection limit of the plan. At most: workers × threads × (2 + number of additional spaces) for the web server, plus 4 × (2 + number of additional spaces) for the background tasks; PostgreSQL allows 100 by default, enough for 2 additional spaces with the defaults. From 3 additional spaces, or if the plan allows fewer: `SPACES_CONN_MAX_AGE=0`, fewer `GUNICORN_THREADS` or `GUNICORN_WORKERS`, or a bigger plan. For more information, see Spaces, § 2. |
 | Monitor | The tool sends email alerts about its health (see the worker `CC_WORKER_COMMAND_2`, or `check_data --alerts`). Also connect the monitoring of Clever Cloud (or an external tool) to `/sante/`: it also warns you when the application is stopped. |
-| Copy the backups off the platform | Set an S3-compatible storage or an SFTP server in **Administration › Settings › Hosting**, box **Copy outside the server** (see [Installation](/docs/), “Copy the backups outside the server”). |
+| Copy the backups off the platform | A space manager sets an S3-compatible storage or an SFTP server in **Administration › Settings › Hosting**, box **Copy outside the server** (see [Installation](/docs/), “Copy the backups outside the server”). |
 | Limit failed sign-ins | Nothing to set up. The tool counts the failed sign-ins in `data/sign-in-attempts`, on the FS Bucket: all the processes and all the instances of the application share the count, and it stays after a redeploy. |
 | Read the log | Open the **Logs** tab of the console, or run `clever logs`. |
 | Automatic updates | Not available with managed hosting: the page **Settings › Hosting** says so. To update, redeploy (first row). |

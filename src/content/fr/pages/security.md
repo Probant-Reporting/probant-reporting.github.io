@@ -21,10 +21,10 @@ Pour une revue de sécurité, envoyez à votre équipe sécurité le [Dossier de
 ## Comment chacun se connecte
 
 - Par défaut, avec un mot de passe. Après 5 échecs de connexion pour un même identifiant depuis une même adresse, la connexion est refusée pendant 15 minutes.
-- Ou avec son compte d'entreprise, par OpenID Connect : par exemple Microsoft Entra ID, Google, Okta ou Keycloak. C'est éteint par défaut. Un gestionnaire des espaces l'allume pour toute l'installation.
+- Ou avec son compte d'entreprise : Microsoft Entra ID, Google, Okta, Keycloak et les autres services qui suivent la norme OpenID Connect. C'est éteint par défaut. Un gestionnaire des espaces l'allume pour toute l'installation.
 - Le compte d'entreprise prouve seulement qui est la personne. L'outil ne crée aucun compte et ne prend aucun rôle chez le fournisseur : les comptes et les rôles restent dans l'outil.
 - Quand la connexion d'entreprise est allumée, seuls les gestionnaires des espaces gardent leur mot de passe, comme comptes de secours. Une personne que votre entreprise bloque chez le fournisseur ne peut plus se connecter. Une personne qui ne peut pas se connecter avec un mot de passe ne peut pas non plus utiliser d'assistant IA.
-- L'outil n'a pas de second facteur à lui. Avec le compte d'entreprise, votre fournisseur applique le sien. L'outil ne prend en charge ni SAML ni LDAP.
+- L'outil n'a pas de second facteur à lui (un code en plus du mot de passe). Avec le compte d'entreprise, votre fournisseur applique le sien. L'outil ne prend en charge ni SAML ni LDAP.
 
 ## Les protections actives par défaut
 
@@ -37,7 +37,7 @@ Pour une revue de sécurité, envoyez à votre équipe sécurité le [Dossier de
 
 ## Image signée et mises à jour
 
-- Chaque image publiée, à partir de la version 1.1.0, est signée. Sa liste de composants (SBOM) l'accompagne, et chaque release contient un rapport des failles connues.
+- Chaque image publiée de l'outil, à partir de la version 1.1.0, est signée : chacun peut vérifier que le dépôt officiel l'a construite. Sa liste de composants (SBOM) l'accompagne, et chaque release contient un rapport des failles connues.
 - L'installation et les mises à jour contrôlent chaque fichier avec la liste signée de la version. Si la liste manque ou si un fichier ne correspond pas, rien ne change.
 - Après une installation en une commande, le serveur installe chaque nouvelle version la nuit, 3 jours après sa publication. Il n'installe qu'une image dont la signature est vérifiée, sauvegarde d'abord chaque espace, et revient à la version précédente si la nouvelle ne répond pas. Un gestionnaire des espaces peut choisir d'être seulement prévenu, ou éteindre ces mises à jour.
 - L'outil lui-même ne se connecte jamais à internet pour chercher une nouvelle version : une tâche du serveur fait ce travail.
@@ -47,7 +47,7 @@ Pour une revue de sécurité, envoyez à votre équipe sécurité le [Dossier de
 
 - L'outil se sauvegarde tout seul. Une sauvegarde contient la base de données et les fichiers de preuve.
 - Un administrateur peut restaurer une sauvegarde depuis l'outil, après une confirmation.
-- Gardez une copie des sauvegardes hors du serveur. Votre équipe informatique les copie. Ou un gestionnaire des espaces règle une destination dans l'outil, un stockage compatible S3 ou un serveur SFTP : l'outil y copie alors chaque nouvelle sauvegarde. Par défaut, il ne supprime rien à la destination.
+- Gardez une copie des sauvegardes hors du serveur. Votre équipe informatique les copie. Ou un gestionnaire des espaces règle une destination dans l'outil, un espace de stockage que fournit votre équipe informatique (stockage compatible S3 ou serveur SFTP) : l'outil y copie alors chaque nouvelle sauvegarde. Par défaut, il ne supprime rien à la destination.
 - Si une sauvegarde ou une copie échoue, une alerte par e-mail vous prévient. Sur une installation neuve, les alertes sont allumées dès que les e-mails sont réglés. Sur une installation que vous mettez à jour, elles restent éteintes tant qu'un gestionnaire des espaces ne les allume pas.
 - Les sauvegardes sont signées, pas chiffrées. Le chiffrement du disque revient à votre équipe informatique.
 - La version tout-en-un, pour un essai sur un ordinateur, n'a ni copie hors de l'ordinateur ni connexion d'entreprise.

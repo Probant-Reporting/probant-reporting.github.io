@@ -1,13 +1,13 @@
 ---
 title: "Set up emails (SMTP)"
-description: "The tool sends emails through the email server (SMTP) of your company: reminders and test emails. You can set up this server in two ways. The settings…"
+description: "The tool sends emails through the email server (SMTP) of your company: reminders, email alerts (section 9), and test emails. You can set up this server in…"
 order: 7
 group: "Run"
 source: "docs/installation.md"
 ---
 
-The tool sends emails through the email server (SMTP) of your company: reminders and test emails. You can set up
-this server in two ways. The settings apply to the whole installation, for all spaces.
+The tool sends emails through the email server (SMTP) of your company: reminders, email alerts (section 9), and test
+emails. You can set up this server in two ways. The settings apply to the whole installation, for all spaces.
 
 | Way | Who | When to use it |
 |---|---|---|
@@ -40,7 +40,8 @@ The password works like this:
   file that you export.
 - To keep the saved password, leave the field empty when you save. To remove it, click **Remove the password**.
 - If you change the server, the port or the username, or set the security to “None”, the tool deletes the saved
-  password, so that it never goes to another server. Enter it again in the same save; the screen says so if you do not.
+  password, so that it never goes to another server. Enter it again in the same save. If you do not, the screen says
+  so.
 - The tool keeps the password encrypted with the secret key of the installation (`DJANGO_SECRET_KEY`, or the file
   `/data/.secret_key`). The backup of a space never contains the email settings. The backup of the shared registry
   (`backups/shared`, only for IT) contains them, with the password encrypted.
@@ -80,10 +81,10 @@ To set up emails in the `.env` file:
 
 ## Reminders
 
-The team in charge manages the reminder emails in **Dashboard › Remind…**. Each person receives a single email, with
-no copy. The email lists what the person still has to enter. Before the tool sends the email, it shows the exact
-preview of the message. The team in charge sets the template.
+The administrators and the validators send the reminder emails in **Dashboard › Remind…**. Each person receives a
+single email, with no copy. The email lists what the person still has to enter. Before the tool sends the email, it
+shows the exact preview of the message. An administrator sets the template.
 
-The team in charge can turn on automatic reminders on the same page. The tool sends them on the chosen days before
+An administrator can turn on automatic reminders on the same page. The tool sends them on the chosen days before
 the end of data entry. It checks for them every day at `REMINDER_TIME` (09:00 by default). `PUBLIC_URL` gives the
 address in these emails. By default, the tool takes this address from `DOMAIN`.

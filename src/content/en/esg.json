@@ -6,7 +6,7 @@
   },
   "hero": {
     "title": "An open source reporting solution",
-    "lead": "{name} is a web tool for collecting KPIs across your sites and subsidiaries. Each figure can be justified with attached evidence. Your data is aggregated through your organisation levels, and accessible to auditors. You run it on your own server, free of charge.",
+    "lead": "{name} is a web tool for collecting KPIs across your sites and subsidiaries. Each figure can be justified with attached evidence. Your data is aggregated through your organisation levels, and accessible to auditors. The software is free: you run it on your own server, or a provider runs it for you.",
     "ctaSecondary": "Ask a question",
     "proofs": [
       "A read-only auditor role: values, evidence, history",
@@ -61,7 +61,7 @@
       "id": "consistency",
       "visual": "consistency",
       "title": "Unusual values show up before the audit",
-      "lead": "The tool compares each value with the comparison period and with the rules you set. Everything worth a look lands in one list, To be handled.",
+      "lead": "The tool compares each value with the comparison period, for example last year, and with the rules you set. Everything worth a look lands in one list, To be handled.",
       "points": [
         "Each alert explains the problem in one sentence.",
         "The contributor fixes the value or explains why it is right."
@@ -95,11 +95,11 @@
       "id": "it",
       "visual": "hosting",
       "title": "IT only takes care of the hosting",
-      "lead": "Your IT team hosts the tool. Everything else is set in the tool, including the emails and the copy of the backups.",
+      "lead": "Your IT team installs and hosts the tool. The rest is set in the tool itself, not on the server: the emails, the alerts, the copy of the backups.",
       "points": [
-        "Installation with one command, from a signed image. A check of the server comes first.",
-        "Updates can install themselves at night, and go back if the new version doesn't respond.",
-        "A list of what to prepare and a security overview, to send to your IT team."
+        "One command installs the tool on a Linux server, after a check of the server. On Debian or Ubuntu, it offers to install Docker if it is missing.",
+        "Updates can install themselves at night, and go back to the previous version if the new one doesn't respond. You can turn this off.",
+        "A list of what to prepare and a security overview, ready to send to your IT team."
       ],
       "cta": true,
       "tab": "For IT"
@@ -108,7 +108,7 @@
   "specs": [
     {
       "term": "Hosting",
-      "value": "On your server with Docker, or managed hosting with Clever Cloud"
+      "value": "On your own Linux server, or managed hosting with Clever Cloud"
     },
     {
       "term": "What IT does",
@@ -120,7 +120,7 @@
     },
     {
       "term": "Sign-in",
-      "value": "Password, or the company account (off by default)"
+      "value": "A password, or the company account if you turn it on"
     },
     {
       "term": "Spaces",
@@ -258,7 +258,7 @@
       },
       {
         "q": "How do I get {name}?",
-        "a": "Try it on your computer, install it on a server with Docker, or use managed hosting with Clever Cloud. The Get {name} page gives the commands and the links."
+        "a": "Try it on your computer, install it on a server with one command, or use managed hosting with Clever Cloud. The Get {name} page helps you choose, and gives the commands and the links."
       },
       {
         "q": "Where is the data hosted?",
@@ -294,11 +294,11 @@
       },
       {
         "q": "Can people sign in with their company account?",
-        "a": "Yes, through OpenID Connect, for example Microsoft Entra ID, Google, Okta or Keycloak. It is off by default. A space manager turns it on. Then only the space managers keep their password, as rescue accounts. The company account only proves who the person is: the administrators still create the accounts and give the roles in the tool."
+        "a": "Yes, if you turn it on: it is off by default. It works with Microsoft Entra ID, Google, Okta, Keycloak and the other services that follow the OpenID Connect standard. A space manager turns it on for the whole installation. Then only the space managers keep a password, as rescue accounts. The company account only proves who the person is: the administrators still create the accounts and give the roles in the tool."
       },
       {
         "q": "What does IT need to do?",
-        "a": "Host the tool. With the installation in one command, the server can install the updates at night. There is nothing to develop. The IT documentation starts with a list of what to prepare and a security overview."
+        "a": "Install the tool and host it. There is nothing to develop. After the installation with one command, the server also installs the updates at night, unless you turn this off. The IT documentation starts with a list of what to prepare and a security overview."
       }
     ]
   },
@@ -321,7 +321,7 @@
   },
   "assistant": {
     "title": "With your AI assistant",
-    "lead": "An AI assistant can work in {name} through its MCP server.",
+    "lead": "An AI assistant, for example Claude, can work in {name} through MCP, the standard way for an assistant to connect to a tool.",
     "specs": [
       {
         "term": "By default",
@@ -357,12 +357,12 @@
       {
         "anchor": "try-it-on-your-computer",
         "title": "Try it on your computer",
-        "text": "A trial with the demo company, to look around before you decide."
+        "text": "On Windows or Mac, with the demo company, to look around before you decide. Nothing to install."
       },
       {
         "anchor": "install-it-on-a-server",
         "title": "Install it on a server",
-        "text": "For your IT team: Docker, one command and a guide."
+        "text": "For your IT team: one command on a Linux server. On Debian or Ubuntu, it offers to install Docker."
       },
       {
         "anchor": "managed-hosting",

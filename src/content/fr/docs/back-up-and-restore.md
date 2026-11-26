@@ -50,21 +50,22 @@ Ce tableau présente comment sauvegarder l'outil :
 
 | Pour… | Faire |
 |---|---|
-| Sauvegarder automatiquement | Rien. Par défaut, l'outil fait une sauvegarde chaque jour à 02:30 et garde 14 archives. L'équipe responsable règle la fréquence dans **Administration › Paramètres › Hébergement**. **Copiez les sauvegardes hors du serveur** : dans l'outil, ou par vos propres moyens (voir [Copier les sauvegardes hors du serveur](/docs/back-up-and-restore/#copier-les-sauvegardes-hors-du-serveur)). |
+| Sauvegarder automatiquement | Rien. Par défaut, l'outil fait une sauvegarde chaque jour à 02:30 et garde 14 archives. Un administrateur règle la fréquence dans **Administration › Paramètres › Hébergement**. |
 | Sauvegarder maintenant | Lancez `docker compose exec web python manage.py backup`. Un administrateur peut aussi cliquer sur **Créer et télécharger une sauvegarde** dans **Administration › Paramètres › Hébergement**. |
 | Lister les sauvegardes | Lancez `docker compose exec web python manage.py backup --list`. |
-| Copier les sauvegardes hors du serveur | Dans l'outil : voir [Copier les sauvegardes hors du serveur](/docs/back-up-and-restore/#copier-les-sauvegardes-hors-du-serveur). Par vos propres moyens : lancez `docker compose cp web:/data/backups/. ../probant-backups/`. Cette commande copie les archives, sous-dossiers compris, dans le dossier `probant-backups` à côté du dossier de l'outil. Ne les copiez pas dans le dossier de l'outil : la mise à jour construit l'image à partir de ce dossier. Copiez ensuite `probant-backups` hors du serveur avec votre outil de sauvegarde habituel (rsync, Veeam…), de façon planifiée. Les fichiers copiés gardent leurs droits : seul le compte qui a lancé `docker compose cp` peut les lire (fichiers `0600`, dossiers `0700`). Si votre outil de sauvegarde tourne sous un autre compte, donnez à ce compte l'accès à `probant-backups`, par exemple avec `chown -R`. Ne changez pas les droits dans le volume. |
+| Copier les sauvegardes hors du serveur | **À faire par l'IT** : par défaut, les sauvegardes restent sur le même serveur que l'outil. Copiez-les dans l'outil, ou par vos propres moyens : voir [Copier les sauvegardes hors du serveur](/docs/back-up-and-restore/#copier-les-sauvegardes-hors-du-serveur). |
 
 **Sans Docker**, planifiez la même sauvegarde avec cron : `30 2 * * * cd /opt/reporting && python manage.py backup`.
 
 ## Copier les sauvegardes hors du serveur
 
 Les sauvegardes restent dans le volume `/data`, sur le même serveur que l'outil. Si le serveur est perdu, elles le
-sont aussi. Copiez-les hors du serveur d'une de ces deux façons.
+sont aussi. Copiez-les hors du serveur d'une de ces deux façons. Les deux façons peuvent fonctionner ensemble.
 
 ### Dans l'outil
 
-L'outil peut copier lui-même chaque sauvegarde vers un stockage que l'IT fournit. Un gestionnaire des espaces le
+Cette copie est éteinte tant qu'un gestionnaire des espaces ne l'a pas réglée. L'outil peut alors copier lui-même
+chaque sauvegarde vers un stockage que l'IT fournit. Un gestionnaire des espaces le
 règle dans **Administration › Paramètres › Hébergement**, encart **Copie hors du serveur**, avec **Régler une copie hors du serveur** :
 
 - **Stockage objet compatible S3** : un compartiment chez un hébergeur, ou MinIO sur votre réseau. Indiquez l'adresse du
@@ -77,8 +78,8 @@ règle dans **Administration › Paramètres › Hébergement**, encart **Copie 
 Cliquez ensuite sur **Essayer la destination**. L'outil dépose un petit fichier d'essai, le relit, puis le supprime.
 Avec SFTP, le premier essai montre l'empreinte SHA-256 de la clé du serveur. Comparez-la à l'empreinte que donne le
 serveur (sur le serveur : `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub`), puis cliquez sur **Confirmer cette
-clé**. Ensuite, l'outil refuse toute autre clé, avant d'envoyer le mot de passe ou la clé : si le serveur change de
-clé, la copie s'arrête et part en alerte, jusqu'à ce qu'un administrateur confirme la nouvelle clé.
+clé**. Ensuite, l'outil refuse toute autre clé, avant d'envoyer le mot de passe ou la clé. Si le serveur change de
+clé, la copie s'arrête et part en alerte, jusqu'à ce qu'un gestionnaire des espaces confirme la nouvelle clé.
 
 Ce que fait ensuite l'outil :
 
@@ -92,7 +93,7 @@ Ce que fait ensuite l'outil :
 - Si une copie échoue (réseau, droits, stockage plein…), il réessaie plus tard (après 5 minutes, puis 15 minutes,
   jusqu'à 6 heures) et copie tout ce qui attend. **Paramètres › Santé** et `/sante/` (`external_copy`) montrent la
   dernière copie et les archives qui attendent ; une alerte par e-mail part si les alertes sont allumées (section 9).
-- Par défaut, il **ne supprime rien** à la destination. Si l'administrateur règle **Copies gardées par espace**,
+- Par défaut, il **ne supprime rien** à la destination. Si un gestionnaire des espaces règle **Copies gardées par espace**,
   l'outil garde ce nombre de copies les plus récentes de chaque espace et du registre, et ne supprime que les archives
   plus anciennes qu'il a faites lui-même (dossier et nom qu'il reconnaît). Il ne supprime jamais un autre fichier, ni la
   dernière archive faite. Pour protéger les copies de toute suppression, donnez au compte le droit d'écrire mais pas
@@ -106,8 +107,8 @@ Ce que fait ensuite l'outil :
 > destination privée que seule l'IT peut ouvrir. L'outil ne chiffre pas les archives.
 
 L'outil enregistre la clé secrète S3, et le mot de passe ou la clé privée SFTP, chiffrés avec la clé secrète de
-l'installation. Il ne les réaffiche jamais. Après une restauration sur un autre serveur, un administrateur les saisit
-de nouveau. Pour les garder, laissez les champs vides quand vous enregistrez. Si vous changez la destination (S3 :
+l'installation. Il ne les réaffiche jamais. Après une restauration sur un autre serveur, un gestionnaire des espaces
+les saisit de nouveau. Pour les garder, laissez les champs vides quand vous enregistrez. Si vous changez la destination (S3 :
 adresse, région, compartiment ou identifiant de la clé d'accès ; SFTP : serveur, port ou compte), l'outil redemande le
 secret, pour qu'il ne parte jamais vers une autre destination. En SFTP, un autre serveur ou un autre port oublie aussi
 la clé du serveur confirmée.
@@ -122,9 +123,17 @@ La version tout-en-un (Windows ou Mac) n'a pas cette fonction : copiez vous-mêm
 
 ### Par vos propres moyens
 
-Copiez le dossier `/data/backups`, avec tous ses sous-dossiers, avec votre outil de sauvegarde habituel, de façon
-planifiée : voir la ligne **Copier les sauvegardes hors du serveur** du tableau ci-dessus. Les deux façons peuvent
-fonctionner ensemble.
+Pour copier le dossier `/data/backups` avec votre outil de sauvegarde habituel, suivez ces étapes :
+
+1. Copiez les archives hors du conteneur : `docker compose cp web:/data/backups/. ../probant-backups/`. Cette
+   commande copie les archives, sous-dossiers compris, dans le dossier `probant-backups` à côté du dossier de l'outil.
+   Ne les copiez pas dans le dossier de l'outil : la mise à jour construit l'image à partir de ce dossier.
+2. Copiez `probant-backups` hors du serveur avec votre outil de sauvegarde habituel (rsync, Veeam…), de façon
+   planifiée.
+
+Les fichiers copiés gardent leurs droits : seul le compte qui a lancé `docker compose cp` peut les lire (fichiers
+`0600`, dossiers `0700`). Si votre outil de sauvegarde tourne sous un autre compte, donnez à ce compte l'accès à
+`probant-backups`, par exemple avec `chown -R`. Ne changez pas les droits dans le volume.
 
 ## Reconstruire un serveur à partir de la copie externe
 
@@ -147,8 +156,8 @@ Si le serveur est perdu, l'IT reconstruit l'installation sur un nouveau serveur 
 
    Les archives ont été signées par l'ancien serveur : `--unsigned` est nécessaire, sauf si vous remettez l'ancienne
    clé secrète (`/data/.secret_key` ou `DJANGO_SECRET_KEY`).
-4. Chacun se connecte avec son mot de passe habituel. Un administrateur saisit de nouveau les secrets : le mot de passe
-   du serveur d'e-mails et le secret de la copie externe. Ils ne se lisent qu'avec la clé secrète de l'ancien serveur.
+4. Chacun se connecte avec son mot de passe habituel. Un gestionnaire des espaces saisit de nouveau les secrets : le
+   mot de passe du serveur d'e-mails et le secret de la copie externe. Seule la clé secrète de l'ancien serveur les lit.
    Si vous avez gardé cette clé en lieu sûr et l'avez remise avant l'étape 3, ils fonctionnent tout de suite.
 
 ## Sauvegardes et preuves supprimées

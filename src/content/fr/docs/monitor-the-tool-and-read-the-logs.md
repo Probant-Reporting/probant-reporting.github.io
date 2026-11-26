@@ -1,6 +1,6 @@
 ---
 title: "Superviser l'outil et lire les journaux"
-description: "L'outil vous prévient par e-mail : vous n'avez aucune supervision à brancher. Un gestionnaire des espaces allume les alertes dans Administration ›…"
+description: "L'outil vous prévient par e-mail : vous n'avez aucune supervision à brancher. Sur une installation neuve, les alertes par e-mail sont allumées d'office.…"
 order: 9
 group: "Run"
 source: "docs/fr/installation.md"
@@ -8,13 +8,14 @@ source: "docs/fr/installation.md"
 
 ## Recevoir un e-mail quand quelque chose ne va pas
 
-L'outil vous prévient par e-mail : vous n'avez aucune supervision à brancher. Un gestionnaire des espaces allume les
-alertes dans **Administration › Paramètres › Santé**, encart
-**Alertes par e-mail**, et choisit les destinataires : par défaut les administrateurs de l'espace principal et les
-gestionnaires des espaces, plus d'autres adresses, par exemple la boîte de l'équipe IT. Sur une installation neuve, les
-alertes sont allumées d'office ; une installation qui existait avant les alertes par e-mail les garde éteintes après
-une mise à jour, tant que personne ne les allume. Éteintes, elles le restent. Elles ont besoin du serveur d'e-mails
-(section 7) : sans lui, l'outil n'envoie rien.
+L'outil vous prévient par e-mail : vous n'avez aucune supervision à brancher. Sur une installation neuve, les alertes
+par e-mail sont allumées d'office. Elles ont besoin du serveur d'e-mails (section 7) : sans lui, l'outil n'envoie
+rien. Une installation qui existait avant les alertes par e-mail les garde éteintes après une mise à jour, tant qu'un
+gestionnaire des espaces ne les allume pas. Une fois éteintes, elles le restent.
+
+Un gestionnaire des espaces règle les alertes dans **Administration › Paramètres › Santé**, encart **Alertes par
+e-mail**, et choisit les destinataires : par défaut les administrateurs de l'espace principal et les gestionnaires des
+espaces, plus d'autres adresses, par exemple la boîte de l'équipe IT.
 
 Les alertes viennent des mêmes contrôles que la page **Santé** et `/sante/`. Ces contrôles envoient une alerte :
 
@@ -164,12 +165,11 @@ seul espace). Pour effacer les sessions terminées à la main, lancez
 
 ## Vérifier qu'un gros import n'est pas bloqué
 
-Le même processus fabrique les gros exports (au-delà du seuil que l'administrateur règle dans **Administration ›
-Paramètres › Hébergement › Gros exports**) : leurs fichiers sont dans `files/exports/` du dossier des données, effacés
-après 7 jours, jamais dans les sauvegardes (rien à copier).
-
 Les gros imports de valeurs se font en arrière-plan, dans le processus `run_imports --schedule`. L'image lance ce
-processus à côté des sauvegardes, des relances et du contrôle des données. Le détail de `/sante/` donne
+processus à côté des sauvegardes, des relances et du contrôle des données. Le même processus fabrique les gros exports
+(au-delà du seuil que l'administrateur règle dans **Administration › Paramètres › Hébergement › Gros exports**). Leurs
+fichiers sont dans `files/exports/` du dossier des données, effacés après 7 jours, et jamais dans les sauvegardes :
+rien à copier. Le détail de `/sante/` donne
 `background_imports` pour les imports et `background_exports` pour les gros exports, avec les trois mêmes champs :
 
 - `running` : le nombre d'imports (ou d'exports) qui tournent

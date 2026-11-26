@@ -23,13 +23,11 @@ Le script effectue ces étapes, dans cet ordre :
    espace échoue, la mise à jour s'arrête et ne change rien.
 2. Il récupère la nouvelle version :
    - Après une installation en une commande (un dossier sans Git, avec `IMAGE` réglé sur une version de
-     `ghcr.io/probant-reporting/probant`) : il télécharge les fichiers de la nouvelle version, comme l'installation,
-     puis règle `IMAGE` dans `.env` sur l'image de cette version et la télécharge. Il garde les autres réglages de
-     `.env` et les données. Si un téléchargement échoue, la mise à jour s'arrête et ne change rien. Avant de mettre
-     les fichiers en place, il contrôle chacun avec la liste des empreintes SHA-256 de la release, et la signature de
-     cette liste quand il le peut, comme l'installation (voir « Installer en une commande »). Si la liste manque, si
-     sa signature est refusée, ou si un seul fichier ne correspond pas, la mise à jour s'arrête et ne change rien
-     (code de sortie 3).
+     `ghcr.io/probant-reporting/probant`) : il télécharge les fichiers de la nouvelle version et les contrôle, comme
+     l'installation (voir « Installer en une commande »). Il règle ensuite `IMAGE` dans `.env` sur l'image de cette
+     version et la télécharge. Il garde les autres réglages de `.env` et les données. Si un téléchargement échoue, si
+     la liste des empreintes manque, si sa signature est refusée, ou si un seul fichier ne correspond pas, la mise à
+     jour s'arrête et ne change rien (code de sortie 3 pour le contrôle des fichiers).
    - Après une installation avec Git : avec `git pull`, puis une nouvelle construction de l'image
    - Ou, si `IMAGE` est renseigné dans `.env` avec une autre image, avec `docker compose pull`
 3. Il redémarre l'outil. L'outil applique les changements de structure de la base automatiquement au démarrage. Si
@@ -57,9 +55,10 @@ Une seule mise à jour tourne à la fois : si la mise à jour automatique tourne
 
 ## Mises à jour automatiques
 
-Après une installation en une commande, une minuterie du serveur installe chaque nouvelle version la nuit, et revient
-à la version précédente si la nouvelle ne fonctionne pas. Le script `auto-update.sh` du dossier de l'outil fait tout le
-travail, sur le serveur. L'outil lui-même ne se connecte jamais à Internet, ne compare jamais deux versions et n'a
+Après une installation en une commande, les mises à jour automatiques sont allumées. Une minuterie du serveur (appelée
+**Tâche du serveur** dans l'outil) installe chaque nouvelle version la nuit, et revient à la version précédente si la
+nouvelle ne fonctionne pas. Les autres installations ne les ont pas : voir le tableau plus bas. Le script
+`auto-update.sh` du dossier de l'outil fait tout le travail, sur le serveur. L'outil lui-même ne se connecte jamais à Internet, ne compare jamais deux versions et n'a
 aucun accès à Docker : aucun socket Docker n'est donné à son conteneur, et aucun autre outil (comme Watchtower) n'est
 utilisé.
 
@@ -91,9 +90,12 @@ Ce tableau montre le réglage au départ :
    cette image est celle de l'image qui tourne, il n'y a rien à faire.
 3. Il vérifie la signature de la nouvelle image (voir « Signature de la nouvelle image »). Si la signature manque, si
    elle n'est pas correcte, ou si la vérification est impossible, rien n'est installé.
-4. Il s'arrête là avec « Prévenir seulement », pendant l'attente après la publication, pour une image dont la mise à
-   jour automatique a déjà échoué, et pour une version qui change le registre commun des comptes (ce changement ne se
-   défait pas automatiquement : l'IT installe cette version avec `./update.sh`).
+4. Il s'arrête là dans ces cas :
+   - Le choix est « Prévenir seulement ».
+   - L'attente après la publication n'est pas finie.
+   - La mise à jour automatique de cette image a déjà échoué.
+   - La version change le registre commun des comptes. Ce changement ne se défait pas automatiquement : l'IT installe
+     cette version avec `./update.sh`.
 5. Il ne met pas à jour pendant une restauration, une sauvegarde, un gros import ou un gros export de l'outil. Il
    réessaie la nuit suivante.
 6. Il télécharge la liste des empreintes SHA-256 des fichiers de cette version, depuis sa release, et vérifie la
@@ -114,11 +116,12 @@ Si la nouvelle version ne répond pas, le script revient en arrière automatique
 3. Il démarre la version d'avant et contrôle `/sante/`.
 
 L'écran dit alors « Le serveur est revenu à la version X.Y.Z », comme la page **Paramètres › Santé** et les alertes par
-e-mail. La même image n'est pas réessayée : quand la cause est connue, l'IT lance `sudo ./auto-update.sh --retry`. Si
-le retour arrière ne réussit pas entièrement (une restauration échoue, le registre commun a changé, ou la version
-d'avant ne répond pas), le résultat est un échec, l'alerte dit « appelez votre équipe IT », et l'IT suit « Revenir à la
-version précédente ». Plus rien n'est fait automatiquement, pas même les nuits suivantes, tant que l'IT n'a pas lancé
-`sudo ./auto-update.sh --retry`.
+e-mail. La même image n'est pas réessayée : quand la cause est connue, l'IT lance `sudo ./auto-update.sh --retry`.
+
+Si le retour arrière ne réussit pas entièrement (une restauration échoue, le registre commun a changé, ou la version
+d'avant ne répond pas), le résultat est un échec. L'alerte dit « Appelez votre équipe IT maintenant », et l'IT suit
+« Revenir à la version précédente ». Plus rien n'est fait automatiquement, pas même les nuits suivantes, tant que l'IT
+n'a pas lancé `sudo ./auto-update.sh --retry`.
 
 ### Signature de la nouvelle image
 
@@ -146,7 +149,7 @@ Dans le dossier de l'outil, en root (`sudo`) :
 - `./install.sh --auto-update off` retire la minuterie. Rien d'autre ne change.
 
 Sur une installation existante, ces commandes ne changent que la minuterie : le choix dans l'outil reste celui des
-administrateurs. Avant de supprimer le dossier de l'outil, lancez `./install.sh --auto-update off`. Si le dossier est
+gestionnaires des espaces. Avant de supprimer le dossier de l'outil, lancez `./install.sh --auto-update off`. Si le dossier est
 déjà supprimé, retirez la minuterie à la main : `sudo systemctl disable --now probant-auto-update-<numéro>.timer`, puis
 supprimez les deux fichiers `/etc/systemd/system/probant-auto-update-<numéro>.*` (ou le fichier de `/etc/cron.d/`).
 
@@ -163,11 +166,8 @@ e-mail si elles sont allumées.
 
 ### Réseau du serveur
 
-Le script a besoin du HTTPS sortant (TCP 443) depuis le serveur, pas depuis le conteneur : `github.com` et
-`raw.githubusercontent.com` (la dernière version et ses fichiers), `objects.githubusercontent.com` et
-`release-assets.githubusercontent.com` (la liste des empreintes des fichiers, jointe à la release),
-`ghcr.io` et `pkg-containers.githubusercontent.com` (l'image et le conteneur de cosign), et `tuf-repo-cdn.sigstore.dev` (la racine de confiance de Sigstore, lue par
-cosign). Derrière un proxy, réglez `HTTPS_PROXY` dans l'environnement de la minuterie (par exemple
+Le script a besoin du même HTTPS sortant (TCP 443) que l'installation, depuis le serveur, pas depuis le conteneur :
+voir « Réseau, téléchargements » à la section 1. Derrière un proxy, réglez `HTTPS_PROXY` dans l'environnement de la minuterie (par exemple
 `systemctl edit probant-auto-update-<numéro>.service`), et le proxy de Docker pour le téléchargement des images.
 
 ## Mettre à jour sans accès à Internet

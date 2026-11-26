@@ -95,17 +95,19 @@ With `report-only`, the protection is off: keep this value only for the time of 
 
 ## AI assistants (MCP): nothing to do
 
-The tool includes a server for AI assistants (Model Context Protocol), at the address `/mcp/` of each space
-(`/espace/<code>/mcp/` for another space). It runs in the same container, on the same port, behind the same HTTPS: there
-is no service, no port, no variable and nothing to install. It stays off until an administrator turns it on in
-**Administration › Settings › Assistants**. The only condition is that the reverse proxy passes the `Authorization`
-header to the tool: Caddy (the `https` profile) and Clever Cloud do it without any setting. Assistant tokens are never in
-the backups. The log of the tool shows the refused tokens (`serveur_mcp: MCP: token refused`). Details:
-`docs/mcp.md`, section 7.
+A person can connect their own AI assistant to the tool, with the Model Context Protocol (MCP). The assistant then
+reads and changes data with the rights of this person. The MCP server is part of the tool, at the address `/mcp/` of each
+space (`/espace/<code>/mcp/` for another space). It runs in the same container, on the same port, behind the same
+HTTPS: there is no service, no port, no variable and nothing to install. It stays off until an administrator turns it
+on in **Administration › Settings › Assistants**. The only condition is that the reverse proxy passes the
+`Authorization` header to the tool: Caddy (the `https` profile) and Clever Cloud do it without any setting. Assistant
+tokens are never in the backups. The log of the tool shows the refused tokens (`serveur_mcp: MCP: token refused`).
+Details: `docs/mcp.md`, section 7.
 
 ## Sign-in with a company account
 
-People can sign in with their company account (single sign-on, OpenID Connect). It is off by default. A space manager sets it up in **Administration › Settings › Company sign-in**. What IT does:
+People can sign in with their company account (single sign-on, OpenID Connect). It is off by default. A space
+manager sets it up in **Administration › Settings › Company sign-in**. What IT does:
 
 | Item | Value |
 |---|---|

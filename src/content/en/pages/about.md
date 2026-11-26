@@ -30,5 +30,5 @@ If you try it and have a question, send me a message, I'm happy to help. I'm als
 ## How it is maintained
 
 - Each new version is listed in [What's new](/whats-new/), with its notes.
-- Your IT team applies an update with one command. The update backs up the database first.
+- Your IT team applies an update with one command, or lets the server install it at night. The update backs up the database first.
 - Every change is tested before release: calculations, roles, accessibility, performance.

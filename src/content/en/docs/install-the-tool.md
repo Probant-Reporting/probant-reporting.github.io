@@ -1,6 +1,6 @@
 ---
 title: "Install the tool"
-description: "The two ways give the same tool, with the same settings, backups and updates. For a server without Internet access, see “Install without Internet access”."
+description: "The two ways give the same tool, with the same settings and backups. Only the installation with one command sets up the automatic updates (section 6). For…"
 order: 2
 group: "Get started"
 source: "docs/installation.md"
@@ -8,18 +8,19 @@ source: "docs/installation.md"
 
 You can install the tool in two ways. This table compares them:
 
-| Way | What you need on the server | Duration |
+| Way | What the server needs, besides Docker | Duration |
 |---|---|---|
 | With one command (recommended) | `curl` | About 2 minutes: the server downloads the published image |
 | With Git | Git | 3 to 5 minutes: the server builds the image |
 
-The two ways give the same tool, with the same settings, backups and updates. For a server without Internet
-access, see “Install without Internet access”.
+The two ways give the same tool, with the same settings and backups. Only the installation with one command sets up
+the automatic updates (section 6). For a server without Internet access, see “Install without Internet access”.
 
 ## Check the server before you install
 
-The check reads the server and tells you what is missing for the installation. It changes nothing on the server.
-It is the script `check.sh`, in the files of each version.
+You do not have to run this check yourself: the installer runs it at the start of a new installation. Run it before,
+if you want to know what is missing without installing anything. The check reads the server and changes nothing. It
+is the script `check.sh`, in the files of each version.
 
 To check the server before an installation with one command, run the command of the installation with `--check`:
 
@@ -54,10 +55,10 @@ The check shows one line for each check:
 At the end, the check shows `Ready`, or `Here is what is missing` with the list of the points to fix. It ends with the
 exit code 0 (ready) or 1 (something is missing).
 
-The installer runs the same check at the start of a new installation (a folder without `.env`). If a point is to
-fix, the installer stops and installs nothing. A missing Docker does not stop it: the installer offers to install
-Docker next. To install without the check, add `--skip-check`. Use this option only if you know why the check fails.
-For example, behind a proxy that the check cannot use.
+At the start of a new installation (a folder without `.env`), if a point is to fix, the installer stops and installs
+nothing. A missing Docker does not stop it: the installer offers to install Docker next. To install without the
+check, add `--skip-check`. Use this option only if you know why the check fails. For example, behind a proxy that the
+check cannot use.
 
 If the network uses a proxy, set it before the check: `sudo HTTPS_PROXY=http://proxy.example.com:3128 sh …`. With
 `sudo`, the variables of your session do not pass to the script. Docker downloads the image itself: set the proxy of
@@ -71,7 +72,7 @@ anything, and it does not need Git.
 To install the tool:
 
 1. Sign in to the server with an account that can use `sudo`.
-2. Go to the folder where you want the folder of the tool (for example, `cd /opt`).
+2. Go to the folder that will contain the folder of the tool (for example, `cd /opt`).
 3. Run the command:
 
    ```bash
@@ -87,21 +88,25 @@ To install the tool:
    The command shows the address to open and the folder of the installation.
 4. Go to the folder of the tool: `cd probant`. Run the other commands of this guide in this folder.
 
+> **Note:** The automatic updates are on after this installation: the server installs each new version at night,
+> 3 days after its publication. To install without them, add `--auto-update off`. See “Automatic updates”
+> (section 6).
+
 The command does these steps, in this order:
 
 1. It finds the latest published version of the tool.
 2. It creates the folder `probant`. If this folder already contains an installation, the command stops and changes
    nothing.
 3. It downloads into this folder only the files that run the tool: `docker-compose.yml`, `.env.example`,
-   `install.sh`, `update.sh`, `check.sh`, `docker/Caddyfile` and `auto-update.sh`. They come from the tag of this version in the public repository
-   (https://github.com/Probant-Reporting/probant), over HTTPS only. Before it puts them in place, it checks each file
-   against the list of the SHA-256 sums attached to the release of this version (`probant-X.Y.Z-files.sha256`). It
-   also verifies the signature of this list when cosign is on the server, or when Docker responds (it then uses the
-   official container of cosign). If the list is missing, if its signature is refused, or if one file does not match,
-   the command stops and installs nothing. The command says what it verified.
-4. It runs `./install.sh` with the published image of this version. See “What the installer does”.
-5. It sets up the timer of the automatic updates, and the tool starts with the choice “Install it automatically”.
-   See “Automatic updates” (section 6). To install without them, add `--auto-update off`.
+   `install.sh`, `update.sh`, `check.sh`, `docker/Caddyfile` and `auto-update.sh`. They come from the tag of this
+   version in the public repository (https://github.com/Probant-Reporting/probant), over HTTPS only.
+4. It checks each file against the list of the SHA-256 sums (one fingerprint per file) attached to the release of
+   this version (`probant-X.Y.Z-files.sha256`). The release is the page of the version on GitHub, with its files. The
+   command also verifies the signature of this list with cosign (the signature tool of Sigstore), when cosign is on
+   the server or when Docker responds. If the list is missing, if its signature is refused, or if one file does not
+   match, the command stops and installs nothing. The command says what it verified.
+5. It runs `./install.sh` with the published image of this version. See “What the installer does”.
+6. It sets up the timer of the automatic updates (see the note above).
 
 This table shows the options of the command:
 
@@ -117,9 +122,10 @@ The check of the files gives this protection:
 
 - It finds a file changed or damaged on the way (a proxy, a mirror, a cache), and a tag moved after the release.
 - With the signature verified, only the workflow `image.yml` of the public repository, for this tag, can make the
-  list, and each signature is in the public transparency log of Sigstore.
-- It does not protect against a person who can change the repository and run its workflow, and it does not check
-  `get.sh` itself: see “Read the script before you run it”.
+  list. Each signature is in the public transparency log of Sigstore.
+- It does not protect against a person who can change the repository and run its workflow.
+- It does not check `get.sh` itself (see “Read the script before you run it”), or the signature of the image (see
+  “Verify the image”).
 
 The versions published before these lists (1.0.0 and 1.0.1) have none: the command refuses them. Just after a
 publication, the list can be missing for up to an hour: try again later.
@@ -129,12 +135,13 @@ publication, the list can be missing for up to an hour: try again later.
 If your security rules do not allow a script to run as soon as it is downloaded, do these steps:
 
 1. Download the script: `curl -fsSLO https://github.com/Probant-Reporting/probant/raw/main/get.sh`.
-2. Read it: `less get.sh`. The script is short, and comments explain each step. It changes nothing outside the folder
-   of the installation, except Docker if you accept to install it.
+2. Read it: `less get.sh`. The script is short, and comments explain each step. Outside the folder of the
+   installation, it changes only two things: Docker, if you accept to install it, and the timer of the automatic
+   updates (unless you add `--auto-update off`).
 3. Run it, with the same options as the command: `sudo sh get.sh` (or `sudo sh get.sh --domain reporting.example.com`).
 
-The script then runs `install.sh` of the version. You can read `install.sh` and `update.sh` in the public repository
-before, at the tag of the version (`vX.Y.Z`).
+The script then runs `install.sh` of the version. Before, you can read `install.sh` and `update.sh` in the public
+repository, at the tag of the version (`vX.Y.Z`).
 
 To verify the script before you run it, download it from the tag of the version, with the list of the SHA-256 sums
 of the release. Replace `X.Y.Z` with the version (the latest one is on
@@ -177,10 +184,10 @@ This table shows the options of `./install.sh`:
 | Option | Effect |
 |---|---|
 | No option | The tool opens over HTTP at `http://SERVER-ADDRESS:8000`. Use it for an internal network or a trial. |
-| `--domain reporting.example.com` | The tool opens over HTTPS. The script adds Caddy in front of the tool, and Caddy gets the certificate automatically. Port 8000 is then open only to the server itself. |
+| `--domain reporting.example.com` | The tool opens over HTTPS. The installer adds Caddy, the HTTPS proxy provided, in front of the tool. Caddy gets the certificate from Let's Encrypt automatically. Port 8000 is then open only to the server itself. |
 | `--port 8080` | The tool uses another HTTP port. |
 | `--image ghcr.io/probant-reporting/probant:X.Y.Z` | The tool uses this published image (the setting `IMAGE` in `.env`). The server downloads it and does not build it. |
-| `--yes` | If Docker is missing, the script installs it without the question. |
+| `--yes` | If Docker is missing, the installer installs it without the question. |
 | `--check` | Only checks the server, with the other options, and installs nothing. |
 | `--skip-check` | Installs without the check of the server. |
 | `--offline probant-image-X.Y.Z.tar.gz` | Installs without Internet access, with the image of the offline package. See “Install without Internet access”. |
@@ -207,8 +214,9 @@ To install the tool with Git:
    ./install.sh                      # or: ./install.sh --domain reporting.example.com
    ```
 
-   The server builds the image. To use the published image instead, add
-   `--image ghcr.io/probant-reporting/probant:X.Y.Z`, with the version of the code.
+   The server builds the image. For this, it downloads the base image from Docker Hub and the Python packages from
+   PyPI. To use the published image instead, add `--image ghcr.io/probant-reporting/probant:X.Y.Z`, with the version
+   of the code.
 
 ## Install without the script
 
@@ -220,13 +228,16 @@ To do the same installation by hand, in the folder of the code (see “Install w
 
 ## Verify the image
 
-This part is for an installation that uses the published image (`IMAGE` in `.env`, see section 4). Each image,
-from version 1.1.0, has these three items (the images of versions 1.0.0 and 1.0.1 have none):
+This part is optional. It is for an installation that uses the published image (`IMAGE` in `.env`, see section 4).
+The installation and `./update.sh` do not verify the signature of the image: do it yourself here if your security
+rules ask for it. The automatic updates verify it before each installation (section 6).
+
+Each image, from version 1.1.0, has these three items (the images of versions 1.0.0 and 1.0.1 have none):
 
 | Item | What it is | Where to find it |
 |---|---|---|
 | Signature | Proof that the image comes from the workflow `image.yml` of the repository `Probant-Reporting/probant`, for the tag of the version. It is made with cosign, without a key: the certificate names the workflow and the tag. | In the registry, next to the image |
-| SBOM | The list of the components of the image (system packages and Python libraries), in SPDX JSON. It is also attached to the image as a signed attestation. | Release of the version: `probant-<version>-sbom.spdx.json` |
+| SBOM (software bill of materials) | The list of the components of the image (system packages and Python libraries), in SPDX JSON. It is also attached to the image as a signed attestation. | Release of the version: `probant-<version>-sbom.spdx.json` |
 | Vulnerability report | The known vulnerabilities of those components on the day of the build, made by Grype. A text table and a JSON file. | Release of the version: `probant-<version>-vulnerabilities.txt` and `.json` |
 
 The release page is `https://github.com/Probant-Reporting/probant/releases`. If a file is not in the release, it is
@@ -276,7 +287,8 @@ To read the vulnerability report:
 
 Use this way for a server that cannot reach the Internet. Each version, from 1.1.0, has an offline package:
 the image of the tool and the files that install and update it, in one file. Nothing is downloaded during the
-installation.
+installation. There are no automatic updates: to update, use the package of the new version (see “Update without
+Internet access”, section 6).
 
 This table shows the files of the offline package, on the release page of the version
 (`https://github.com/Probant-Reporting/probant/releases`):
@@ -287,7 +299,7 @@ This table shows the files of the offline package, on the release page of the ve
 | `probant-X.Y.Z-offline.tar.sha256` | The SHA-256 sum of the package |
 | `probant-X.Y.Z-offline.tar.sigstore.json` | The signature of the package (cosign bundle). It contains everything that cosign needs to verify the package without network. |
 
-This works today without Internet access:
+Without Internet access, you can use:
 
 - The tool, with its SQLite database (the default). The package holds the image of the tool and the image of Caddy.
   It does not hold the image of PostgreSQL (`postgres` profile): see “PostgreSQL without Internet access” below.
@@ -365,9 +377,10 @@ bring the image yourself:
 
 ## Company network
 
-This part is for a server on the network of a company: a certificate that your company gives for the HTTPS address,
-a certificate authority of the company for the outgoing connections, and a proxy. An installation that uses none of
-them works as before.
+This part is optional. It is for a server on the network of a company, with one or more of these items: a
+certificate that your company gives for the HTTPS address, a certificate authority of your company (the certificate
+that signs its internal certificates) for the outgoing connections, and a proxy. If your network uses none of them,
+skip this part.
 
 The files of this part go into the folder `certificates/` of the installation, next to `.env`:
 
@@ -397,7 +410,7 @@ To install the tool with this certificate:
 ./install.sh --domain reporting.example.com --cert reporting.pem --key reporting.key
 ```
 
-With the one-line installation, add the same options after `sh -s --`. Without Internet access, add
+With the installation with one command, add the same options after `sh -s --`. Without Internet access, add
 `--offline probant-image-X.Y.Z.tar.gz`: the installer loads the image of Caddy from the package.
 
 Before any change, the installer checks the files (with `check.sh`, which needs the `openssl` command). This table
@@ -448,7 +461,7 @@ connection. The public authorities stay trusted.
 The tool uses only the certificate of an authority. A file that it cannot read, that holds no certificate, or that
 holds a server certificate, is written in the log at the start (`docker compose logs web`) and ignored: the tool
 starts all the same. **Administration › Settings › Health** shows the authorities in use, with their expiry dates,
-to the space manager and to the administrators of the main space. The line becomes “To look at” 30 days before an
+to the space managers and to the administrators of the main space. The line becomes “To check” 30 days before an
 authority expires.
 
 To remove an authority, delete its file from `certificates/ca/`, then run `docker compose restart web`.
@@ -468,7 +481,7 @@ Python packages during the build: behind such a proxy, use the published image o
 
 ### Use a proxy for the outgoing connections
 
-The tool already supports a proxy for its outgoing HTTPS connections. This table shows what to set:
+The tool can use a proxy for its outgoing HTTPS connections. This table shows what to set:
 
 | What | How |
 |---|---|

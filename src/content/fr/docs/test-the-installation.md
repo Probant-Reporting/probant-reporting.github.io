@@ -1,10 +1,14 @@
 ---
 title: "Tester l'installation"
-description: "À la fin, le script supprime tout ce qu'il a créé. Pour lancer le même test avec les tests de l'outil, lancez TESTER_DOCKER=1 python manage.py test…"
+description: "Cette partie s'adresse aux personnes qui modifient le code de l'outil. Vous n'en avez pas besoin pour installer l'outil. Les scripts d'essai sont dans le…"
 order: 11
 group: "Run"
 source: "docs/fr/installation.md"
 ---
+
+Cette partie s'adresse aux personnes qui modifient le code de l'outil. Vous n'en avez pas besoin pour installer
+l'outil. Les scripts d'essai sont dans le code (dossier `docker/`), pas dans le dossier d'une installation en une
+commande.
 
 Le script `bash docker/test_installation.sh` reproduit une installation sur une machine vierge. Il copie le dépôt dans
 un dossier vide et lance `./install.sh`. Ensuite, il vérifie ces points :

@@ -7,11 +7,15 @@ replis: true
 lead: false
 ---
 
-{name} est un logiciel libre, sous licence AGPL-3.0-or-later :
+{name} est un logiciel libre, sous licence AGPL-3.0-or-later. Trouvez votre chemin :
 
-- [Dernière version](https://github.com/Probant-Reporting/probant/releases/latest)
-- [Code source](https://github.com/Probant-Reporting/probant)
-- [Les nouveautés de chaque version](/whats-new/)
+- **Pour faire le tour sur votre ordinateur**, pour une personne, sous Windows ou Mac : [Essayer sur votre ordinateur](#essayer-sur-votre-ordinateur). Rien à installer.
+- **Pour travailler en équipe, sur un serveur de votre entreprise** : [Installer sur un serveur](#installer-sur-un-serveur). Votre équipe informatique lance une commande. Sur Debian ou Ubuntu, elle n'installe pas Docker avant : le script d'installation propose de l'installer et attend un oui.
+- **Sur un serveur sans accès à Internet** : [Sans accès à Internet](#sans-accès-à-internet), avec le paquet hors ligne.
+- **Sans serveur à gérer** : [Hébergement clé en main](#hébergement-clé-en-main). Un hébergeur, Clever Cloud, fait tourner l'outil, et vous payez l'hébergeur.
+- **Pour passer un essai avec de vraies données sur un serveur** : [De votre ordinateur à un serveur](#de-votre-ordinateur-à-un-serveur).
+
+Liens : [dernière version](https://github.com/Probant-Reporting/probant/releases/latest) · [code source](https://github.com/Probant-Reporting/probant) · [les nouveautés de chaque version](/whats-new/).
 
 ## Essayer sur votre ordinateur
 
@@ -33,7 +37,7 @@ La version tout-en-un n'a ni la connexion avec le compte d'entreprise, ni la cop
 
 ### Avec Docker
 
-Il vous faut Docker et Git, sur un Mac ou un ordinateur Linux. Sous Windows, passez par WSL.
+Pour les personnes à l'aise avec un terminal. Il vous faut Docker et Git, sur un Mac ou un ordinateur Linux. Sous Windows, passez par WSL, le sous-système Linux de Windows.
 
 1. Récupérez le code depuis GitHub et démarrez l'outil :
 
@@ -65,11 +69,17 @@ Il vous faut Docker et Git, sur un Mac ou un ordinateur Linux. Sous Windows, pas
 
 ## Installer sur un serveur
 
-Cette partie s'adresse à l'équipe informatique. Il lui faut un serveur Linux 64 bits avec Docker et `curl`. Sur Debian ou Ubuntu, le script d'installation propose d'installer Docker. Avant l'installation, envoyez-lui [Ce qu'il faut préparer](/docs/it-request/) et le [Dossier de sécurité](/docs/security-overview/).
+Cette partie s'adresse à l'équipe informatique. Ce qu'il faut au serveur :
+
+- Un système Linux 64 bits sur `x86_64` (sur `arm64`, installez avec Git), avec la commande `curl` et un compte qui peut utiliser `sudo`.
+- Docker, le logiciel qui fait tourner l'outil. Sur Debian ou Ubuntu, ne l'installez pas avant : s'il manque, le script d'installation propose de l'installer et attend votre oui. Sur un autre système, installez d'abord Docker.
+- Facultatif, pour HTTPS : un nom de domaine qui pointe vers le serveur, avec les ports 80 et 443 ouverts.
+
+[Ce qu'il faut préparer](/docs/it-request/) donne tout le reste, par exemple le compte e-mail et le réseau. Le [Dossier de sécurité](/docs/security-overview/) répond aux questions d'une revue de sécurité.
 
 ### En une commande
 
-La commande installe la dernière version publiée de {name}, depuis son image signée. Elle contrôle chaque fichier avec la liste signée de la version avant de le mettre en place : sans cette liste, ou si un fichier ne correspond pas, elle n'installe rien. La commande existe à partir de la version 1.1.0 : si la [dernière version](https://github.com/Probant-Reporting/probant/releases/latest) est plus ancienne, installez avec Git (plus bas).
+La commande installe la dernière version publiée de {name}. Avant d'installer quoi que ce soit, elle vérifie que chaque fichier est bien celui que le dépôt officiel a publié (la liste signée de la version) : sans cette liste, ou si un fichier ne correspond pas, elle n'installe rien. La commande existe à partir de la version 1.1.0 : si la [dernière version](https://github.com/Probant-Reporting/probant/releases/latest) est plus ancienne, installez avec Git (plus bas).
 
 1. Sur le serveur, lancez cette commande dans le dossier qui recevra l'outil, par exemple `/opt` :
 
@@ -91,7 +101,7 @@ La commande installe la dernière version publiée de {name}, depuis son image s
 
      Le mot de passe des comptes de démonstration est public : ne laissez pas cette installation ouverte sur internet. Pour démarrer ensuite pour de bon, supprimez l'évaluation et ses données (`docker compose down -v`), puis lancez `./install.sh` dans le même dossier.
 
-Après cette installation, le serveur installe chaque nouvelle version la nuit, 3 jours après sa publication. Il sauvegarde d'abord les données, et revient à la version précédente si la nouvelle ne répond pas. Dans l'outil, un gestionnaire des espaces peut choisir **Prévenir seulement** ou **Éteint** à la place. Pour installer sans les mises à jour automatiques, ajoutez `--auto-update off` à la commande.
+Ce qui se passe ensuite, tout seul : le serveur installe chaque nouvelle version la nuit, 3 jours après sa publication. Il sauvegarde d'abord les données, et revient à la version précédente si la nouvelle ne répond pas. Dans l'outil, un gestionnaire des espaces peut choisir **Prévenir seulement** ou **Éteint** à la place. Pour installer sans les mises à jour automatiques, ajoutez `--auto-update off` à la commande.
 
 ### Contrôler d'abord le serveur
 
@@ -134,11 +144,10 @@ L'image Docker de chaque version est aussi publiée sous `ghcr.io/probant-report
 
 Si votre équipe informatique ne veut pas gérer de serveur, un hébergeur peut faire tourner {name}. Le guide décrit Clever Cloud, un hébergeur français. Il fait tourner l'outil, applique les mises à jour de sécurité du système et fournit HTTPS.
 
-- Le déploiement prend environ 30 minutes.
+- Il vous faut un compte Clever Cloud et les réglages d'un compte e-mail pour les relances.
+- Vous créez une application Python à partir du dépôt, avec deux add-ons : PostgreSQL pour la base de données, et FS Bucket pour les fichiers de preuve et les sauvegardes. Le déploiement prend environ 30 minutes.
 - **Vide.** Pour démarrer pour de bon. L'application démarre vide et l'assistant de mise en place crée le compte administrateur.
 - **Avec la démo.** Pour une évaluation seulement : aussitôt après le déploiement, ouvrez une console SSH et lancez `python manage.py load_demo`. Le mot de passe des comptes de démonstration est public. Pour démarrer ensuite pour de bon, supprimez l'application et déployez de nouveau.
-- Il vous faut un compte Clever Cloud et les réglages d'un compte e-mail pour les relances.
-- Vous créez une application Python à partir du dépôt, avec deux add-ons : PostgreSQL pour la base de données, et FS Bucket pour les fichiers de preuve et les sauvegardes.
 - Pour mettre à jour, vous déployez de nouveau la nouvelle version. Les mises à jour automatiques d'un serveur n'existent pas en hébergement clé en main.
 
 Vous payez l'hébergement à l'hébergeur. {name} reste gratuit.

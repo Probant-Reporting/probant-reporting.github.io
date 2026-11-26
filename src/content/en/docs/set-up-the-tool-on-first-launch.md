@@ -12,31 +12,14 @@ When you first open the tool, it has no account yet. The **Setup** wizard opens 
 > **Important: create the administrator account right away.** Until step 1 is done, the first person who opens the
 > address of the tool creates the administrator account. After step 1, the wizard opens only for that account.
 
-## Start empty, or with the demo
-
-A new installation is empty: you set up your own structure with the wizard. This is the way to start for real.
-
-To look at the tool first, you can load the demo instead: Exemplia, a fictitious company, with its organisations,
-its KPIs and three reporting years. Do it before step 1 of the wizard, on the empty database:
-
-```bash
-docker compose exec web python manage.py load_demo
-```
-
-The command shows the demo accounts and their password.
-
-> **Important:** the password of the demo accounts is public. Load the demo only on an installation that you use for
-> an evaluation, and do not leave it open to the internet. The command refuses a database that already holds your
-> data. To start for real afterwards, delete the evaluation and its data (`docker compose down -v`), then install
-> again: the tool starts empty.
-
 The tool asks for no installation code. As long as nothing is created, the tool holds no sensitive data. What
 protects it is the order of the steps: you create the administrator account right after the installation, and
 before you share the address.
 
 To set up the tool:
 
-1. Right after the installation (or deployment), open the address of the tool. The **Setup** wizard opens.
+1. Right after the installation (or deployment), open the address of the tool. The **Setup** wizard opens. To look at
+   the demo instead, load it now, before step 1: see “Start empty, or with the demo”.
 2. Complete step 1, **Administrator account**, before you share the address.
 3. Complete the other steps, or give the address to the person who does the setup.
 
@@ -59,7 +42,29 @@ This table shows the 8 steps of the wizard:
 You can stop and continue later. The person who does the setup does not need the IT team, except for emails
 (section 7).
 
+The account of step 1 is also the first **space manager**. Only the space managers change the settings of the whole
+installation: the email server, the email alerts, the automatic updates, the external copy of the backups, and the
+company sign-in. The other administrators cannot change them. See docs/spaces.md.
+
 After the setup, each person signs in with their email address. The **Dashboard** shows the progress of the
 collection:
 
 Data entry also works on a phone:
+
+## Start empty, or with the demo
+
+A new installation is empty: you set up your own structure with the wizard. This is the way to start for real.
+
+To look at the tool first, you can load the demo instead: Exemplia, a fictitious company, with its organisations,
+its KPIs and three reporting years. Do it before step 1 of the wizard, on the empty database:
+
+```bash
+docker compose exec web python manage.py load_demo
+```
+
+The command shows the demo accounts and their password.
+
+> **Important:** the password of the demo accounts is public. Load the demo only on an installation that you use for
+> an evaluation, and do not leave it open to the internet. The command refuses a database that already holds your
+> data. To start for real afterwards, delete the evaluation and its data (`docker compose down -v`), then install
+> again: the tool starts empty.

@@ -9,7 +9,8 @@ ids: {"Before you start":"from-pc-to-server-before-you-start"}
 
 You tried Probant with the all-in-one version on a computer, and you entered real data. This page tells you how to
 move this data to a server without losing anything. Part 1 is for the person who uses the tool on the computer. Part 2
-is for the IT team that installs the server.
+is for the IT team that installs the server. Without an IT team, give part 2 to the person or the provider who
+installs the server.
 
 The method is simple: you send the whole `data` folder of the all-in-one version. The server uses it as its data
 folder.
@@ -19,12 +20,12 @@ folder.
 | Item | Moves | Comment |
 |---|---|---|
 | Accounts and passwords | Yes | Each person signs in with the same password. |
-| Values, frameworks, campaigns, history, settings | Yes | |
+| Values, frameworks, campaigns, history, settings | Yes | Except the password of the email server, if it is saved in the tool: enter it again on the server. |
 | Evidence files and logo | Yes | |
 | Other spaces | Yes | |
 | Assistant tokens (MCP) | Yes | |
 | Sign-in sessions | No | Each person signs in again once. |
-| Secret key | No | The all-in-one version keeps its own key in `data/.secret_key_all_in_one`. The server never uses it: it makes its own key at its first start. Step 4 deletes the copy of the computer's key. |
+| Secret key | No | The all-in-one version keeps its own key in `data/.secret_key_all_in_one`. The server never uses it: it makes its own key at its first start. Step 4 of part 2 deletes the copy of the computer's key. |
 | Backups made on the computer | Yes, as files | The server lists them, but **Restore…** refuses them: another installation signed them. IT can still restore one, see [Restore a backup](/docs/back-up-and-restore/#restore-a-backup). |
 
 ## Before you start

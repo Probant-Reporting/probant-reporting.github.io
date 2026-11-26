@@ -16,6 +16,8 @@ group: "Product"
 | Consolidation | Le calcul de la valeur d'une organisation à partir des valeurs des organisations en dessous |
 | Contributeur | La personne qui saisit les valeurs de ses organisations, ajoute les preuves et valide sa saisie |
 | ESRS | Les normes européennes d'information en matière de durabilité de la CSRD (European Sustainability Reporting Standards). {name} fournit les ESRS révisées en onze modèles, un par norme, à installer selon vos sujets importants |
+| Espace | Une partie séparée d'une installation, avec ses propres référentiels, organisations, valeurs et preuves, par exemple une par département. Une personne se connecte une seule fois pour tous ses espaces |
+| Gestionnaire des espaces | La personne qui crée les espaces et y donne accès. Seul un gestionnaire des espaces change les réglages de toute l'installation : serveur d'e-mails, alertes par e-mail, mises à jour automatiques, copie des sauvegardes, connexion d'entreprise |
 | KPI | Indicateur clé de performance : un chiffre collecté ou calculé |
 | Modèle | Un référentiel prêt à l'emploi, fourni avec {name} : le module de base et le module complet de la norme volontaire VS, la transparence des rémunérations et les onze modèles ESRS |
 | N-1 | La même période, dans l'exercice précédent |
