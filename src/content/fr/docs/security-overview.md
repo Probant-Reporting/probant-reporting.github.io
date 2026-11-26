@@ -213,7 +213,7 @@ Chaque compte a un rôle dans chaque espace. Ce tableau présente les rôles :
 | Contributeur | Saisit les valeurs qui lui sont attribuées, ajoute les preuves et valide sa saisie |
 | Lecteur | Lit la Visualisation et le Tableau de bord. Ne modifie jamais rien. |
 | Auditeur | Lit tout ce qu'il faut pour un audit : valeurs, preuves, historique, alertes, historique des connexions. Ne modifie jamais rien. |
-| Gestionnaire des espaces | Crée et archive les espaces, gère l'accès des personnes à chaque espace, et change les réglages de toute l'installation : connexion d'entreprise, serveur d'e-mails, alertes par e-mail, mises à jour automatiques, copie externe des sauvegardes |
+| Gestionnaire des espaces | Crée et archive les espaces, gère l'accès des personnes à chaque espace, et change les réglages de toute l'installation : connexion d'entreprise, serveur d'e-mails, alertes par e-mail, mises à jour automatiques, copie externe des sauvegardes. Restaure depuis l'outil une sauvegarde faite par une autre installation |
 
 L'administrateur peut limiter un lecteur ou un auditeur à certaines organisations. L'outil refuse toute requête qui
 écrit venant d'un lecteur ou d'un auditeur, avant que la page ne s'exécute. Seules exceptions : leurs propres
@@ -279,6 +279,22 @@ sa propre clé à son premier démarrage. L'outil n'utilise ni service de gestio
 - **Signature.** L'outil signe chaque archive en HMAC-SHA256, avec une clé dérivée de la clé secrète. La page
   **Administration › Paramètres › Hébergement** ne restaure que les archives de cette installation, intactes. L'IT peut
   restaurer une autre archive en ligne de commande, avec l'option `--unsigned`.
+- **Sauvegarde d'une autre installation.** Seul un gestionnaire des espaces peut la restaurer depuis l'outil : dans
+  l'assistant de mise en place d'une installation vide, ou dans **Hébergement**. L'outil ne peut pas vérifier un tel
+  fichier : il ne lui fait donc confiance en rien. Il n'y lit aucun mot de passe, aucun jeton MCP, aucun groupe ni
+  aucune permission : les droits viennent du seul rôle. En JSON, il n'accepte que les données qu'une sauvegarde de
+  l'outil contient (en SQLite, une table en plus d'une version antérieure est gardée mais jamais lue). Il éteint les
+  relances automatiques et les assistants (MCP) de l'espace, et arrête les imports et exports en
+  arrière-plan qui attendaient. Toute restauration d'une base SQLite, aussi en ligne de commande, refuse déclencheurs,
+  vues, colonnes calculées et toute autre structure que celle attendue (colonnes, contraintes, index, clés étrangères,
+  tels que SQLite les lit). Un échec après le remplacement de la base ramène seul l'espace à l'archive
+  « before-restore » ; sans cette archive, la restauration reste notée comme interrompue pour l'IT. La sauvegarde ne va que dans l'espace courant : elle
+  ne donne aucun droit dans un autre espace, ni jamais le rôle de gestionnaire des espaces. L'outil la refuse, avant
+  tout changement, si l'un de ses comptes a le numéro, l'e-mail ou l'identifiant d'une autre personne qui a un compte
+  dans un autre espace. La personne qui restaure garde son mot de passe et reste administratrice active de l'espace
+  (ligne dans l'historique). Les autres comptes de la sauvegarde n'ont pas de mot de passe tant qu'un administrateur ne
+  leur en a pas donné un provisoire. Les sessions et les liens avec un compte d'entreprise des comptes que la sauvegarde
+  remplace sont supprimés. L'historique des restaurations note « autre installation ».
 - **Restauration sûre.** Une restauration sauvegarde d'abord l'état actuel. Si une restauration s'arrête en cours de
   route, l'outil la termine au démarrage suivant. Une restauration supprime tous les jetons MCP de l'espace.
 - **Mises à jour.** `./update.sh` sauvegarde chaque espace avant de rien changer.

@@ -207,7 +207,7 @@ Each account has one role in each space. This table shows the roles:
 | Contributor | Enters the values assigned to them, adds the evidence, and validates the entry |
 | Reader | Reads the Visualisation and the Dashboard. Never changes anything. |
 | Auditor | Reads all that an audit needs: values, evidence, history, alerts, sign-in history. Never changes anything. |
-| Space manager | Creates and archives the spaces, manages the access of people to each space, and changes the settings of the whole installation: company sign-in, email server, email alerts, automatic updates, external copy of the backups |
+| Space manager | Creates and archives the spaces, manages the access of people to each space, and changes the settings of the whole installation: company sign-in, email server, email alerts, automatic updates, external copy of the backups. Restores from the tool a backup made by another installation |
 
 The administrator can limit a reader or an auditor to some organisations. The tool refuses every request that writes
 from a reader or an auditor, before the page runs. The only exceptions change nothing but their own settings, such as
@@ -269,6 +269,21 @@ own key at its first start. The tool does not use a key management service or a 
 - **Signature.** The tool signs each archive with HMAC-SHA256, with a key derived from the secret key. The page
   **Administration › Settings › Hosting** restores only the archives of this installation, unchanged. IT can restore
   another archive from the command line, with the option `--unsigned`.
+- **Backup from another installation.** Only a space manager can restore it from the tool: in the setup wizard of an
+  empty installation, or in **Hosting**. The tool cannot check such a file, so it trusts nothing in it. It reads no
+  password, no MCP token, no group and no permission from it: rights come from the role only. In JSON it accepts only
+  the data that a backup of the tool contains (in SQLite, an extra table of an earlier version is kept but never read).
+  It turns off the automatic reminders and the assistants (MCP) of the space, and stops the
+  background imports and exports that were waiting. Every restore of an SQLite database, also from the command line,
+  refuses triggers, views, calculated columns, and any other structure than the expected one (columns, constraints,
+  indexes, foreign keys, as SQLite reads them). A failure after the database is replaced brings the space back to the
+  “before-restore” archive by itself; without that archive, the restore stays marked as interrupted for IT. The
+  backup goes into the current space only: it gives no right in another space and never the role of space manager.
+  The tool refuses it, before any change, if one of its accounts has the number, email, or user name of another
+  person who has an account in another space. The person who restores keeps their password and stays an active
+  administrator of the space (line in the history). The other accounts of the backup have no password until an
+  administrator gives them a temporary one. The sessions and the links to company accounts of the accounts that the
+  backup replaces are deleted. The history of the restores notes “other installation”.
 - **Safe restore.** A restore first backs up the current state. If a restore stops halfway, the tool finishes it at
   the next start. A restore deletes all the MCP tokens of the space.
 - **Updates.** `./update.sh` backs up each space before it changes anything.

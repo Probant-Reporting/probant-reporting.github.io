@@ -14,7 +14,8 @@ frameworks, and first campaign. Each step shows what contributors will see, and 
 - **Frameworks**: install a template from the library (the voluntary standard VS, pay transparency, or the ESRS), compose a framework from existing KPIs, or import a file.
 - **Organisations**: choose your levels and their names, and add your organisations.
 - For a site that opens during the year, enter its opening date in **Open since**. The site counts in the totals from that date.
-- **Accounts**: you create the accounts in the tool and give each person a role. If a space manager turns on sign-in with the company account, people sign in with it, but their accounts and roles still come from here.
+- **Accounts**: you create the accounts in the tool and give each person a role. If a space manager turns on sign-in with the company account, people sign in with it, but their accounts and roles still come from here. In **Administration › Accounts**, a **Space manager** label shows next to the role: an administrator sets up their space, a space manager sets up the whole installation.
+- **Start from a backup**: you have a backup made by another server or by the all-in-one version? On an empty installation, create your account, then choose **Start from a backup** from step 2 of the wizard. On an installation in service, a space manager restores it in **Administration › Settings › Hosting**. You keep your password; the other accounts get a temporary password that you give them in **Accounts**.
 
 ## Run a campaign
 

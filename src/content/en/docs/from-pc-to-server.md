@@ -109,8 +109,15 @@ computers must run the same version of the tool.
 ### If you have only a backup file
 
 If the person cannot send the `data` folder, the backup of step 2 of part 1 also moves the data, with these limits:
-the passwords do not move, and only the space of the backup moves. Restore it on a server with SQLite, before anyone
-uses the setup wizard:
+the passwords do not move, and only the space of the backup moves.
+
+The simplest way is in the tool. Install the server empty. The administrator creates their account at step 1 of the
+setup wizard, then opens **Start from a backup** at step 2, chooses the file, and confirms. This administrator keeps
+their password and stays an administrator. They then give the other accounts a temporary password in
+**Administration › Accounts**. See
+[Restore a backup from another installation](/docs/back-up-and-restore/#restore-a-backup-from-another-installation).
+
+IT can also restore it from the command line, on a server with SQLite, before anyone uses the setup wizard:
 
 1. Copy the archive into the volume: `docker compose cp <archive>.zip web:/data/backups/`.
 2. Run `docker compose exec web python manage.py restore <archive>.zip --unsigned --other-space --yes`, then
@@ -122,7 +129,9 @@ uses the setup wizard:
 
 | Message | What to do |
 |---|---|
-| “This backup was not made by this installation, or it was changed after it was made” (page **Hosting**) | Normal for a backup made on the computer. Use the `data` folder, or restore the backup from the command line with `--unsigned`. |
+| “This backup was not made by this installation, or it was changed after it was made” (page **Hosting**) | Normal for a backup made on the computer, when the person who adds the file is not a space manager. A space manager can restore it from the tool. Or use the `data` folder, or restore the backup from the command line with `--unsigned`. |
+| “This backup does not come from this installation” (page **Hosting**, or **Start from a backup** in the setup wizard) | Normal for a backup made on the computer. Read the page, select the two boxes, and enter the word. |
+| “… other accounts will have no password” (same page) | The backup carries no passwords. After the restore, give these accounts a temporary password in **Administration › Accounts**. |
 | “This backup comes from another installation of the tool” (`restore`) | Normal for a backup made on the computer. Add `--other-space` (section [If you have only a backup file](#if-you-have-only-a-backup-file)). |
 | “… account(s) of this space have no password on this server” | The backup carries no passwords. Do step 3 of [If you have only a backup file](#if-you-have-only-a-backup-file). |
 | `WARNING: this is the demo database` (startup summary) | The folder comes from the demo. Install the server empty: see [Before you start](#from-pc-to-server-before-you-start). |

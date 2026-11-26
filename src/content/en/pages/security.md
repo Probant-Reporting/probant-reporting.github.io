@@ -46,7 +46,7 @@ For a security review, send your security team the [Security overview](/docs/sec
 ## Backups
 
 - The tool backs itself up automatically. A backup contains the database and the evidence files.
-- An administrator can restore a backup from the tool, after a confirmation.
+- An administrator can restore a backup from the tool, after a confirmation. A space manager can also restore a backup of another installation (change of server, lost server, all-in-one version): the tool cannot check such a file, so it asks for two confirmations and gives the other accounts a temporary password to set.
 - Keep a copy of the backups outside the server. Your IT team copies them. Or a space manager sets a destination in the tool, a storage space that your IT team provides (S3-compatible storage or SFTP server): the tool then copies each new backup there. By default, it deletes nothing at the destination.
 - If a backup or a copy fails, an email alert tells you. On a new installation, the alerts are on as soon as the emails are set. On an installation that you update, they stay off until a space manager turns them on.
 - The backups are signed, not encrypted. The encryption of the disk is up to your IT team.

@@ -14,7 +14,8 @@ référentiels et première campagne. Chaque étape montre ce que verront les co
 - **Référentiels** : installez un modèle de la bibliothèque (la norme volontaire VS, la transparence des rémunérations ou les ESRS), composez un référentiel à partir de KPI existants, ou importez un fichier.
 - **Organisations** : choisissez vos niveaux et leurs noms, puis ajoutez vos organisations.
 - **Ouverte depuis** : pour un site qui ouvre en cours d'année, saisissez sa date d'ouverture dans ce champ. Le site compte dans les totaux à partir de cette date.
-- **Comptes** : vous créez les comptes dans l'outil et vous donnez un rôle à chaque personne. Si un gestionnaire des espaces allume la connexion avec le compte d'entreprise, chacun se connecte avec lui, mais les comptes et les rôles viennent toujours d'ici.
+- **Comptes** : vous créez les comptes dans l'outil et vous donnez un rôle à chaque personne. Si un gestionnaire des espaces allume la connexion avec le compte d'entreprise, chacun se connecte avec lui, mais les comptes et les rôles viennent toujours d'ici. Dans **Administration › Comptes**, une étiquette **Gestionnaire des espaces** apparaît à côté du rôle : un administrateur règle son espace, un gestionnaire des espaces règle toute l'installation.
+- **Partir d'une sauvegarde** : vous avez une sauvegarde faite par un autre serveur ou par la version tout-en-un ? Sur une installation vide, créez votre compte, puis choisissez **Partir d'une sauvegarde** à partir de l'étape 2 de l'assistant. Sur une installation en service, un gestionnaire des espaces la restaure dans **Administration › Paramètres › Hébergement**. Vous gardez votre mot de passe ; les autres comptes reçoivent un mot de passe temporaire que vous leur donnez dans **Comptes**.
 
 ## Piloter une campagne
 

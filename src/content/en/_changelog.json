@@ -2,6 +2,42 @@
   "source": "CHANGELOG.md",
   "entries": [
     {
+      "version": "1.1.1",
+      "date": "2026-11-26",
+      "sections": [
+        {
+          "title": "Highlights",
+          "items": [
+            "Restore a backup from another installation in the tool: after a change of server, after the loss of a server, or with a backup of the all-in-one version. On an empty installation, the setup wizard offers **Start from a backup** from step 2, after you create your account. On an installation in service, a space manager adds the `.zip` file in **Administration › Settings › Hosting**. Before, only IT could do it, from the command line.",
+            "The confirmation page says that the tool cannot check such a file. It shows the name, the date, and the version that the file gives, what the backup replaces, what happens to each account, and the administrators of the backup. You select two boxes and enter `RESTORE`. The tool backs up the current state first.",
+            "The person who restores keeps their password and stays an active administrator of the space. The other accounts of the backup have no password: give them a temporary password in **Administration › Accounts**. The page says it before and after the restore.",
+            "The backup goes into the current space. The other spaces, the shared account registry, and the settings of the whole installation do not change.",
+            "A backup counts as made by this installation only if its signature is valid and it names this installation and this space. A backup of another installation with the same secret key (server rebuilt with the same `DJANGO_SECRET_KEY`) goes through the same page as any backup from another installation, with all its checks.",
+            "Accounts show the space managers. In **Administration › Accounts**, a **Space manager** label shows next to the role, and the account page explains the difference between an administrator and a space manager. A space manager can appoint another space manager there or on the Spaces page. Only an active administrator of the main space can be appointed. A space manager who is no longer an active administrator of the main space loses the role, after a confirmation. The tool never lets anyone deactivate, demote, delete, or block the last space manager who can act. Each change adds a line to the History."
+          ]
+        },
+        {
+          "title": "For IT",
+          "items": [
+            "No database migration, no new setting. The format of the backups does not change.",
+            "The `restore` command keeps its options. One change: it now refuses an SQLite database with triggers, views, or calculated columns, or with another structure than the tool expects (columns, constraints, indexes, and foreign keys, as SQLite reads them), with or without `--unsigned`. The backups that the tool makes never have them. It is still the way to move the passwords with the backup of the shared registry (installation guide, “Rebuild a server from the external copy”).",
+            "If a restore fails after the database was replaced, the tool goes back to the “before-restore” archive by itself, from the tool and from the command line, and says so; the assistant tokens (MCP) of the space are then lost. Without this archive (`--no-backup-before`, or a database that could not be read), the restore stays marked as interrupted: `/sante/` reports it, and IT restores an archive from the command line.",
+            "A file added for such a restore stays in a hidden folder of the backups folder of the space (`.other-installation`). It is not in the list of backups, and the external copy does not copy it. The tool deletes it after the restore, or at a start one day later.",
+            "The history of the restores (`restores.jsonl`) has two new fields for such a restore: `autre_installation` and `installation` (the name that the file gives)."
+          ]
+        },
+        {
+          "title": "Security",
+          "items": [
+            "Only a space manager can restore a backup without a valid signature of this installation. Other administrators and all other roles are refused, also at the direct address. A backup made by this installation keeps the usual checks, for everyone.",
+            "The tool does not trust the content of such a backup. It reads no password, no assistant token (MCP), no group and no permission from it: the rights of each account come from its role only. In JSON, it accepts only the data that a backup of the tool contains (in SQLite, an extra table of an earlier version is kept but never read). It turns off the automatic reminders, the AI assistant, and the assistants (MCP) of the space, and stops the background imports and exports that were waiting: an administrator turns them on again. The confirmation page and the restore read the same checked copy of the file, bound to it by its SHA-256 sum. The backup gives no right in another space, and never the role of space manager.",
+            "The tool refuses such a backup, before any change, when one of its accounts has the number, the email, or the user name of another person who has an account in another space.",
+            "The accounts that the backup replaces lose their sessions and their links with a company account: a number that another person takes again never opens them."
+          ]
+        }
+      ]
+    },
+    {
       "version": "1.1.0",
       "date": "2026-11-25",
       "sections": [
@@ -10,26 +46,22 @@
           "items": [
             "**For the IT team of a large company**",
             "Two documents to send before the installation: what to prepare (`docs/it_request.md`, one page for IT) and a security overview with a filled-in security questionnaire (`docs/security_overview.md`). Both exist in French.",
-            "Install with one command, from the published image, without Git: `curl -fsSL https://github.com/Probant-Reporting/probant/raw/main/get.sh | sudo sh`. On Debian or Ubuntu, the command offers to install Docker.",
+            "Install with one command, from the published image, without Git: `curl -fsSL https://github.com/Probant-Reporting/probant/raw/main/get.sh | sudo sh`. On Debian or Ubuntu, if Docker is missing, the command offers to install it and waits for your yes.",
             "Check the server before you install: `get.sh --check` or `./install.sh --check` reads Docker, memory, disk, ports, domain name, network, and clock. It changes nothing. The installer runs the same check before a new installation.",
             "Each image is signed with cosign, without a key: the certificate names the workflow of the public repository and the tag. The SBOM of the image is attached to it as a signed attestation. The release has the SBOM and a report of the known vulnerabilities.",
             "Each release has a signed list of the SHA-256 sums of the installation files. `get.sh`, `update.sh`, and `auto-update.sh` check each file against it before they put it in place.",
             "Install and update without Internet access: `./install.sh --offline` and `./update.sh --offline` use the offline package of the release. It holds the image of the tool, the image of Caddy for HTTPS, and the files, with their sums. The package is signed.",
             "Company network: Caddy can serve the HTTPS certificate of your company (`--cert`, `--key`), without Let's Encrypt. The tool trusts the certificate authorities of your company for its outgoing connections (`--ca-cert`).",
-            "Sign in with the company account, through OpenID Connect (Microsoft Entra ID, Google, Okta, Keycloak, and others). It is off by default. A space manager sets it up for the whole installation. See `docs/single_sign_on.md`.",
-            "The identity provider only proves who the person is. The accounts, roles, and assignments stay in the tool, and the tool creates no account. When company sign-in is on, only the space managers keep their password, as rescue accounts. A person who cannot sign in with a password cannot use an AI assistant (MCP).",
-            "An automatic check updates a demo database from each published version to the new version, in one step, with SQLite and with PostgreSQL. You can update from any published version directly.",
+            "Sign in with the company account, through OpenID Connect (Microsoft Entra ID, Google, Okta, Keycloak, and others). It is off by default: a space manager turns it on for the whole installation (`docs/single_sign_on.md`). The identity provider only proves who the person is. The accounts, roles, and assignments stay in the tool, which creates no account. When company sign-in is on, only the space managers keep their password, as rescue accounts, and a person who cannot sign in with a password cannot use an AI assistant (MCP).",
+            "You can update from any published version directly: an automatic test updates a demo database from each published version to the new version, in one step, with SQLite and with PostgreSQL.",
             "**For a small company without an IT team**",
             "Set up the email server in the tool, in **Administration › Settings › Hosting**, box **Emails**, then send a test email. If the test fails, the message gives the cause in plain words. The `SMTP_…` settings of `.env` still work.",
-            "Email alerts about the health of the installation: a failed or late backup, a disk almost full, a stopped background task, failed emails, a failed external copy, an automatic update. One email when a problem appears, a reminder at most once a day, and one email when it is resolved.",
-            "The email alerts are on from the start on a new installation. On an installation that you update, they stay off until a space manager turns them on in **Administration › Settings › Health**.",
+            "Email alerts about the health of the installation: a failed or late backup, a disk almost full, a stopped background task, failed emails, a failed external copy, an automatic update. One email when a problem appears, a reminder at most once a day, and one email when it is resolved. They are on from the start on a new installation. On an updated installation, they stay off until a space manager turns them on in **Administration › Settings › Health**.",
             "New lines on the page **Settings › Health**: a failed backup, a backup that cannot be read, a stopped background task, errors of the nightly data check, the certificate authorities that IT added, and the external copy. It also shows the automatic updates, and the demo data when demo accounts on a server still have the public password.",
-            "Automatic updates, with going back. After an installation with one command, a timer of the server installs each new version at night, 3 days after its publication by default. In **Settings › Hosting**, choose **Install it automatically**, **Notify only**, or **Off**.",
-            "The automatic update installs only an image with a verified signature. It backs up each space first. If the new version does not respond, it goes back to the previous version. `./install.sh --auto-update on` or `off` sets up or removes the timer.",
-            "External copy of the backups, set in the tool: to an S3-compatible storage or to an SFTP server, with a button that tests the destination. The tool copies each new backup of each space and of the shared account registry.",
-            "By default, the external copy deletes nothing at the destination. The installation guide tells how to rebuild a server from this copy alone.",
+            "Automatic updates, with going back. After a new installation with one command, they are on: every night, a timer of the server installs each new version, 3 days after its publication by default. It installs only an image with a verified signature, and backs up each space first. If the new version does not respond, it goes back to the previous version. In **Settings › Hosting**, a space manager chooses **Install it automatically**, **Notify only**, or **Off**. `./install.sh --auto-update on` or `off` sets up or removes the timer.",
+            "External copy of the backups, set in the tool: to an S3-compatible storage or to an SFTP server, with a button that tests the destination. The tool copies each new backup of each space and of the shared account registry. By default, it deletes nothing at the destination. The installation guide tells how to rebuild a server from this copy alone.",
             "A new guide, “From the all-in-one version to a server” (`docs/from_pc_to_server.md`), moves the data of the all-in-one version (Windows, Mac) to a server.",
-            "The all-in-one version creates its own secret key at its first start. After the update, each person signs in again once. The page **Hosting** refuses the backups made before. IT can still restore one with `restore --unsigned`.",
+            "All-in-one version: it now creates its own secret key at its first start. After the update, each person signs in again once, and the page **Hosting** refuses the older backups. IT can still restore one with `restore --unsigned`.",
             "**Corrections**",
             "A restore of the shared account registry on a new server with several spaces no longer stops on a space that has no tables yet.",
             "An installation without Git (for example, with a published image) now shows the commit of its image next to the version number.",
@@ -42,13 +74,13 @@
           "title": "For IT",
           "items": [
             "Update with `./update.sh`, from any published version. The update backs up each space first, as before.",
-            "New database migrations, applied at the start: `espaces` 0002 to 0004 and `connexion_entreprise` 0001 in the shared registry, and `referentiel` 0023 in each space. They add tables and columns. They change no data.",
-            "Nothing changes on an existing installation until someone turns it on. These items are off: company sign-in, email alerts, automatic updates (no timer, choice **Off**), external copy (no destination), and the email server in the tool.",
+            "New database migrations, applied at the start (nothing to do): `espaces` 0002 to 0004 and `connexion_entreprise` 0001 in the shared registry, and `referentiel` 0023 in each space. They add tables and columns, and change no data.",
+            "On an existing installation, these items stay off until a space manager turns them on in the tool: company sign-in, email alerts, automatic updates (choice **Off**), external copy (no destination), and the email server in the tool. For the automatic updates (published image only), IT also sets up the timer: `./install.sh --auto-update on`.",
             "New settings in `.env`: `HTTPS_CERTIFICATE` (the certificate of your company, set by `./install.sh --cert --key`), `COMPANY_SIGN_IN` (`off` turns company sign-in off for the whole installation), and `COMPANY_SIGN_IN_TIMEOUT` (5 seconds). Without Docker, `EXTRA_CA_CERTS` gives the certificate authorities of your company.",
             "`SMTP_HOST` keeps the priority: when it is set, the `SMTP_…` settings of `.env` apply, and the tool shows them read-only. `PUBLIC_URL` also gives the redirect URI of company sign-in and the link in the email alerts.",
-            "A new folder `certificates/`, next to `.env`, holds the certificate of your company (`https/`, read by Caddy only) and your certificate authorities (`ca/`). The backups of the tool do not contain it. If the folder already exists (for example, made by Docker as root), `install.sh` and `update.sh` keep it as it is. Only a certificate to put there needs write access to it. If this user cannot write there, the command tells you what to do.",
+            "A new folder `certificates/`, next to `.env`, holds the certificate of your company (`https/`, read by Caddy only) and your certificate authorities (`ca/`). The backups of the tool do not contain it. `install.sh` and `update.sh` keep an existing folder as it is, also one made by Docker as root. You need write access to it only to add a certificate. If this user cannot write there, the command tells you what to do.",
             "Managed hosting without workers: add `python manage.py backup --copy` to the scheduled tasks, every hour, when an external copy of the backups is set. For each additional space, also add `SPACE=<code> python manage.py backup`.",
-            "Behind a strict firewall, also allow outgoing HTTPS (TCP 443) from the server to `objects.githubusercontent.com` and `release-assets.githubusercontent.com` (files attached to the releases), and to `tuf-repo-cdn.sigstore.dev` (to verify the signatures). With the automatic updates, the server opens these connections at night.",
+            "Behind a strict firewall, also allow outgoing HTTPS (TCP 443) from the server to `objects.githubusercontent.com` and `release-assets.githubusercontent.com` (files attached to the releases), and to `tuf-repo-cdn.sigstore.dev` (to verify the signatures). With the automatic updates, the server opens these connections at night. To install Docker, the installer also needs `download.docker.com` and the package mirrors of the system.",
             "The tags of the public repository are written in lower case from this version: `v1.1.0`. The signature of an image names this tag (`…/image.yml@refs/tags/v1.1.0`). The tag of version 1.0.1 is `V1.0.1`.",
             "`get.sh` installs version 1.1.0 or later only: the releases of 1.0.0 and 1.0.1 have no list of sums. An installation of these versions updates with its `./update.sh`, as before.",
             "New Python packages in the image: PyJWT and cryptography (with cffi and pycparser) for company sign-in, and paramiko (with bcrypt, PyNaCl, and invoke) for the copy to an SFTP server. The all-in-one version does not have them. It has neither company sign-in nor the external copy."
@@ -58,8 +90,8 @@
           "title": "Security",
           "items": [
             "Only the space managers can change the settings that apply to the whole installation: email server, email alerts, automatic updates, and external copy of the backups.",
-            "When company sign-in is on, a session opened with a password follows the same rule as a new sign-in.",
-            "Every failed sign-in with a password gives the same message.",
+            "When company sign-in is turned on, a session opened earlier with a password ends at the next page if the person may no longer use a password.",
+            "Every failed sign-in with a password gives the same message, whatever the cause.",
             "The tool refuses the addresses of cloud metadata services for the connections that are set in the tool: identity provider and external copy.",
             "Company sign-in uses the authorization code flow with PKCE (`S256`), a single-use `state`, and a `nonce`. The tool accepts only ID tokens with an asymmetric signature.",
             "The secrets saved in the tool (password of the email server, secrets of the external copy, client secret of company sign-in) are encrypted with a key derived from the secret key of the installation. The tool never shows them again.",

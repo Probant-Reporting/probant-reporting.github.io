@@ -160,6 +160,11 @@ Si le serveur est perdu, l'IT reconstruit l'installation sur un nouveau serveur 
    mot de passe du serveur d'e-mails et le secret de la copie externe. Seule la clé secrète de l'ancien serveur les lit.
    Si vous avez gardé cette clé en lieu sûr et l'avez remise avant l'étape 3, ils fonctionnent tout de suite.
 
+Si vous n'avez que la sauvegarde d'un espace, sans celle du registre commun, un gestionnaire des espaces peut aussi la
+restaurer depuis l'outil, sur le nouveau serveur : voyez
+[Restaurer une sauvegarde d'une autre installation](/docs/back-up-and-restore/#restaurer-une-sauvegarde-dune-autre-installation). Les mots de
+passe ne passent pas dans ce cas : seule la personne qui restaure garde le sien.
+
 ## Sauvegardes et preuves supprimées
 
 Un administrateur peut supprimer les fichiers de preuve des KPI sensibles dans **Administration › Preuves à supprimer**. L'outil supprime le fichier aussitôt. Une sauvegarde garde les fichiers de preuve qui existaient au moment où elle a été faite. Les sauvegardes déjà faites gardent donc le fichier jusqu'à ce que l'outil les remplace.
@@ -203,7 +208,16 @@ faite par cette installation, ou elle a été modifiée après sa création ». 
 - Les archives que quelqu'un a modifiées après la sauvegarde
 
 L'IT peut toujours restaurer une telle archive en ligne de commande, si elle lui fait confiance : ajoutez `--unsigned`
-à la commande `restore`. Sans cette option, la commande refuse l'archive et ne change rien.
+à la commande `restore`. Sans cette option, la commande refuse l'archive et ne change rien. Un gestionnaire des espaces
+peut aussi la restaurer depuis l'outil : voyez
+[Restaurer une sauvegarde d'une autre installation](/docs/back-up-and-restore/#restaurer-une-sauvegarde-dune-autre-installation).
+
+Toute restauration d'une base SQLite, depuis l'outil ou en ligne de commande, avec ou sans `--unsigned`, refuse une base
+avec des déclencheurs, des vues ou des colonnes calculées, ou d'une autre structure que celle que l'outil attend
+(colonnes, contraintes, index et clés étrangères, tels que SQLite les lit). Les sauvegardes faites par l'outil n'en ont
+jamais. Si une restauration échoue après le remplacement de la base, l'outil revient seul à l'archive
+« before-restore ». Sans cette archive (`--no-backup-before`, ou base illisible), il ne le peut pas : la restauration
+reste notée comme interrompue, `/sante/` le signale, et l'IT restaure une archive en ligne de commande.
 
 Pour restaurer une archive du serveur (si l'outil ne démarre plus) :
 
@@ -240,6 +254,82 @@ Pour restaurer, après une mise à jour, une archive PostgreSQL faite par une ve
 2. Revenez à la version qui a fait l'archive (la restauration affiche sa version, aussi dans `backup.json`), et
    restaurez l'archive avec cette version : voyez [Revenir à la version précédente](/docs/update-the-tool/#revenir-à-la-version-précédente).
 3. Mettez de nouveau l'outil à jour avec `./update.sh`. La mise à jour amène les données restaurées à la nouvelle version.
+
+## Restaurer une sauvegarde d'une autre installation
+
+Un gestionnaire des espaces peut restaurer depuis l'outil une sauvegarde que cette installation n'a pas faite : après un
+changement de serveur, après la perte d'un serveur, ou avec une sauvegarde de la version tout-en-un. La ligne de
+commande ne change pas.
+
+L'outil ne peut pas vérifier un tel fichier, car la clé secrète de l'autre installation ne quitte jamais son serveur.
+L'outil ne fait donc pas confiance à son contenu, et ces règles s'appliquent :
+
+- Une sauvegarde ne compte comme faite par cette installation que si sa signature est valide et qu'elle nomme cette
+  installation et cet espace. La sauvegarde d'une autre installation qui a la même clé secrète (serveur reconstruit
+  avec le même `DJANGO_SECRET_KEY`, `.env` recopié) a une signature valide, mais vient d'une autre installation : ces
+  règles s'appliquent à elle aussi. La sauvegarde d'un autre espace de cette installation reste pour l'IT
+  (`restore --other-space`).
+
+- Seul un gestionnaire des espaces peut le faire. Pour les autres administrateurs et les autres rôles, la page refuse
+  le fichier, comme avant. Une sauvegarde faite par cette installation garde les contrôles habituels, pour tout le monde.
+- **Installation vide.** L'IT installe l'outil. Un administrateur crée son compte à l'étape 1 de l'assistant de mise en
+  place. À partir de l'étape 2, l'assistant propose **Partir d'une sauvegarde** tant que l'installation est vide :
+  espace principal seul, un seul compte, aucune organisation, aucun KPI, aucune campagne, aucune valeur, et l'assistant
+  n'est pas terminé. Un visiteur non connecté ne le voit jamais.
+- **Installation en service.** Dans **Administration › Paramètres › Hébergement**, ouvrez **Restaurer depuis un fichier
+  .zip téléchargé auparavant**, choisissez le fichier, puis cliquez sur **Vérifier le fichier**. L'outil range le
+  fichier à part : il n'est pas dans la liste des sauvegardes, et la copie externe ne le copie pas. L'outil l'efface
+  après la restauration, ou au bout d'un jour.
+- La sauvegarde va dans l'espace courant, comme avec `restore --other-space`. Les autres espaces et le registre commun
+  des comptes ne changent pas.
+
+La page de confirmation affiche le nom de l'installation, la date et la version que donne le fichier. Elle dit que
+l'outil ne peut pas vérifier le fichier, ce que la sauvegarde remplace, ce que deviennent les comptes, et les
+administrateurs de la sauvegarde. Cochez les deux cases, saisissez `RESTAURER`, puis cliquez sur **Restaurer cette
+sauvegarde**. L'outil sauvegarde d'abord l'état actuel de l'espace (archive « before-restore »). Ensuite, il vous
+déconnecte : reconnectez-vous avec votre propre mot de passe.
+
+Ce que deviennent les comptes :
+
+- Vous gardez votre compte, votre mot de passe et votre rôle de gestionnaire des espaces. Après la restauration, votre
+  compte est administrateur actif de l'espace : l'outil l'ajoute, ou lui rend ce rôle, et l'écrit dans l'historique.
+- Les autres comptes de la sauvegarde n'ont pas de mot de passe. Les sauvegardes ne contiennent jamais de mot de passe,
+  et l'outil ne lit aucun mot de passe dans un tel fichier. Donnez-leur un mot de passe provisoire dans
+  **Administration › Comptes**.
+- Un compte qui a le même numéro et le même e-mail qu'un compte d'un autre espace de cette installation est la même
+  personne. Il garde son mot de passe et son rôle dans les autres espaces.
+- Les comptes qui n'existaient que dans cet espace, sauf le vôtre, quittent le registre commun : les comptes de la
+  sauvegarde les remplacent. Leurs sessions et leurs liens avec un compte d'entreprise sont supprimés. Un gestionnaire
+  des espaces parmi eux perd ce rôle.
+- Si un compte de la sauvegarde a le numéro, l'e-mail ou l'identifiant d'une autre personne qui a un compte dans un
+  autre espace, l'outil refuse la sauvegarde et ne change rien. L'IT peut la restaurer en ligne de commande.
+
+Ce qui change aussi :
+
+- Les jetons des assistants (MCP) de l'espace ne fonctionnent plus. Chaque personne en crée un nouveau.
+- Les relances automatiques et les assistants (MCP) de l'espace sont éteints après la restauration, et
+  les imports et exports en arrière-plan qui attendaient sont arrêtés. Rallumez-les dans la page **Relances** et dans
+  **Paramètres** si besoin.
+- Les droits de chaque compte viennent de son seul rôle : un administrateur de la sauvegarde a le mode expert, aucun
+  autre compte ne l'a. Les groupes et permissions écrits dans le fichier ne sont pas repris.
+- Les réglages de toute l'installation restent tels quels : serveur d'e-mails, copie externe, alertes par e-mail,
+  connexion d'entreprise et clé de l'IA. La sauvegarde d'un espace n'en contient aucun, ni aucun de leurs secrets.
+
+L'outil refuse aussi, avant de changer quoi que ce soit : une sauvegarde faite par une version plus récente, une
+sauvegarde PostgreSQL faite avec d'autres migrations de la base, une sauvegarde SQLite sur PostgreSQL, un fichier trop
+gros pour la place libre du disque, un fichier modifié après la page de confirmation, un fichier JSON avec des données
+qu'une sauvegarde de l'outil ne contient jamais, et une base SQLite avec des déclencheurs, des vues ou des colonnes
+calculées, ou d'une autre structure que celle que l'outil attend. Dans une base SQLite, une table en plus (laissée par
+une version antérieure) est admise : l'outil ne la lit pas. Une sauvegarde d'une version antérieure est contrôlée juste
+après sa mise à jour, avant que le registre commun des comptes change. Si quoi que ce soit échoue après le remplacement
+de la base, l'outil revient seul à l'état d'avant la restauration, et la page le dit ; les jetons des assistants (MCP)
+de l'espace sont alors perdus.
+
+Avec plusieurs espaces, restaurez la sauvegarde de chaque espace dans son propre espace, l'espace principal d'abord. Les
+sauvegardes des espaces d'une même installation donnent le même numéro à une personne qui travaille dans plusieurs
+espaces : l'outil reconnaît donc cette personne. L'historique des restaurations (page **Hébergement** et
+`restores.jsonl`) note « autre installation » et son nom. Pour faire passer aussi les mots de passe, l'IT suit
+[Reconstruire un serveur à partir de la copie externe](/docs/back-up-and-restore/#reconstruire-un-serveur-à-partir-de-la-copie-externe).
 
 ## Si une restauration est interrompue
 

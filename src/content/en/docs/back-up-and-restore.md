@@ -154,6 +154,10 @@ If the server is lost, IT rebuilds the installation on a new server from the cop
    server, and the secret of the external copy. Only the secret key of the old server can read them. If you kept that
    key in a safe place and put it back before step 3, they work at once.
 
+If you have only the backup of a space, and not the backup of the shared registry, a space manager can also restore it
+from the tool, on the new server: see [Restore a backup from another installation](/docs/back-up-and-restore/#restore-a-backup-from-another-installation).
+The passwords do not move in this case: only the person who restores keeps theirs.
+
 ## Backups and deleted evidence
 
 An administrator can delete the evidence files of sensitive KPIs in **Administration › Evidence to delete**. The tool deletes the file at once. A backup keeps the evidence files that existed when it was made. So the backups that already exist keep the file until the tool replaces them.
@@ -195,7 +199,15 @@ installation, or it was changed after it was made”. These archives have no val
 - Archives that someone changed after the backup
 
 IT can still restore such an archive from the command line, if it trusts the archive: add `--unsigned` to the
-`restore` command. Without this option, the command refuses the archive and changes nothing.
+`restore` command. Without this option, the command refuses the archive and changes nothing. A space manager can also
+restore it from the tool: see [Restore a backup from another installation](/docs/back-up-and-restore/#restore-a-backup-from-another-installation).
+
+Every restore of an SQLite database, from the tool or from the command line, with or without `--unsigned`, refuses a
+database with triggers, views, or calculated columns, or with another structure than the tool expects (columns,
+constraints, indexes, and foreign keys, as SQLite reads them). The backups that the tool makes never have them. If a
+restore fails after the database was replaced, the tool goes back to the “before-restore” archive by itself. Without
+this archive (`--no-backup-before`, or a database that could not be read), it cannot: the restore stays marked as
+interrupted, `/sante/` reports it, and IT restores an archive from the command line.
 
 To restore an archive from the server (if the tool no longer starts):
 
@@ -231,6 +243,75 @@ To restore a PostgreSQL archive made by an older version after an update:
 2. Go back to the version that made the archive (the restore shows its version, also in `backup.json`), and restore the
    archive with that version: see [Going back to the previous version](/docs/update-the-tool/#going-back-to-the-previous-version).
 3. Update the tool again with `./update.sh`. The update brings the restored data to the new version.
+
+## Restore a backup from another installation
+
+A space manager can restore from the tool a backup that this installation did not make: after a change of server,
+after the loss of a server, or with a backup of the all-in-one version. The command line does not change.
+
+The tool cannot check such a file, because the secret key of the other installation never leaves its server. So the
+tool does not trust its content, and these rules apply:
+
+- A backup counts as made by this installation only if its signature is valid and it names this installation and
+  this space. A backup of another installation that has the same secret key (a server rebuilt with the same
+  `DJANGO_SECRET_KEY`, a copied `.env`) has a valid signature, but it is from another installation: these rules apply
+  to it too. A backup of another space of this installation stays for IT (`restore --other-space`).
+
+- Only a space manager can do it. For the other administrators and the other roles, the page refuses the file, as
+  before. A backup that this installation made keeps the usual checks, for everyone.
+- **Empty installation.** IT installs the tool. An administrator creates their account at step 1 of the setup wizard.
+  From step 2, the wizard shows **Start from a backup** while the installation is empty: main space only, one
+  account, no organisation, no KPI, no campaign, no value, and the wizard is not finished. A visitor who is not signed
+  in never sees it.
+- **Installation in service.** In **Administration › Settings › Hosting**, open **Restore from a .zip file downloaded
+  earlier**, choose the file, then click **Check the file**. The tool keeps the file apart: it is not in the list of
+  backups, and the external copy does not copy it. The tool deletes it after the restore, or after one day.
+- The backup goes into the current space, as with `restore --other-space`. The other spaces and the shared account
+  registry do not change.
+
+The confirmation page shows the name of the installation, the date, and the version that the file gives. It says that
+the tool cannot check the file, what the backup replaces, what happens to the accounts, and the administrators of the
+backup. Select the two boxes, enter `RESTORE`, then click **Restore this backup**. The tool backs up the current state
+of the space first (“before-restore” archive). Then it signs you out: sign in again with your own password.
+
+What happens to the accounts:
+
+- You keep your account, your password, and your role of space manager. After the restore, your account is an active
+  administrator of the space: the tool adds it, or gives the role back, and writes it in the history.
+- The other accounts of the backup have no password. Backups never contain passwords, and the tool reads no password
+  from such a file. Give them a temporary password in **Administration › Accounts**.
+- An account with the same number and the same email as an account of another space of this installation is the same
+  person. It keeps its password and its role in the other spaces.
+- The accounts that existed only in this space, except yours, leave the shared registry: the accounts of the backup
+  replace them. Their sessions and their links with a company account are deleted. A space manager among them loses
+  this role.
+- If an account of the backup has the number, the email, or the user name of another person who has an account in
+  another space, the tool refuses the backup and changes nothing. IT can restore it from the command line.
+
+What else changes:
+
+- The assistant tokens (MCP) of the space stop working. Each person creates a new one.
+- The automatic reminders and the assistants (MCP) of the space are off after the restore, and the
+  background imports and exports that were waiting are stopped. Turn them on again on the **Reminders** page and in
+  **Settings** if you need them.
+- The rights of each account come from its role only: an administrator of the backup has the expert mode, no other
+  account has it. The groups and permissions written in the file are not kept.
+- The settings of the whole installation stay as they are: email server, external copy, email alerts, company sign-in,
+  and AI key. The backup of a space contains none of them, and none of their secrets.
+
+The tool also refuses, before it changes anything: a backup made by a more recent version, a PostgreSQL backup made
+with other database migrations, an SQLite backup on PostgreSQL, a file too large for the free disk space, a file that
+changed after the confirmation page, a JSON file with data that a backup of the tool never contains, and an SQLite
+database with triggers, views, or calculated columns, or with another structure than the tool expects. In an SQLite
+database, an extra table (left by an earlier version) is accepted: the tool does not read it. A backup made by an
+earlier version is checked just after its update, before the shared account registry changes. If anything fails after
+the database was replaced, the tool goes back to the state before the restore by itself, and the page says so; the
+assistant tokens (MCP) of the space are then lost.
+
+With several spaces, restore the backup of each space in its own space, the main space first. The backups of the
+spaces of one installation give the same number to a person who works in several spaces, so the tool recognises this
+person. The history of the restores (**Hosting** page and `restores.jsonl`) notes “other installation” and its name.
+To move the passwords too, IT uses [Rebuild a server from the external copy](/docs/back-up-and-restore/#rebuild-a-server-from-the-external-copy).
 
 ## If a restore is interrupted
 

@@ -46,7 +46,7 @@ Pour une revue de sécurité, envoyez à votre équipe sécurité le [Dossier de
 ## Sauvegardes
 
 - L'outil se sauvegarde tout seul. Une sauvegarde contient la base de données et les fichiers de preuve.
-- Un administrateur peut restaurer une sauvegarde depuis l'outil, après une confirmation.
+- Un administrateur peut restaurer une sauvegarde depuis l'outil, après une confirmation. Un gestionnaire des espaces peut aussi restaurer la sauvegarde d'une autre installation (changement de serveur, serveur perdu, version tout-en-un) : l'outil ne peut pas contrôler un tel fichier, il demande donc deux confirmations, et les autres comptes reçoivent un mot de passe temporaire à changer.
 - Gardez une copie des sauvegardes hors du serveur. Votre équipe informatique les copie. Ou un gestionnaire des espaces règle une destination dans l'outil, un espace de stockage que fournit votre équipe informatique (stockage compatible S3 ou serveur SFTP) : l'outil y copie alors chaque nouvelle sauvegarde. Par défaut, il ne supprime rien à la destination.
 - Si une sauvegarde ou une copie échoue, une alerte par e-mail vous prévient. Sur une installation neuve, les alertes sont allumées dès que les e-mails sont réglés. Sur une installation que vous mettez à jour, elles restent éteintes tant qu'un gestionnaire des espaces ne les allume pas.
 - Les sauvegardes sont signées, pas chiffrées. Le chiffrement du disque revient à votre équipe informatique.
